@@ -46,15 +46,53 @@ Hardened benchmark with:
 
 ## Usage
 
-### Run full ablation (30 seeds)
+### Map your own regulations to controls
 ```bash
-python raa_agent.py --ablation --runs 30
+# Discovery mode — just provide your regulation and control files
+python raa_agent.py --regs regulations.csv --controls controls.csv
+
+# With Excel files
+python raa_agent.py --regs regs.xlsx --controls controls.xlsx
+
+# Get top-10 matches per regulation
+python raa_agent.py --regs regs.csv --controls controls.csv --top-k 10
 ```
 
-### Run a single variant
+Output: `output/mappings.csv` with ranked control matches, confidence scores, and agent reasoning steps.
+
+### Input file formats
+
+**Regulations** (CSV/Excel/JSON):
+| id | framework | text |
+|----|-----------|------|
+| 0 | GDPR | Art 32: Implement appropriate technical measures including encryption... |
+| 1 | NIST | PR.AC-1: Identities and credentials are managed... |
+
+Only `text` column is required. `id` and `framework` are optional.
+
+**Controls** (CSV/Excel/JSON):
+| id | text |
+|----|------|
+| 0 | AES-256 encryption applied to all personal data at rest... |
+| 1 | Automated workflow for processing data deletion requests... |
+
+Only `text` column is required.
+
+**Mappings** (optional, for evaluation):
+| regulation_id | control_id |
+|---------------|------------|
+| 0 | 0 |
+| 0 | 3 |
+
+### Run built-in benchmark
 ```bash
-python raa_agent.py --backend agent --runs 30
-python raa_agent.py --backend tfidf --runs 5
+python raa_agent.py --ablation --runs 30
+python raa_agent.py --backend agent --runs 5
+```
+
+### Evaluate with ground truth
+```bash
+python raa_agent.py --regs regs.csv --controls ctrls.csv --mappings ground_truth.csv
 ```
 
 ### Available backends
@@ -65,7 +103,7 @@ python raa_agent.py --backend tfidf --runs 5
 ## Requirements
 
 - Python 3.8+
-- numpy, scikit-learn, scipy
+- numpy, pandas, scikit-learn, scipy
 - sentence-transformers (optional, for semantic backends)
 - torch (CPU sufficient)
 

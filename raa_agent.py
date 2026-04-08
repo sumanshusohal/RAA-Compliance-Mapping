@@ -19,11 +19,16 @@ Baselines (from v1.0, fully reproducible):
 Evaluation: same protocol as v1.0 (stratified splits, repeated seeds, full metric suite).
 
 Usage:
+  # Built-in benchmark
   python raa_agent.py --backend agent --runs 5
-  python raa_agent.py --backend multi --runs 30
-  python raa_agent.py --backend crossref --runs 5
-  python raa_agent.py --ablation          # run all variants, produce ablation table
-  python raa_agent.py --backend bm25 --runs 30  # classic baseline
+  python raa_agent.py --ablation --runs 30
+
+  # External files (discovery mode — no ground truth needed)
+  python raa_agent.py --regs regulations.csv --controls controls.csv
+  python raa_agent.py --regs regs.xlsx --controls controls.xlsx --top-k 10
+
+  # External files with ground truth (evaluation mode)
+  python raa_agent.py --regs regs.csv --controls ctrls.csv --mappings gt.csv
 """
 
 from __future__ import annotations
@@ -493,6 +498,192 @@ def load_hardened_benchmark() -> Tuple[List[Regulation], List[Control], Dict[int
             if c.regulation_id == r.regulation_id and c.match_type in {"perfect", "good", "mapped"}
         ]
     return regs, ctrls, gt
+
+
+# =====================================================================
+# External file loading
+# =====================================================================
+
+def load_from_files(
+    regs_file: str,
+    controls_file: str,
+    mappings_file: Optional[str] = None,
+) -> Tuple[List[Regulation], List[Control], Dict[int, List[int]]]:
+    """
+    Load regulations and controls from CSV/JSON/Excel files.
+
+    Expected formats:
+
+    Regulations CSV/Excel:
+        id,framework,text
+        0,GDPR,"Art 32: Implement appropriate technical measures..."
+        1,NIST,"PR.AC-1: Identities and credentials are managed..."
+
+    Controls CSV/Excel:
+        id,text
+        0,"Encryption applied to all personal data at rest..."
+        1,"Access control lists enforced on all systems..."
+
+        Optional columns: family, match_type, quality
+
+    Mappings CSV (optional, for evaluation):
+        regulation_id,control_id
+        0,0
+        0,3
+        1,5
+
+    If no mappings file is provided, runs in discovery mode (no evaluation).
+    """
+    # --- Load regulations ---
+    regs_df = _read_file(regs_file)
+
+    # Normalize column names
+    regs_df.columns = [c.strip().lower().replace(" ", "_") for c in regs_df.columns]
+
+    # Check required columns
+    if "text" not in regs_df.columns:
+        raise ValueError(f"Regulations file must have a 'text' column. Found: {list(regs_df.columns)}")
+
+    # Auto-assign IDs if not present
+    if "id" not in regs_df.columns:
+        regs_df["id"] = range(len(regs_df))
+
+    # Auto-assign framework if not present
+    if "framework" not in regs_df.columns:
+        regs_df["framework"] = "unknown"
+
+    regs = []
+    for _, row in regs_df.iterrows():
+        regs.append(Regulation(
+            regulation_id=int(row["id"]),
+            text=str(row["text"]).strip(),
+            framework=str(row.get("framework", "unknown")).strip(),
+        ))
+
+    # --- Load controls ---
+    ctrls_df = _read_file(controls_file)
+    ctrls_df.columns = [c.strip().lower().replace(" ", "_") for c in ctrls_df.columns]
+
+    if "text" not in ctrls_df.columns:
+        raise ValueError(f"Controls file must have a 'text' column. Found: {list(ctrls_df.columns)}")
+
+    if "id" not in ctrls_df.columns:
+        ctrls_df["id"] = range(len(ctrls_df))
+
+    ctrls = []
+    for _, row in ctrls_df.iterrows():
+        ctrls.append(Control(
+            control_id=int(row["id"]),
+            text=str(row["text"]).strip(),
+            regulation_id=int(row["regulation_id"]) if "regulation_id" in ctrls_df.columns else -1,
+            quality=float(row.get("quality", 1.0)),
+            match_type=str(row.get("match_type", "mapped")),
+            family=str(row.get("family", "general")),
+        ))
+
+    # --- Load mappings (ground truth) ---
+    gt: Dict[int, List[int]] = {}
+    if mappings_file:
+        map_df = _read_file(mappings_file)
+        map_df.columns = [c.strip().lower().replace(" ", "_") for c in map_df.columns]
+
+        if "regulation_id" not in map_df.columns or "control_id" not in map_df.columns:
+            raise ValueError(
+                f"Mappings file must have 'regulation_id' and 'control_id' columns. "
+                f"Found: {list(map_df.columns)}"
+            )
+
+        for _, row in map_df.iterrows():
+            rid = int(row["regulation_id"])
+            cid = int(row["control_id"])
+            gt.setdefault(rid, []).append(cid)
+
+    print(f"Loaded from files: {len(regs)} regulations, {len(ctrls)} controls", end="")
+    if mappings_file:
+        print(f", {sum(len(v) for v in gt.values())} ground-truth links")
+    else:
+        print(" (discovery mode — no ground truth)")
+
+    return regs, ctrls, gt
+
+
+def _read_file(filepath: str) -> pd.DataFrame:
+    """Read CSV, TSV, Excel, or JSON file into a DataFrame."""
+    ext = os.path.splitext(filepath)[1].lower()
+    if ext in (".csv", ".tsv"):
+        sep = "\t" if ext == ".tsv" else ","
+        return pd.read_csv(filepath, sep=sep)
+    elif ext in (".xlsx", ".xls"):
+        return pd.read_excel(filepath)
+    elif ext == ".json":
+        return pd.read_json(filepath)
+    else:
+        # Try CSV as default
+        return pd.read_csv(filepath)
+
+
+def run_discovery(regs, controls, args):
+    """
+    Discovery mode: map regulations to controls without ground truth.
+    Produces a CSV of predicted mappings with confidence scores.
+    """
+    control_texts = [c.text for c in controls]
+    reg_texts = [r.text for r in regs]
+
+    # Build scorers
+    tfidf_scorer = build_tfidf_scorer(control_texts)
+    bm25_scorer = build_bm25_scorer(control_texts)
+    lsi_scorer = build_lsi_scorer(control_texts, reg_texts, n_components=min(100, len(control_texts) - 1))
+
+    scorers = {"tfidf": tfidf_scorer, "bm25": bm25_scorer, "lsi": lsi_scorer}
+
+    # Build agent
+    tools = AgentTools(scorers, controls, regs, {})
+    agent = ComplianceAgent(
+        tools=tools,
+        conf_thr=0.0,    # accept everything in discovery mode
+        gap_thr=0.0,
+        enable_multi=True,
+        enable_reform=True,
+        enable_crossref=True,
+        enable_verify=True,
+    )
+
+    results = []
+    for reg in regs:
+        print(f"  Mapping: {reg.text[:80]}...")
+        trace = agent.solve(reg)
+        d = trace.decision
+
+        for rank, cand in enumerate(d.ranked[:args.top_k]):
+            results.append({
+                "regulation_id": reg.regulation_id,
+                "regulation_framework": reg.framework,
+                "regulation_text": reg.text,
+                "rank": rank + 1,
+                "control_id": cand.control_id,
+                "control_text": controls[cand.control_id].text,
+                "score": round(cand.score, 4),
+                "confidence": round(d.confidence, 4),
+                "gap": round(d.gap, 4),
+                "decision": d.status,
+                "agent_steps": trace.n_steps,
+            })
+
+    df = pd.DataFrame(results)
+    out_path = os.path.join(args.output_dir, "mappings.csv")
+    df.to_csv(out_path, index=False)
+    print(f"\nWrote {len(results)} mappings to: {out_path}")
+
+    # Print summary
+    print(f"\n=== Discovery Summary ===")
+    print(f"Regulations processed: {len(regs)}")
+    print(f"Controls in corpus: {len(controls)}")
+    print(f"Top-{args.top_k} mappings per regulation: {len(results)}")
+    print(f"Mean confidence: {df['confidence'].mean():.3f}")
+    print(f"Mean top-1 score: {df[df['rank'] == 1]['score'].mean():.3f}")
+
+    return df
 
 
 # =====================================================================
@@ -1437,7 +1628,38 @@ def summarize(runs, keys):
 # =====================================================================
 
 def parse_args():
-    p = argparse.ArgumentParser(description="RAA Agent Experiments v2.0")
+    p = argparse.ArgumentParser(
+        description="RAA: Retrieval-Augmented Agentic Compliance Mapping",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Run with built-in benchmark
+  python raa_agent.py --ablation --runs 30
+
+  # Map your own regulations to controls (discovery mode)
+  python raa_agent.py --regs regulations.csv --controls controls.csv
+
+  # Evaluate with known ground-truth mappings
+  python raa_agent.py --regs regs.csv --controls ctrls.csv --mappings gt.csv
+
+  # Use Excel files
+  python raa_agent.py --regs regs.xlsx --controls controls.xlsx
+
+File formats:
+  Regulations:  CSV/Excel with columns: text (required), id, framework (optional)
+  Controls:     CSV/Excel with columns: text (required), id, family, quality (optional)
+  Mappings:     CSV with columns: regulation_id, control_id
+""")
+
+    # External file inputs
+    p.add_argument("--regs", type=str, default=None,
+                   help="Path to regulations file (CSV/Excel/JSON)")
+    p.add_argument("--controls", type=str, default=None,
+                   help="Path to controls file (CSV/Excel/JSON)")
+    p.add_argument("--mappings", type=str, default=None,
+                   help="Path to ground-truth mappings file (CSV). If omitted, runs in discovery mode.")
+
+    # Experiment settings
     p.add_argument("--backend", choices=["tfidf", "bm25", "lsi", "semantic", "reranker",
                                           "single", "multi", "reform", "crossref", "agent"],
                     default="agent")
@@ -1471,8 +1693,21 @@ def run_variant(variant_name, regs, ctrls, gt, args):
 
 def main():
     args = parse_args()
-    regs, ctrls, gt = load_hardened_benchmark()
     os.makedirs(args.output_dir, exist_ok=True)
+
+    # Load data from external files or built-in benchmark
+    if args.regs and args.controls:
+        regs, ctrls, gt = load_from_files(args.regs, args.controls, args.mappings)
+
+        # Discovery mode: no ground truth, just produce mappings
+        if not args.mappings:
+            print(f"\nRunning RAA agent in discovery mode...\n")
+            run_discovery(regs, ctrls, args)
+            return
+    elif args.regs or args.controls:
+        raise ValueError("Both --regs and --controls must be provided together.")
+    else:
+        regs, ctrls, gt = load_hardened_benchmark()
 
     print(f"Benchmark: {len(regs)} regulations, {len(ctrls)} controls, "
           f"{sum(len(v) for v in gt.values())} positive links")
