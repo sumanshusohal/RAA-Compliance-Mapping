@@ -36,17 +36,11 @@ Hardened benchmark with:
 ```
 .
 ├── raa_agent.py                 # Main agent implementation (v2.0)
-├── raa_experiments.py           # Original evaluation harness (v1.0)
-├── revised_manuscript_v3.tex    # LaTeX manuscript for ASE submission
-├── revised_manuscript.tex       # Earlier manuscript draft (v2)
 ├── output/
 │   ├── ablation_table.csv       # 30-seed ablation results (8 variants x 15 metrics)
 │   ├── summary_tfidf.csv        # TF-IDF baseline results
 │   ├── summary_semantic.csv     # Dual-encoder results
 │   └── summary_reranker.csv     # Cross-encoder reranker results
-├── RAG.ipynb                    # Exploratory notebooks
-├── RAG 2.ipynb
-├── revised_RAG.ipynb
 └── README.md
 ```
 
@@ -75,19 +69,3 @@ python raa_agent.py --backend tfidf --runs 5
 - sentence-transformers (optional, for semantic backends)
 - torch (CPU sufficient)
 
-## Citation
-
-If you use this work, please cite:
-
-```bibtex
-@article{sohal2026raa,
-  title={Retrieval-Augmented Agentic Compliance Mapping with Selective Prediction},
-  author={Sohal, Sumanshu},
-  journal={Automated Software Engineering},
-  year={2026}
-}
-```
-
-## License
-
-MIT
