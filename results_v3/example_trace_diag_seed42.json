@@ -1,0 +1,1306 @@
+[
+  {
+    "regulation_id": 3,
+    "framework": "GDPR",
+    "requirement_text": "GDPR Art 35: Conduct data protection impact assessments for high-risk processing.",
+    "decision": "abstain",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0007932310946589111,
+    "predicted_control_id": 7,
+    "predicted_control_text": "DPIA template mandatory for all high-risk processing activities.",
+    "gold_control_ids": [
+      7
+    ],
+    "correct": true,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from GDPR: 'GDPR Art 35: Conduct data protection impact assessments for high-risk processing...'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "GDPR Art 35: Conduct data protection impact assessments for high-risk processing.",
+          "backend": "bm25"
+        },
+        "observation": "top1=DPIA template mandatory for all high-risk processing activit... conf=11.643 gap=2.448"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=DPIA template mandatory for all high-risk processing activit... conf=0.0492 gap=0.0008"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.016) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "GDPR Art 35: Conduct data protection impact assessments for high-risk processing",
+          "reformulated": "GDPR Art 35: Conduct data protection impact assessments for high-risk processing. DPIA PIA privacy impact assessment pri"
+        },
+        "observation": "expanded query: 'GDPR Art 35: Conduct data protection impact assessments for high-risk processing. DPIA PIA privacy impact assessment pri...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "GDPR Art 35: Conduct data protection impact assessments for high-risk processing. DPIA PIA privacy i",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=DPIA template mandatory for all high-risk processing activit... conf=0.0492 gap=0.0008"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "GDPR",
+          "top_control_id": 7,
+          "corroboration": 0.0
+        },
+        "observation": "corroboration=0.00: domain family spans 0/1 related frameworks (ISO, SOC2)"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 7,
+          "reverse_rank": 1,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 1/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0007932310946589111,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 1.0,
+          "gap_mult": 1.0,
+          "effective_conf_thr": 0.052599281143157706,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "abstain: ctrl 7"
+      }
+    ]
+  },
+  {
+    "regulation_id": 4,
+    "framework": "GDPR",
+    "requirement_text": "GDPR Art 25: Implement data protection by design and by default.",
+    "decision": "accept",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0007932310946589111,
+    "predicted_control_id": 8,
+    "predicted_control_text": "Privacy by design checklist integrated into SDLC.",
+    "gold_control_ids": [
+      8
+    ],
+    "correct": true,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from GDPR: 'GDPR Art 25: Implement data protection by design and by default....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "GDPR Art 25: Implement data protection by design and by default.",
+          "backend": "bm25"
+        },
+        "observation": "top1=Privacy by design checklist integrated into SDLC.... conf=10.315 gap=0.950"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Data Protection Officer appointed and registered.... conf=0.0489 gap=0.0005"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.011) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "GDPR Art 25: Implement data protection by design and by default.",
+          "reformulated": "GDPR Art 25: Implement data protection by design and by default. privacy by design PbD data minimization privacy confide"
+        },
+        "observation": "expanded query: 'GDPR Art 25: Implement data protection by design and by default. privacy by design PbD data minimization privacy confide...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "GDPR Art 25: Implement data protection by design and by default. privacy by design PbD data minimiza",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Privacy by design checklist integrated into SDLC.... conf=0.0492 gap=0.0008"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "GDPR",
+          "top_control_id": 8,
+          "corroboration": 1.0
+        },
+        "observation": "corroboration=1.00: domain family spans 1/1 related frameworks (ISO, SOC2)"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 8,
+          "reverse_rank": 1,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 1/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0007932310946589111,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 0.85,
+          "gap_mult": 0.8,
+          "effective_conf_thr": 0.04470938897168405,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "accept: ctrl 8"
+      }
+    ]
+  },
+  {
+    "regulation_id": 10,
+    "framework": "NIST",
+    "requirement_text": "NIST PR.IP-1: Baseline configuration is established and maintained.",
+    "decision": "accept",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0007932310946589111,
+    "predicted_control_id": 16,
+    "predicted_control_text": "Baseline configuration defined via IaC and reviewed quarterly.",
+    "gold_control_ids": [
+      16
+    ],
+    "correct": true,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from NIST: 'NIST PR.IP-1: Baseline configuration is established and maintained....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "NIST PR.IP-1: Baseline configuration is established and maintained.",
+          "backend": "bm25"
+        },
+        "observation": "top1=Baseline configuration defined via IaC and reviewed quarterl... conf=10.017 gap=3.774"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Baseline configuration defined via IaC and reviewed quarterl... conf=0.0492 gap=0.0008"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.016) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "NIST PR.IP-1: Baseline configuration is established and maintained.",
+          "reformulated": "NIST PR.IP-1: Baseline configuration is established and maintained. hardening CIS benchmark IaC golden image"
+        },
+        "observation": "expanded query: 'NIST PR.IP-1: Baseline configuration is established and maintained. hardening CIS benchmark IaC golden image...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "NIST PR.IP-1: Baseline configuration is established and maintained. hardening CIS benchmark IaC gold",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Baseline configuration defined via IaC and reviewed quarterl... conf=0.0492 gap=0.0008"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "NIST",
+          "top_control_id": 16,
+          "corroboration": 1.0
+        },
+        "observation": "corroboration=1.00: domain family spans 1/1 related frameworks (ISO, PCI, HIPAA)"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 16,
+          "reverse_rank": 1,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 1/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0007932310946589111,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 0.85,
+          "gap_mult": 0.8,
+          "effective_conf_thr": 0.04470938897168405,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "accept: ctrl 16"
+      }
+    ]
+  },
+  {
+    "regulation_id": 11,
+    "framework": "NIST",
+    "requirement_text": "NIST PR.DS-2: Data-in-transit is protected.",
+    "decision": "abstain",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0015532797377720703,
+    "predicted_control_id": 86,
+    "predicted_control_text": "Network traffic uses TLS (in-transit only, not at-rest).",
+    "gold_control_ids": [
+      17,
+      84
+    ],
+    "correct": false,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from NIST: 'NIST PR.DS-2: Data-in-transit is protected....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "NIST PR.DS-2: Data-in-transit is protected.",
+          "backend": "bm25"
+        },
+        "observation": "top1=Network traffic uses TLS (in-transit only, not at-rest).... conf=6.411 gap=0.582"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Network traffic uses TLS (in-transit only, not at-rest).... conf=0.0492 gap=0.0016"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.032) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "NIST PR.DS-2: Data-in-transit is protected.",
+          "reformulated": "NIST PR.DS-2: Data-in-transit is protected. TLS transport encryption network encryption SSL"
+        },
+        "observation": "expanded query: 'NIST PR.DS-2: Data-in-transit is protected. TLS transport encryption network encryption SSL...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "NIST PR.DS-2: Data-in-transit is protected. TLS transport encryption network encryption SSL",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Encryption keys stored in HSM (key mgmt, not data encryption... conf=0.0492 gap=0.0008"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "NIST",
+          "top_control_id": 86,
+          "corroboration": 0.0
+        },
+        "observation": "corroboration=0.00: no domain family found for control"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 86,
+          "reverse_rank": 1,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 1/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0015532797377720703,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 1.0,
+          "gap_mult": 1.0,
+          "effective_conf_thr": 0.052599281143157706,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "abstain: ctrl 86"
+      }
+    ]
+  },
+  {
+    "regulation_id": 25,
+    "framework": "HIPAA",
+    "requirement_text": "HIPAA 164.308(a)(1): Security management process (risk analysis).",
+    "decision": "abstain",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0010492474797075546,
+    "predicted_control_id": 32,
+    "predicted_control_text": "Annual HIPAA risk assessment by third party.",
+    "gold_control_ids": [
+      32,
+      85
+    ],
+    "correct": true,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from HIPAA: 'HIPAA 164.308(a)(1): Security management process (risk analysis)....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "HIPAA 164.308(a)(1): Security management process (risk analysis).",
+          "backend": "bm25"
+        },
+        "observation": "top1=Software creation follows a gated process with mandatory sta... conf=9.302 gap=1.750"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Annual HIPAA risk assessment by third party.... conf=0.0484 gap=0.0000"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.000) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "HIPAA 164.308(a)(1): Security management process (risk analysis).",
+          "reformulated": "HIPAA 164.308(a)(1): Security management process (risk analysis). threat modeling risk register risk evaluation"
+        },
+        "observation": "expanded query: 'HIPAA 164.308(a)(1): Security management process (risk analysis). threat modeling risk register risk evaluation...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "HIPAA 164.308(a)(1): Security management process (risk analysis). threat modeling risk register risk",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Annual HIPAA risk assessment by third party.... conf=0.0492 gap=0.0010"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "HIPAA",
+          "top_control_id": 32,
+          "corroboration": 0.0
+        },
+        "observation": "corroboration=0.00: domain family spans 0/1 related frameworks (NIST, SOC2)"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 32,
+          "reverse_rank": 1,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 1/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0010492474797075546,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 1.0,
+          "gap_mult": 1.0,
+          "effective_conf_thr": 0.052599281143157706,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "abstain: ctrl 32"
+      }
+    ]
+  },
+  {
+    "regulation_id": 27,
+    "framework": "HIPAA",
+    "requirement_text": "HIPAA 164.310(d): Device and media controls (disposal, reuse).",
+    "decision": "abstain",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0007932310946589111,
+    "predicted_control_id": 34,
+    "predicted_control_text": "NIST 800-88 compliant media sanitization for ePHI.",
+    "gold_control_ids": [
+      34,
+      75
+    ],
+    "correct": true,
+    "n_steps": 8,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve",
+      "decompose"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from HIPAA: 'HIPAA 164.310(d): Device and media controls (disposal, reuse)....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "HIPAA 164.310(d): Device and media controls (disposal, reuse).",
+          "backend": "bm25"
+        },
+        "observation": "top1=HIPAA security awareness training required annually.... conf=4.004 gap=0.084"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Database integrity controls with checksums for ePHI.... conf=0.0479 gap=0.0005"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.011) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "HIPAA 164.310(d): Device and media controls (disposal, reuse).",
+          "reformulated": "HIPAA 164.310(d): Device and media controls (disposal, reuse). sanitization degaussing NIST 800-88 media wiping media de"
+        },
+        "observation": "expanded query: 'HIPAA 164.310(d): Device and media controls (disposal, reuse). sanitization degaussing NIST 800-88 media wiping media de...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "HIPAA 164.310(d): Device and media controls (disposal, reuse). sanitization degaussing NIST 800-88 m",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=NIST 800-88 compliant media sanitization for ePHI.... conf=0.0492 gap=0.0008"
+      },
+      {
+        "step": 5,
+        "thought": "Regulation has 2 sub-requirements. Retrieving for each.",
+        "action": "decompose",
+        "action_input": {
+          "n_parts": 2,
+          "parts": [
+            "HIPAA 164.310(d): Device",
+            "media controls (disposal, reuse)."
+          ]
+        },
+        "observation": "decomposed into 2 parts"
+      },
+      {
+        "step": 6,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "HIPAA",
+          "top_control_id": 34,
+          "corroboration": 0.0
+        },
+        "observation": "corroboration=0.00: domain family spans 0/1 related frameworks (NIST, SOC2)"
+      },
+      {
+        "step": 7,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 34,
+          "reverse_rank": 5,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 5/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 8,
+        "thought": "Final decision based on 8 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0007932310946589111,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 1.0,
+          "gap_mult": 1.0,
+          "effective_conf_thr": 0.052599281143157706,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "abstain: ctrl 34"
+      }
+    ]
+  },
+  {
+    "regulation_id": 37,
+    "framework": "PCI",
+    "requirement_text": "PCI DSS 10.2: Implement audit trails.",
+    "decision": "accept",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0012972633527234267,
+    "predicted_control_id": 44,
+    "predicted_control_text": "Audit trails enabled for all CDE components.",
+    "gold_control_ids": [
+      44
+    ],
+    "correct": true,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from PCI: 'PCI DSS 10.2: Implement audit trails....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "PCI DSS 10.2: Implement audit trails.",
+          "backend": "bm25"
+        },
+        "observation": "top1=Audit trails enabled for all CDE components.... conf=7.983 gap=4.411"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Audit trails enabled for all CDE components.... conf=0.0492 gap=0.0010"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.021) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "PCI DSS 10.2: Implement audit trails.",
+          "reformulated": "PCI DSS 10.2: Implement audit trails. logging log"
+        },
+        "observation": "expanded query: 'PCI DSS 10.2: Implement audit trails. logging log...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "PCI DSS 10.2: Implement audit trails. logging log",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Audit trails enabled for all CDE components.... conf=0.0492 gap=0.0013"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "PCI",
+          "top_control_id": 44,
+          "corroboration": 1.0
+        },
+        "observation": "corroboration=1.00: domain family spans 1/1 related frameworks (NIST, ISO)"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 44,
+          "reverse_rank": 2,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 2/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0012972633527234267,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 0.85,
+          "gap_mult": 0.8,
+          "effective_conf_thr": 0.04470938897168405,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "accept: ctrl 44"
+      }
+    ]
+  },
+  {
+    "regulation_id": 38,
+    "framework": "PCI",
+    "requirement_text": "PCI DSS 11.2: Run vulnerability scans regularly.",
+    "decision": "abstain",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0010492474797075546,
+    "predicted_control_id": 45,
+    "predicted_control_text": "Quarterly vulnerability scans performed.",
+    "gold_control_ids": [
+      45
+    ],
+    "correct": true,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from PCI: 'PCI DSS 11.2: Run vulnerability scans regularly....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "PCI DSS 11.2: Run vulnerability scans regularly.",
+          "backend": "bm25"
+        },
+        "observation": "top1=Quarterly vulnerability scans performed.... conf=10.670 gap=7.098"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Quarterly vulnerability scans performed.... conf=0.0492 gap=0.0010"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.021) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "PCI DSS 11.2: Run vulnerability scans regularly.",
+          "reformulated": "PCI DSS 11.2: Run vulnerability scans regularly. weakness exposure CVE"
+        },
+        "observation": "expanded query: 'PCI DSS 11.2: Run vulnerability scans regularly. weakness exposure CVE...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "PCI DSS 11.2: Run vulnerability scans regularly. weakness exposure CVE",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Quarterly vulnerability scans performed.... conf=0.0492 gap=0.0010"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "PCI",
+          "top_control_id": 45,
+          "corroboration": 0.0
+        },
+        "observation": "corroboration=0.00: no domain family found for control"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 45,
+          "reverse_rank": 1,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 1/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0010492474797075546,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 1.0,
+          "gap_mult": 1.0,
+          "effective_conf_thr": 0.052599281143157706,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "abstain: ctrl 45"
+      }
+    ]
+  },
+  {
+    "regulation_id": 43,
+    "framework": "ISO",
+    "requirement_text": "ISO 27001 A.5.23: Supplier relationship security addressed.",
+    "decision": "accept",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0020267645862569184,
+    "predicted_control_id": 50,
+    "predicted_control_text": "Supplier security requirements included in contracts.",
+    "gold_control_ids": [
+      50,
+      79
+    ],
+    "correct": true,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from ISO: 'ISO 27001 A.5.23: Supplier relationship security addressed....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "ISO 27001 A.5.23: Supplier relationship security addressed.",
+          "backend": "bm25"
+        },
+        "observation": "top1=Supplier security requirements included in contracts.... conf=8.107 gap=4.879"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Supplier security requirements included in contracts.... conf=0.0492 gap=0.0020"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.041) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "ISO 27001 A.5.23: Supplier relationship security addressed.",
+          "reformulated": "ISO 27001 A.5.23: Supplier relationship security addressed. third-party vendor supply chain"
+        },
+        "observation": "expanded query: 'ISO 27001 A.5.23: Supplier relationship security addressed. third-party vendor supply chain...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "ISO 27001 A.5.23: Supplier relationship security addressed. third-party vendor supply chain",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Supplier security requirements included in contracts.... conf=0.0489 gap=0.0003"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "ISO",
+          "top_control_id": 50,
+          "corroboration": 1.0
+        },
+        "observation": "corroboration=1.00: domain family spans 1/1 related frameworks (NIST, GDPR, SOC2)"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 50,
+          "reverse_rank": 1,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 1/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0020267645862569184,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 0.85,
+          "gap_mult": 0.8,
+          "effective_conf_thr": 0.04470938897168405,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "accept: ctrl 50"
+      }
+    ]
+  },
+  {
+    "regulation_id": 47,
+    "framework": "ISO",
+    "requirement_text": "ISO 27001 A.8.23: Web filtering controls implemented where needed.",
+    "decision": "abstain",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0013052638647561982,
+    "predicted_control_id": 54,
+    "predicted_control_text": "Web filtering applied for high-risk categories.",
+    "gold_control_ids": [
+      54
+    ],
+    "correct": true,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from ISO: 'ISO 27001 A.8.23: Web filtering controls implemented where needed....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "ISO 27001 A.8.23: Web filtering controls implemented where needed.",
+          "backend": "bm25"
+        },
+        "observation": "top1=Web filtering applied for high-risk categories.... conf=9.403 gap=5.627"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Web filtering applied for high-risk categories.... conf=0.0492 gap=0.0010"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.021) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "ISO 27001 A.8.23: Web filtering controls implemented where needed.",
+          "reformulated": "ISO 27001 A.8.23: Web filtering controls implemented where needed. URL filtering proxy content filtering web gateway"
+        },
+        "observation": "expanded query: 'ISO 27001 A.8.23: Web filtering controls implemented where needed. URL filtering proxy content filtering web gateway...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "ISO 27001 A.8.23: Web filtering controls implemented where needed. URL filtering proxy content filte",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Web filtering applied for high-risk categories.... conf=0.0492 gap=0.0013"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "ISO",
+          "top_control_id": 54,
+          "corroboration": 0.0
+        },
+        "observation": "corroboration=0.00: no domain family found for control"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 54,
+          "reverse_rank": 2,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 2/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0013052638647561982,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 1.0,
+          "gap_mult": 1.0,
+          "effective_conf_thr": 0.052599281143157706,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "abstain: ctrl 54"
+      }
+    ]
+  },
+  {
+    "regulation_id": 50,
+    "framework": "SOX",
+    "requirement_text": "SOX ITGC: Periodically review user access rights.",
+    "decision": "accept",
+    "confidence": 0.04918032786885246,
+    "gap": 0.0007932310946589111,
+    "predicted_control_id": 60,
+    "predicted_control_text": "User provisioning requires approval before granting access.",
+    "gold_control_ids": [
+      57
+    ],
+    "correct": false,
+    "n_steps": 7,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from SOX: 'SOX ITGC: Periodically review user access rights....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "SOX ITGC: Periodically review user access rights.",
+          "backend": "bm25"
+        },
+        "observation": "top1=User provisioning requires approval before granting access.... conf=5.858 gap=0.316"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=User provisioning requires approval before granting access.... conf=0.0492 gap=0.0008"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.016) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "SOX ITGC: Periodically review user access rights.",
+          "reformulated": "SOX ITGC: Periodically review user access rights. authorization authentication"
+        },
+        "observation": "expanded query: 'SOX ITGC: Periodically review user access rights. authorization authentication...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "SOX ITGC: Periodically review user access rights. authorization authentication",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=User provisioning requires approval before granting access.... conf=0.0489 gap=0.0008"
+      },
+      {
+        "step": 5,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "SOX",
+          "top_control_id": 60,
+          "corroboration": 1.0
+        },
+        "observation": "corroboration=1.00: domain family spans 2/2 related frameworks (SOC2, ISO)"
+      },
+      {
+        "step": 6,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 60,
+          "reverse_rank": 1,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 1/58 (consistent, cutoff 6)"
+      },
+      {
+        "step": 7,
+        "thought": "Final decision based on 7 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04918032786885246,
+          "gap": 0.0007932310946589111,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 0.85,
+          "gap_mult": 0.8,
+          "effective_conf_thr": 0.04470938897168405,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "accept: ctrl 60"
+      }
+    ]
+  },
+  {
+    "regulation_id": 53,
+    "framework": "SOC2",
+    "requirement_text": "SOC 2 CC6.2: Register and authorize users prior to access.",
+    "decision": "abstain",
+    "confidence": 0.04817150063051703,
+    "gap": 0.0007619209628728502,
+    "predicted_control_id": 30,
+    "predicted_control_text": "Biometric authentication for clinical workstations.",
+    "gold_control_ids": [
+      60
+    ],
+    "correct": false,
+    "n_steps": 8,
+    "tools_used": [
+      "cross_ref",
+      "reformulate",
+      "verify",
+      "fuse",
+      "retrieve",
+      "decompose"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "thought": "Regulation from SOC2: 'SOC 2 CC6.2: Register and authorize users prior to access....'. Starting retrieval.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "SOC 2 CC6.2: Register and authorize users prior to access.",
+          "backend": "bm25"
+        },
+        "observation": "top1=TLS 1.2+ enforced for all service-to-service communications.... conf=8.171 gap=1.027"
+      },
+      {
+        "step": 2,
+        "thought": "Fusing results from all available backends for robust ranking.",
+        "action": "fuse",
+        "action_input": {
+          "backends": [
+            "tfidf",
+            "bm25",
+            "lsi"
+          ]
+        },
+        "observation": "fused top1=Processing activity register maintained in OneTrust.... conf=0.0482 gap=0.0005"
+      },
+      {
+        "step": 3,
+        "thought": "Relative top-2 margin (0.011) is below 0.1. Reformulating query with domain concepts.",
+        "action": "reformulate",
+        "action_input": {
+          "original": "SOC 2 CC6.2: Register and authorize users prior to access.",
+          "reformulated": "SOC 2 CC6.2: Register and authorize users prior to access. authorization authentication"
+        },
+        "observation": "expanded query: 'SOC 2 CC6.2: Register and authorize users prior to access. authorization authentication...'"
+      },
+      {
+        "step": 4,
+        "thought": "Re-retrieving with reformulated query.",
+        "action": "retrieve",
+        "action_input": {
+          "query": "SOC 2 CC6.2: Register and authorize users prior to access. authorization authentication",
+          "backend": "fused"
+        },
+        "observation": "reformed top1=Biometric authentication for clinical workstations.... conf=0.0482 gap=0.0008"
+      },
+      {
+        "step": 5,
+        "thought": "Regulation has 2 sub-requirements. Retrieving for each.",
+        "action": "decompose",
+        "action_input": {
+          "n_parts": 2,
+          "parts": [
+            "SOC 2 CC6.2: Register",
+            "authorize users prior to access."
+          ]
+        },
+        "observation": "decomposed into 2 parts"
+      },
+      {
+        "step": 6,
+        "thought": "Cross-referencing the top candidate against related frameworks for corroboration.",
+        "action": "cross_ref",
+        "action_input": {
+          "regulation_framework": "SOC2",
+          "top_control_id": 30,
+          "corroboration": 1.0
+        },
+        "observation": "corroboration=1.00: domain family spans 1/1 related frameworks (ISO, SOX, NIST)"
+      },
+      {
+        "step": 7,
+        "thought": "Bidirectional verification: does the top control's text recover this requirement in reverse?",
+        "action": "verify",
+        "action_input": {
+          "top_control_id": 30,
+          "reverse_rank": 29,
+          "rank_cutoff": 6,
+          "n_requirements": 58
+        },
+        "observation": "reverse rank 29/58 (inconsistent, cutoff 6)"
+      },
+      {
+        "step": 8,
+        "thought": "Final decision based on 8 steps of reasoning.",
+        "action": "decide",
+        "action_input": {
+          "conf": 0.04817150063051703,
+          "gap": 0.0007619209628728502,
+          "base_conf_thr": 0.052599281143157706,
+          "base_gap_thr": 0.0,
+          "conf_mult": 0.935,
+          "gap_mult": 0.8800000000000001,
+          "effective_conf_thr": 0.04918032786885246,
+          "effective_gap_thr": 0.0
+        },
+        "observation": "abstain: ctrl 30"
+      }
+    ]
+  }
+]

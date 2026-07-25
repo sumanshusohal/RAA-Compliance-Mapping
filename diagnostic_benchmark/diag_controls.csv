@@ -1,0 +1,111 @@
+id,text,family,match_type
+0,All databases encrypt PII at rest using AES-256 with FIPS 140-2 modules.,gdpr_enc,perfect
+1,AWS S3 buckets with personal data have SSE-S3 encryption enabled.,gdpr_enc,good
+2,Backup tapes encrypted with AES-256 before offsite transport.,gdpr_enc,good
+3,Automated data subject deletion workflow in ServiceNow with 30-day SLA.,gdpr_erasure,perfect
+4,Self-service portal for data subjects to submit erasure requests.,gdpr_erasure,perfect
+5,Breach notification procedure with 72-hour escalation documented.,gdpr_breach,perfect
+6,Security incident team activates breach assessment within 4 hours.,gdpr_breach,good
+7,DPIA template mandatory for all high-risk processing activities.,gdpr_dpia,perfect
+8,Privacy by design checklist integrated into SDLC.,gdpr_pbd,perfect
+9,Processing activity register maintained in OneTrust.,gdpr_ropa,perfect
+10,Data processing agreements executed with all third-party processors.,gdpr_dpa,perfect
+11,Data Protection Officer appointed and registered.,gdpr_dpo,perfect
+12,IAM lifecycle management with joiner/mover/leaver controls.,nist_prac1,perfect
+13,Privileged access managed via PAM with approvals.,nist_prac1,good
+14,VPN remote access restricted and logged.,nist_prac3,perfect
+15,Bastion host required for remote admin sessions.,nist_prac3,good
+16,Baseline configuration defined via IaC and reviewed quarterly.,nist_prip1,perfect
+17,TLS 1.2+ enforced for all service-to-service communications.,nist_prds2,perfect
+18,Centralized logging to SIEM with weekly review.,nist_prpt1,perfect
+19,IDS/IPS monitoring with alert triage for anomalies.,nist_decm1,perfect
+20,Daily encrypted backups with weekly integrity verification.,nist_prip4,perfect
+21,Backup restoration tested quarterly.,nist_prip4,good
+22,MFA required for all remote and privileged access.,nist_ia2,perfect
+23,Incident response playbook for detection and recovery.,nist_ir4,perfect
+24,Next-gen firewall with IPS at network perimeter.,nist_sc7,perfect
+25,TLS 1.3 required for all data transmission.,nist_sc8,perfect
+26,EDR deployed on all endpoints with behavioral analysis.,nist_si4,perfect
+27,EHR access restricted by role and department.,hipaa_access,perfect
+28,All ePHI access logged to SIEM with 6-year retention.,hipaa_audit,perfect
+29,Database integrity controls with checksums for ePHI.,hipaa_integrity,perfect
+30,Biometric authentication for clinical workstations.,hipaa_auth,perfect
+31,TLS 1.3 required for all ePHI transmission.,hipaa_trans,perfect
+32,Annual HIPAA risk assessment by third party.,hipaa_risk,perfect
+33,HIPAA security awareness training required annually.,hipaa_training,perfect
+34,NIST 800-88 compliant media sanitization for ePHI.,hipaa_media,perfect
+35,HIPAA breach response procedure with notification workflow.,hipaa_incident,perfect
+36,Badge access controls for data centers with ePHI.,hipaa_physical,perfect
+37,Firewall with documented ruleset and change control.,pci_firewall,perfect
+38,All default passwords changed before production.,pci_defaults,perfect
+39,PAN tokenized before storage.,pci_pan,perfect
+40,TLS 1.2+ required for cardholder data transmission.,pci_trans,perfect
+41,EDR deployed in cardholder environment.,pci_av,perfect
+42,RBAC enforced for cardholder environment.,pci_access,perfect
+43,MFA required for admin access to cardholder systems.,pci_auth,perfect
+44,Audit trails enabled for all CDE components.,pci_logs,perfect
+45,Quarterly vulnerability scans performed.,pci_scans,perfect
+46,Incident response plan includes payment card procedures.,pci_ir,perfect
+47,Access control policy reviewed annually.,iso_access,perfect
+48,Monitoring and anomaly detection alerts reviewed daily.,iso_monitor,perfect
+49,Data leakage prevention policies enforced.,iso_dlp,perfect
+50,Supplier security requirements included in contracts.,iso_supplier,perfect
+51,Secure SDLC with code review and security testing gates.,iso_sdlc,perfect
+52,Configuration baselines defined and changes reviewed.,iso_config,perfect
+53,Secure coding practices and peer review required.,iso_securecoding,perfect
+54,Web filtering applied for high-risk categories.,iso_web,perfect
+55,Financial system access controlled by role; quarterly recertification.,sox_access,perfect
+56,Audit logs retained for financial systems; reviewed for anomalies.,sox_logs,perfect
+57,User access reviews for financial applications performed monthly.,sox_review,perfect
+58,Change tickets require approval for financial reporting systems.,sox_change,perfect
+59,Logical access security with SSO and conditional access policies.,soc2_cc61,perfect
+60,User provisioning requires approval before granting access.,soc2_cc62,perfect
+61,Automated deprovisioning within 24 hours.,soc2_cc63,perfect
+62,SIEM with correlation rules for incident detection.,soc2_cc71,perfect
+63,User behavior analytics for anomaly detection.,soc2_cc72,perfect
+64,Change advisory board reviews production changes.,soc2_cc81,perfect
+65,Cryptographic safeguards applied to individually identifiable records stored in relational databases.,gdpr_enc,good
+66,"Upon verified request, the organization purges all individually attributable records within calendar month.",gdpr_erasure,good
+67,Regulator communication protocol triggers within three calendar days of confirmed compromise discovery.,gdpr_breach,good
+68,Workforce onboarding and offboarding procedures govern digital account provisioning and revocation.,nist_prac1,good
+69,Off-premises connectivity to corporate resources requires encrypted tunnel with session recording.,nist_prac3,good
+70,Perimeter defense appliances with stateful packet inspection segregate trusted and untrusted zones.,nist_sc7,good
+71,Continuous telemetry collection from servers and workstations feeds behavioral threat detection platform.,nist_si4,good
+72,"Documented procedures for triaging, containing, and remediating confirmed security compromises.",nist_ir4,good
+73,Clinical information systems enforce least-privilege permissions segmented by care team role.,hipaa_access,good
+74,Clinicians verify identity via fingerprint readers before viewing protected health records.,hipaa_auth,good
+75,End-of-life storage devices undergo DoD 5220.22-M compliant overwrite before surplus auction.,hipaa_media,good
+76,Network segmentation appliance rulesets undergo documented review and approval workflow.,pci_firewall,good
+77,Primary account numbers are replaced with surrogate tokens in all persistent data stores.,pci_pan,good
+78,Factory-shipped credentials on all appliances are rotated to organization-managed secrets prior to deployment.,pci_defaults,good
+79,Contractual obligations for external service providers include mandatory infosec requirements and right-to-audit clauses.,iso_supplier,good
+80,"Software creation follows a gated process with mandatory static analysis, peer examination, and penetration evaluation.",iso_sdlc,good
+81,ERP and general ledger platform entitlements are mapped to job functions with quarterly attestation.,sox_access,good
+82,Correlation engine aggregates event streams to identify and escalate confirmed threat activity.,soc2_cc71,good
+83,Terminated employee digital accounts are disabled by HR-triggered automation within one business day.,soc2_cc63,good
+84,Organizational policy mandates wrapped channel protocols for all inter-service payload exchange.,nist_prds2,good
+85,Independent evaluators catalog threat scenarios and control gaps across clinical systems annually.,hipaa_risk,good
+86,"Network traffic uses TLS (in-transit only, not at-rest).",neg_scope,hard_neg
+87,"Encryption keys stored in HSM (key mgmt, not data encryption).",neg_scope,hard_neg
+88,"Annual security training (training, not access control).",neg_family,hard_neg
+89,"Physical badge access to building (physical, not logical).",neg_family,hard_neg
+90,Customer satisfaction surveys encrypted during email transmission.,neg_scope,hard_neg
+91,Marketing database access restricted to campaign managers only.,neg_scope,hard_neg
+92,Employee performance review records backed up to cloud storage.,neg_scope,hard_neg
+93,Office Wi-Fi network segmented from guest network.,neg_scope,hard_neg
+94,Cafeteria vendor undergoes food safety audit annually.,neg_irrelevant,hard_neg
+95,HVAC system monitoring alerts sent to facilities team.,neg_scope,hard_neg
+96,Software license compliance audit performed quarterly.,neg_scope,hard_neg
+97,Travel expense reports require manager approval before reimbursement.,neg_scope,hard_neg
+98,Logging enabled on development servers for debugging purposes only.,neg_near,hard_neg
+99,Passwords rotated every 90 days for non-privileged accounts on test systems.,neg_near,hard_neg
+100,Vulnerability scan results reviewed by development team for code fixes.,neg_near,hard_neg
+101,Data retention policy specifies 7-year hold for tax documents.,neg_near,hard_neg
+102,Business continuity plan covers natural disaster scenarios for office facilities.,neg_near,hard_neg
+103,Print queue logs maintained for compliance with internal document handling policy.,neg_near,hard_neg
+104,Two-person integrity required for physical vault access to backup media.,neg_near,hard_neg
+105,API rate limiting configured to prevent denial-of-service on public endpoints.,neg_near,hard_neg
+106,Office supplies inventory system.,neg_irrelevant,neg
+107,Marketing campaign metrics tracked.,neg_irrelevant,neg
+108,Company picnic scheduled for Q3 with team-building activities.,neg_irrelevant,neg
+109,Parking lot resurfacing project approved by facilities committee.,neg_irrelevant,neg

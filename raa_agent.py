@@ -117,6 +117,14 @@ class AgentTrace:
     reasoning: str         # final explanation
     n_steps: int = 0
     tools_used: List[str] = field(default_factory=list)
+    # Post-pipeline top-1 confidence and gap, and the multiplicative
+    # adjustments the decision tools applied to the base thresholds. These
+    # let the calibrator reproduce the exact accept/abstain rule used at test
+    # time from a single pipeline pass per query.
+    final_conf: float = 0.0
+    final_gap: float = 0.0
+    mult_c: float = 1.0
+    mult_g: float = 1.0
 
 
 # =====================================================================
@@ -182,6 +190,13 @@ CONCEPT_PATTERNS: List[Tuple[str, List[str]]] = [
     (r"vendor.*supplied.*default", ["default password", "factory reset", "hardening", "initial configuration"]),
     (r"user.*access.*review", ["recertification", "access attestation", "entitlement review"]),
 ]
+
+# Static mapping from control-family name prefixes to framework names,
+# used by corroboration in place of ground-truth links
+FAMILY_PREFIX_TO_FRAMEWORK: Dict[str, str] = {
+    "gdpr": "GDPR", "nist": "NIST", "hipaa": "HIPAA", "pci": "PCI",
+    "iso": "ISO", "sox": "SOX", "soc2": "SOC2",
+}
 
 # Framework family relationships for cross-referencing
 FRAMEWORK_RELATIONSHIPS: Dict[str, List[str]] = {
@@ -866,8 +881,8 @@ def mrr_at_k(gt: Sequence[int], pred: Sequence[int], k: int) -> float:
 def micro_precision_recall_at_k(gt_map, pred_map, reg_ids, k):
     correct = retrieved = relevant = 0
     for rid in reg_ids:
-        g = set(gt_map[rid])
-        p = list(pred_map[rid])[:k]
+        g = set(gt_map.get(rid, []))
+        p = list(pred_map.get(rid, []))[:k]
         relevant += len(g)
         retrieved += len(p)
         correct += len(g & set(p))
@@ -949,7 +964,7 @@ def calibrate_thresholds(cal_scores, cal_ids, gt, target_cov,
         accepted = [rid for rid, conf in passed if conf >= conf_thr]
         if not accepted:
             continue
-        sel_acc = safe_mean([1.0 if int(np.argmax(cal_scores[rid])) in set(gt[rid]) else 0.0 for rid in accepted])
+        sel_acc = safe_mean([1.0 if int(np.argmax(cal_scores[rid])) in set(gt.get(rid, [])) else 0.0 for rid in accepted])
         cov = len(accepted) / Q
         key = (sel_acc, -abs(cov - target_cov))
         if best is None or key > best[0]:
@@ -959,6 +974,54 @@ def calibrate_thresholds(cal_scores, cal_ids, gt, target_cov,
         confs = sorted([top1_conf_gap(cal_scores[rid])[0] for rid in cal_ids], reverse=True)
         conf_thr = confs[need - 1]
         return float(conf_thr), 0.0
+    return float(best[1]), float(best[2])
+
+
+def calibrate_agent_thresholds(agent, cal_ids, regs, gt, target_cov,
+                               gap_grid=(0.0, 0.01, 0.05, 0.1, 0.2, 0.3)):
+    """Calibrate an agent's base thresholds end-to-end.
+
+    Unlike calibrate_thresholds, which sees only the initial fused scores,
+    this runs the agent's complete pipeline (reformulation, decomposition,
+    and the CrossRef/Verify threshold multipliers) on the calibration set and
+    selects base thresholds so that the target coverage is met under the exact
+    accept rule used at test time. Because the decision-tool multipliers do not
+    depend on the base thresholds, a single pipeline pass per query suffices.
+    """
+    saved = (agent.conf_thr, agent.gap_thr)
+    agent.conf_thr, agent.gap_thr = 0.0, 0.0   # decision irrelevant while collecting
+    recs = []  # (adjusted_conf, adjusted_gap, correct)
+    for rid in cal_ids:
+        tr = agent.solve(regs[rid])
+        top = int(tr.decision.ranked[0].control_id) if tr.decision.ranked else -1
+        correct = top in set(gt.get(rid, []))
+        adj_conf = tr.final_conf / max(tr.mult_c, 1e-9)
+        adj_gap = tr.final_gap / max(tr.mult_g, 1e-9)
+        recs.append((adj_conf, adj_gap, correct))
+    agent.conf_thr, agent.gap_thr = saved
+
+    Q = len(recs)
+    if Q == 0:
+        return 0.0, 0.0
+    need = int(math.ceil(target_cov * Q))
+    best = None
+    for gap_thr in gap_grid:
+        passed = [(ac, corr) for (ac, ag, corr) in recs if ag >= gap_thr]
+        if len(passed) < need:
+            continue
+        confs = sorted([ac for ac, _ in passed], reverse=True)
+        conf_thr = confs[need - 1]
+        accepted = [corr for ac, corr in passed if ac >= conf_thr]
+        if not accepted:
+            continue
+        sel_acc = safe_mean([1.0 if c else 0.0 for c in accepted])
+        cov = len(accepted) / Q
+        key = (sel_acc, -abs(cov - target_cov))
+        if best is None or key > best[0]:
+            best = (key, conf_thr, gap_thr)
+    if best is None:
+        confs = sorted([ac for ac, _, _ in recs], reverse=True)
+        return float(confs[min(need, Q) - 1]), 0.0
     return float(best[1]), float(best[2])
 
 
@@ -993,6 +1056,27 @@ class AgentTools:
         self._fw_reg_index: Dict[str, List[int]] = {}
         for r in regs:
             self._fw_reg_index.setdefault(r.framework, []).append(r.regulation_id)
+
+        # Reverse index over requirement texts, for bidirectional
+        # verification: querying with a control's text should recover the
+        # requirement it maps to. Row i corresponds to self.regs[i].
+        self._reg_row_to_id = [r.regulation_id for r in regs]
+        self._reg_id_to_row = {rid: i for i, rid in enumerate(self._reg_row_to_id)}
+        self._reverse_index = BM25Index([r.text for r in regs])
+
+    def verify_reverse_rank(self, reg: Regulation, control_id: int) -> Tuple[int, int]:
+        """Bidirectional check: use the candidate control's text as a query
+        against the requirement corpus and return (rank_of_reg, n_reqs).
+        Rank 1 means the control most strongly recovers its own requirement.
+        Returns (rank, N); rank is 1-indexed."""
+        ctrl_text = self.controls[control_id].text
+        rev_scores = self._reverse_index.score(ctrl_text)
+        order = np.argsort(-rev_scores)
+        target_row = self._reg_id_to_row.get(reg.regulation_id)
+        if target_row is None:
+            return len(self._reg_row_to_id), len(self._reg_row_to_id)
+        rank = int(np.where(order == target_row)[0][0]) + 1
+        return rank, len(self._reg_row_to_id)
 
     def retrieve(self, query: str, backend: str) -> np.ndarray:
         """Run retrieval with a specific backend. Returns score array."""
@@ -1071,21 +1155,16 @@ class AgentTools:
         corroboration_checks = 0
 
         for domain in domain_families_for_ctrl:
-            family_ctrl_ids = []
-            for fam in DOMAIN_FAMILIES[domain]:
-                family_ctrl_ids.extend(self._ctrl_family_index.get(fam, []))
-            family_ctrl_ids = list(set(family_ctrl_ids))
-            if not family_ctrl_ids:
-                continue
-
+            # Which frameworks does this domain family span? Derived purely
+            # from the static taxonomy (family-name prefixes), never from
+            # ground-truth links: consulting gold mappings at inference time
+            # would leak labels into the corroboration signal.
             family_frameworks = set()
-            for cid in family_ctrl_ids:
-                ctrl = self.controls[cid]
-                if ctrl.regulation_id >= 0:
-                    for r in self.regs:
-                        if r.regulation_id == ctrl.regulation_id:
-                            family_frameworks.add(r.framework)
-                            break
+            for fam in DOMAIN_FAMILIES[domain]:
+                prefix = fam.split("_", 1)[0]
+                fw = FAMILY_PREFIX_TO_FRAMEWORK.get(prefix)
+                if fw:
+                    family_frameworks.add(fw)
 
             cross_fw_support = len(family_frameworks & set(related_fws))
             corroboration_checks += 1
@@ -1099,60 +1178,6 @@ class AgentTools:
         explanation = (f"domain family spans {corroboration_hits}/{corroboration_checks} "
                        f"related frameworks ({', '.join(related_fws[:3])})")
         return score, explanation
-
-    def cross_reference_rerank(self, reg: Regulation, scores: np.ndarray,
-                                top_n: int = 10) -> np.ndarray:
-        """
-        Selectively re-rank top candidates: only act when top candidates are
-        ambiguous (small gap). Penalizes negative-family controls and gives
-        a small boost to candidates corroborated across related frameworks.
-        Does NOT override strong existing rankings.
-        """
-        related_fws = set(FRAMEWORK_RELATIONSHIPS.get(reg.framework, []))
-        if not related_fws:
-            return scores
-
-        top_ids = np.argsort(-scores)[:top_n]
-        conf, gap = top1_conf_gap(scores)
-
-        # only intervene when the ranking is ambiguous
-        # (gap < 15% of confidence means top candidates are close)
-        if conf > 0 and gap / conf > 0.15:
-            # strong ranking — only penalize obvious negatives
-            boosted = scores.copy()
-            for cid in top_ids[:3]:
-                if self.tools.controls[cid].family.startswith("neg_"):
-                    boosted[cid] *= 0.7
-            return boosted
-
-        # ambiguous case: apply corroboration-based tie-breaking
-        boosted = scores.copy()
-        for cid in top_ids:
-            ctrl = self.controls[cid]
-
-            # penalize negatives
-            if ctrl.family.startswith("neg_"):
-                boosted[cid] *= 0.7
-                continue
-
-            domains = self._get_domain_families_for_control(ctrl.family)
-            cross_fw_count = 0
-            for domain in domains:
-                family_fws = set()
-                for fam in DOMAIN_FAMILIES[domain]:
-                    for c in self.controls:
-                        if c.family == fam and c.regulation_id >= 0:
-                            for r in self.regs:
-                                if r.regulation_id == c.regulation_id:
-                                    family_fws.add(r.framework)
-                                    break
-                cross_fw_count += len(family_fws & related_fws)
-
-            # small boost for corroborated candidates (tie-breaking, not overriding)
-            if cross_fw_count > 0 and boosted[cid] > 0:
-                boosted[cid] *= (1.0 + 0.03 * cross_fw_count)
-
-        return boosted
 
     def reciprocal_rank_fusion(self, score_arrays: Dict[str, np.ndarray],
                                 k: int = 60) -> np.ndarray:
@@ -1173,41 +1198,60 @@ class AgentTools:
 
 
 # =====================================================================
-# Compliance Mapping Agent (ReAct loop)
+# Compliance Mapping Agent (deterministic multi-stage retrieval workflow)
 # =====================================================================
 
 class ComplianceAgent:
-    """
-    ReAct-style agent for compliance mapping.
+    """Deterministic, ReAct-inspired multi-stage retrieval workflow for
+    compliance mapping.
 
-    Reasoning loop:
-    1. THINK about the regulation
-    2. ACT: retrieve with primary backend
-    3. OBSERVE: check confidence and gap
-    4. If low confidence → THINK → ACT: reformulate → retrieve again
-    5. ACT: fuse results from multiple backends
-    6. If still uncertain → ACT: cross-reference with related frameworks
-    7. DECIDE: accept or abstain with full audit trace
+    This is a fixed conditional sequence of tool invocations, not an
+    open-ended reasoning loop: the stages below always execute in order, gated
+    by the enable_* flags and by scale-invariant confidence tests. Each stage
+    emits a structured trace step for auditability.
+
+    Ranking stages (shape the candidate ordering):
+      1. Retrieve + fuse across backends (RRF).
+      2. If the top-2 relative margin is ambiguous, reformulate and re-retrieve.
+      3. Optionally decompose compound requirements and aggregate.
+
+    Decision stages (shape accept/abstain only, never the ranking):
+      4. Cross-framework corroboration -> relaxes the acceptance threshold.
+      5. Bidirectional verification -> tightens it when inconsistent.
+      6. Calibrated accept/abstain against the (adjusted) thresholds.
     """
 
     def __init__(self, tools: AgentTools, conf_thr: float, gap_thr: float,
-                 max_steps: int = 8,
                  enable_multi: bool = True,
                  enable_reform: bool = True,
+                 enable_decompose: bool = False,
                  enable_crossref: bool = True,
                  enable_verify: bool = False,
-                 confidence_retry_threshold: float = 0.4,
-                 gap_retry_threshold: float = 0.05):
+                 rel_gap_retry_threshold: float = 0.10,
+                 crossref_relax_conf: float = 0.15,
+                 crossref_relax_gap: float = 0.20,
+                 verify_tighten: float = 0.10):
         self.tools = tools
         self.conf_thr = conf_thr
         self.gap_thr = gap_thr
-        self.max_steps = max_steps
         self.enable_multi = enable_multi
         self.enable_reform = enable_reform
+        self.enable_decompose = enable_decompose
         self.enable_crossref = enable_crossref
         self.enable_verify = enable_verify
-        self.confidence_retry_threshold = confidence_retry_threshold
-        self.gap_retry_threshold = gap_retry_threshold
+        # Retry trigger uses the relative margin between the top-2 scores
+        # (gap / top score), which is invariant to the score scale of the
+        # active backend (raw BM25 vs. fused RRF differ by orders of
+        # magnitude, so an absolute confidence threshold cannot be shared).
+        self.rel_gap_retry_threshold = rel_gap_retry_threshold
+        # Decision-tool heuristic constants (subject to sensitivity analysis).
+        self.crossref_relax_conf = crossref_relax_conf
+        self.crossref_relax_gap = crossref_relax_gap
+        self.verify_tighten = verify_tighten
+
+    def _ambiguous(self, conf: float, gap: float) -> bool:
+        rel_gap = gap / max(conf, 1e-9)
+        return rel_gap < self.rel_gap_retry_threshold
 
     def solve(self, reg: Regulation, primary_backend: str = "bm25") -> AgentTrace:
         steps: List[AgentStep] = []
@@ -1258,10 +1302,11 @@ class ComplianceAgent:
             best_scores = fused.copy()
             conf, gap = fused_conf, fused_gap
 
-        # --- Step 3: Reformulation (if confidence is low) ---
-        if self.enable_reform and (conf < self.confidence_retry_threshold or gap < self.gap_retry_threshold):
+        # --- Step 3: Reformulation (if the top-2 margin is ambiguous) ---
+        if self.enable_reform and self._ambiguous(conf, gap):
             step_num += 1
-            thought = f"Confidence ({conf:.3f}) or gap ({gap:.3f}) is low. Reformulating query with domain concepts."
+            thought = (f"Relative top-2 margin ({gap / max(conf, 1e-9):.3f}) is below "
+                       f"{self.rel_gap_retry_threshold}. Reformulating query with domain concepts.")
             reformulated = self.tools.reformulate(query)
 
             steps.append(AgentStep(
@@ -1302,7 +1347,10 @@ class ComplianceAgent:
                     best_scores = reform_fused.copy()
                     conf, gap = reform_conf, reform_gap
 
-            # --- Step 3b: Decomposition for compound regulations ---
+        # --- Step 3b: Decomposition for compound regulations (own ablation
+        # flag; previously bundled with reformulation, which contaminated
+        # the ablation attribution) ---
+        if self.enable_decompose and self._ambiguous(conf, gap):
             sub_reqs = self.tools.decompose(query)
             if len(sub_reqs) > 1:
                 step_num += 1
@@ -1315,10 +1363,16 @@ class ComplianceAgent:
                 ))
                 tools_used.append("decompose")
 
-                # retrieve for each sub-requirement and aggregate
+                # retrieve for each sub-requirement and aggregate, using the
+                # same backend configuration (and hence score scale) as the
+                # scores it competes against
                 sub_scores_list = []
                 for sub_q in sub_reqs:
-                    sub_s = self.tools.retrieve(sub_q, primary_backend)
+                    if self.enable_multi and len(self.tools.scorers) > 1:
+                        sub_all = {bn: self.tools.retrieve(sub_q, bn) for bn in self.tools.scorers}
+                        sub_s = self.tools.reciprocal_rank_fusion(sub_all)
+                    else:
+                        sub_s = self.tools.retrieve(sub_q, primary_backend)
                     sub_scores_list.append(sub_s)
                 if sub_scores_list:
                     agg_sub = np.mean(sub_scores_list, axis=0)
@@ -1332,125 +1386,90 @@ class ComplianceAgent:
         if self.enable_crossref:
             top_id = int(np.argmax(best_scores))
             step_num += 1
+            # Corroboration is a DECISION signal only: it produces a score that
+            # later relaxes the acceptance threshold. It never modifies the
+            # candidate scores and never reorders the ranking.
             corr_score, corr_explanation = self.tools.cross_reference(reg, top_id, best_scores)
-
-            # also check if the runner-up has better corroboration
-            sorted_ids = np.argsort(-best_scores)
-            runner_up = int(sorted_ids[1]) if len(sorted_ids) > 1 else top_id
-            ru_corr, _ = self.tools.cross_reference(reg, runner_up, best_scores)
-
-            # penalize negative-family controls in top positions
-            for rank_pos in range(min(3, len(sorted_ids))):
-                cid = int(sorted_ids[rank_pos])
-                if self.tools.controls[cid].family.startswith("neg_"):
-                    best_scores[cid] *= 0.7
-
-            # if runner-up is better corroborated AND gap is small, swap
-            if ru_corr > corr_score and gap < 0.02 * max(conf, 1e-9):
-                best_scores[runner_up] *= 1.05
-                conf, gap = top1_conf_gap(best_scores)
-                new_top = int(np.argmax(best_scores))
-                obs = f"corroboration top={corr_score:.2f} vs runner-up={ru_corr:.2f}: swapped to ctrl {new_top}"
-            else:
-                obs = f"corroboration={corr_score:.2f}: {corr_explanation}"
 
             steps.append(AgentStep(
                 step_num=step_num,
-                thought="Cross-referencing top candidates against related frameworks for corroboration.",
+                thought="Cross-referencing the top candidate against related frameworks for corroboration.",
                 action="cross_ref",
                 action_input={"regulation_framework": reg.framework, "top_control_id": top_id,
                               "corroboration": corr_score},
-                observation=obs
+                observation=f"corroboration={corr_score:.2f}: {corr_explanation}"
             ))
             tools_used.append("cross_ref")
 
         # --- Step 5 (full agent only): Bidirectional verification ---
-        # Unique agent capability: use the top control's text as a query
-        # to retrieve regulations. If the original regulation ranks high
-        # in the reverse direction, the mapping is bidirectionally supported.
+        # Query the requirement corpus with the top control's own text and
+        # check whether the original requirement is recovered near the top of
+        # the reverse ranking. A bidirectionally consistent mapping is more
+        # trustworthy; an inconsistent one is a signal to abstain. This is a
+        # DECISION signal only and never reorders the candidate list.
+        verified = None
         if self.enable_verify:
             top_id = int(np.argmax(best_scores))
             step_num += 1
 
-            # reverse retrieval: query with the control text against all regs
-            ctrl_text = self.tools.controls[top_id].text
-            rev_scores = {}
-            for bn in self.tools.scorers:
-                # score all controls using the control's text as query
-                rev_s = self.tools.retrieve(ctrl_text, bn)
-                rev_scores[bn] = rev_s
-
-            # check how the top-1 and top-2 controls fare in reverse
-            sorted_ids = np.argsort(-best_scores)
-            top2_ids = [int(sorted_ids[i]) for i in range(min(2, len(sorted_ids)))]
-
-            # for each of top-2 candidates, compute reverse retrieval agreement
-            rev_agreement = {}
-            for cid in top2_ids:
-                c_text = self.tools.controls[cid].text
-                # how well does this control's text retrieve controls similar to itself?
-                # use BM25 to score: does querying with this control text rank the control itself high?
-                c_scores = self.tools.retrieve(c_text, "bm25")
-                c_rank = int(np.where(np.argsort(-c_scores) == cid)[0][0]) + 1
-                # also check: does the reformulated regulation text match this control?
-                ref_query = self.tools.reformulate(query)
-                ref_scores = self.tools.retrieve(ref_query, "bm25")
-                ref_rank = int(np.where(np.argsort(-ref_scores) == cid)[0][0]) + 1
-                rev_agreement[cid] = (c_rank, ref_rank)
-
-            # if the runner-up has much better agreement, consider swapping
-            obs_parts = []
-            if len(top2_ids) == 2:
-                top_cid, runner_cid = top2_ids
-                top_agree = rev_agreement[top_cid]
-                runner_agree = rev_agreement[runner_cid]
-                obs_parts.append(f"top ctrl {top_cid}: self-rank={top_agree[0]}, reform-rank={top_agree[1]}")
-                obs_parts.append(f"runner ctrl {runner_cid}: self-rank={runner_agree[0]}, reform-rank={runner_agree[1]}")
-
-                # swap if runner-up has strictly better reform-rank AND the gap is small
-                if (runner_agree[1] < top_agree[1] and
-                    runner_agree[1] <= 3 and
-                    gap < 0.01 * max(conf, 1e-9)):
-                    best_scores[runner_cid] *= 1.03
-                    conf, gap = top1_conf_gap(best_scores)
-                    obs_parts.append(f"swapped: ctrl {runner_cid} promoted")
-            else:
-                obs_parts.append(f"ctrl {top2_ids[0]}: agreement={rev_agreement[top2_ids[0]]}")
+            rev_rank, n_reqs = self.tools.verify_reverse_rank(reg, top_id)
+            # "Consistent" if the requirement is recovered within the top
+            # decile of the reverse ranking (at least top-3).
+            rank_cutoff = max(3, int(math.ceil(0.10 * n_reqs)))
+            verified = rev_rank <= rank_cutoff
 
             steps.append(AgentStep(
                 step_num=step_num,
-                thought="Bidirectional verification: checking if top control's text retrieves back to this regulation.",
+                thought="Bidirectional verification: does the top control's text recover this requirement in reverse?",
                 action="verify",
-                action_input={"top_control_id": top_id, "verification_type": "bidirectional"},
-                observation="; ".join(obs_parts)
+                action_input={"top_control_id": top_id, "reverse_rank": rev_rank,
+                              "rank_cutoff": rank_cutoff, "n_requirements": n_reqs},
+                observation=(f"reverse rank {rev_rank}/{n_reqs} "
+                             f"({'consistent' if verified else 'inconsistent'}, cutoff {rank_cutoff})")
             ))
             tools_used.append("verify")
 
         step_num += 1
-        # corroboration-aware thresholds: corroborated matches get relaxed thresholds
-        effective_conf_thr = self.conf_thr
-        effective_gap_thr = self.gap_thr
+        # Decision-tool threshold adjustments are expressed as multipliers on
+        # the base thresholds. Corroborated mappings relax the bar; mappings
+        # that fail the bidirectional check tighten it. These multipliers are
+        # independent of the base thresholds, so calibration can compute them
+        # once per query and then search for base thresholds (see
+        # calibrate_agent_thresholds).
+        mult_c, mult_g = 1.0, 1.0
         if self.enable_crossref and corr_score > 0:
-            effective_conf_thr *= (1.0 - 0.15 * corr_score)  # up to 15% lower threshold
-            effective_gap_thr *= (1.0 - 0.2 * corr_score)
+            mult_c *= (1.0 - self.crossref_relax_conf * corr_score)
+            mult_g *= (1.0 - self.crossref_relax_gap * corr_score)
+        if verified is False:
+            mult_c *= (1.0 + self.verify_tighten)
+            mult_g *= (1.0 + self.verify_tighten)
 
+        effective_conf_thr = self.conf_thr * mult_c
+        effective_gap_thr = self.gap_thr * mult_g
         decision = make_decision(best_scores, effective_conf_thr, effective_gap_thr)
         top_id = int(np.argmax(best_scores))
 
         reasoning_parts = []
         if decision.status == "accept":
-            reasoning_parts.append(f"ACCEPT: top candidate (ctrl {top_id}) with conf={conf:.3f}, gap={gap:.3f}")
+            reasoning_parts.append(f"ACCEPT: ctrl {top_id} with conf={conf:.3f} (>= {effective_conf_thr:.3f}), gap={gap:.3f} (>= {effective_gap_thr:.3f})")
         else:
-            reasoning_parts.append(f"ABSTAIN: conf={conf:.3f} < thr={self.conf_thr:.3f} or gap={gap:.3f} < thr={self.gap_thr:.3f}")
-        reasoning_parts.append(f"Tools used: {', '.join(set(tools_used))}")
+            reasoning_parts.append(f"ABSTAIN: conf={conf:.3f} vs {effective_conf_thr:.3f} or gap={gap:.3f} vs {effective_gap_thr:.3f}")
+        reasoning_parts.append(f"Tools used: {', '.join(sorted(set(tools_used)))}")
         reasoning_parts.append(f"Steps taken: {step_num}")
         reasoning = "; ".join(reasoning_parts)
 
+        # The decision record logs the EFFECTIVE (post-adjustment) thresholds
+        # actually applied, together with the base thresholds and the
+        # multipliers, so the audit trail reflects the real decision boundary.
         steps.append(AgentStep(
             step_num=step_num,
-            thought=f"Final decision based on {len(steps)} steps of reasoning.",
+            thought=f"Final decision based on {step_num} steps of reasoning.",
             action="decide",
-            action_input={"conf": conf, "gap": gap, "conf_thr": self.conf_thr, "gap_thr": self.gap_thr},
+            action_input={"conf": conf, "gap": gap,
+                          "base_conf_thr": self.conf_thr, "base_gap_thr": self.gap_thr,
+                          "conf_mult": mult_c, "gap_mult": mult_g,
+                          "effective_conf_thr": effective_conf_thr,
+                          "effective_gap_thr": effective_gap_thr},
             observation=f"{decision.status}: ctrl {top_id}"
         ))
 
@@ -1460,7 +1479,11 @@ class ComplianceAgent:
             decision=decision,
             reasoning=reasoning,
             n_steps=step_num,
-            tools_used=list(set(tools_used))
+            tools_used=list(set(tools_used)),
+            final_conf=conf,
+            final_gap=gap,
+            mult_c=mult_c,
+            mult_g=mult_g,
         )
 
 
@@ -1480,6 +1503,39 @@ def evaluate_run(
 ) -> Dict[str, float]:
     set_global_seed(seed)
     train_ids, cal_ids, test_ids = stratified_split(regs, holdout_ratio, cal_ratio, seed)
+
+    # --- Open-world setup: hold out a fraction of controls to manufacture
+    # genuine no-match (gap) queries. A test requirement whose gold controls
+    # are all removed becomes an unanswerable query on which the correct
+    # behaviour is to abstain. Controls are reindexed; gt is remapped. ---
+    open_world_frac = float(getattr(args, "open_world_frac", 0.0) or 0.0)
+    gap_ids: set = set()
+    if open_world_frac > 0.0:
+        rng = random.Random(seed * 7919 + 1)
+        n_remove = int(round(open_world_frac * len(controls)))
+        removed = set(rng.sample(range(len(controls)), n_remove))
+        old_to_new = {}
+        kept_controls = []
+        for c in controls:
+            if c.control_id in removed:
+                continue
+            old_to_new[c.control_id] = len(kept_controls)
+            kept_controls.append(Control(
+                control_id=len(kept_controls), text=c.text,
+                regulation_id=c.regulation_id, quality=c.quality,
+                match_type=c.match_type, family=c.family))
+        controls = kept_controls
+        new_gt: Dict[int, List[int]] = {}
+        for rid, cids in gt.items():
+            kept = [old_to_new[cid] for cid in cids if cid in old_to_new]
+            if kept:
+                new_gt[rid] = kept
+        gt = new_gt
+        # A test requirement with no surviving gold control is a gap query.
+        gap_ids = {rid for rid in test_ids if not gt.get(rid)}
+        # Calibrate only on answerable requirements.
+        cal_ids = [rid for rid in cal_ids if gt.get(rid)]
+
     control_texts = [c.text for c in controls]
     fit_reg_texts = [regs[rid].text for rid in (train_ids + cal_ids)]
 
@@ -1505,7 +1561,7 @@ def evaluate_run(
             raise RuntimeError(f"Reranker backend failed: {e}") from e
 
     # determine the score function based on backend
-    is_agent_variant = backend_name in ("single", "multi", "reform", "crossref", "agent")
+    is_agent_variant = backend_name in ("single", "multi", "reform", "decomp", "crossref", "agent")
 
     if backend_name in ("tfidf", "bm25", "lsi", "semantic", "reranker"):
         score_fn = scorers[backend_name]
@@ -1514,31 +1570,33 @@ def evaluate_run(
     else:
         raise ValueError(f"Unknown backend: {backend_name}")
 
-    # calibration
-    cal_scores = {rid: score_fn(regs[rid].text) for rid in cal_ids}
-
-    # for agent variants, calibrate using multi-backend fusion
-    if is_agent_variant and backend_name != "single":
-        tools = AgentTools(scorers, controls, regs, gt)
-        for rid in cal_ids:
-            all_s = {bn: scorers[bn](regs[rid].text) for bn in scorers}
-            cal_scores[rid] = tools.reciprocal_rank_fusion(all_s)
-
-    conf_thr, gap_thr = calibrate_thresholds(cal_scores, cal_ids, gt, target_cov)
-
-    # build agent if needed
+    # Calibration.
     agent = None
     if is_agent_variant:
+        # Agent variants are calibrated end-to-end: the base thresholds are
+        # chosen by running the full pipeline (including reformulation and the
+        # CrossRef/Verify threshold multipliers) on the calibration set, so the
+        # reported operating point actually reflects the target coverage.
         tools = AgentTools(scorers, controls, regs, gt)
         agent = ComplianceAgent(
             tools=tools,
-            conf_thr=conf_thr,
-            gap_thr=gap_thr,
-            enable_multi=(backend_name in ("multi", "reform", "crossref", "agent")),
-            enable_reform=(backend_name in ("reform", "crossref", "agent")),
+            conf_thr=0.0,
+            gap_thr=0.0,
+            enable_multi=(backend_name in ("multi", "reform", "decomp", "crossref", "agent")),
+            enable_reform=(backend_name in ("reform", "decomp", "crossref", "agent")),
+            enable_decompose=(backend_name in ("decomp", "crossref", "agent")),
             enable_crossref=(backend_name in ("crossref", "agent")),
             enable_verify=(backend_name == "agent"),
+            rel_gap_retry_threshold=getattr(args, "rel_retry", 0.10),
+            crossref_relax_conf=getattr(args, "crossref_relax_conf", 0.15),
+            crossref_relax_gap=getattr(args, "crossref_relax_gap", 0.20),
+            verify_tighten=getattr(args, "verify_tighten", 0.10),
         )
+        conf_thr, gap_thr = calibrate_agent_thresholds(agent, cal_ids, regs, gt, target_cov)
+        agent.conf_thr, agent.gap_thr = conf_thr, gap_thr
+    else:
+        cal_scores = {rid: score_fn(regs[rid].text) for rid in cal_ids}
+        conf_thr, gap_thr = calibrate_thresholds(cal_scores, cal_ids, gt, target_cov)
 
     # test evaluation
     pred: Dict[int, List[int]] = {}
@@ -1553,6 +1611,9 @@ def evaluate_run(
     per_query_r5 = []
     per_query_p5 = []
     total_steps = []
+    gap_abstained = 0      # gap queries correctly abstained (true reject)
+    gap_total = 0
+    per_query_records = []  # (rid, top1, rr) for query-level statistics
 
     for rid in test_ids:
         if agent is not None:
@@ -1564,19 +1625,31 @@ def evaluate_run(
             scores = score_fn(regs[rid].text)
             d = make_decision(scores, conf_thr, gap_thr)
 
+        # Ranking metrics are computed from the full ranking regardless of
+        # the accept/abstain decision; the decision feeds only coverage and
+        # selective accuracy. Conflating the two would let a coverage change
+        # masquerade as a ranking change.
+        pred[rid] = [c.control_id for c in d.ranked[:top_k]]
         if d.status == "accept":
             accepted.append(rid)
-            ranked_ids = [c.control_id for c in d.ranked[:top_k]]
-            pred[rid] = ranked_ids
-        else:
-            pred[rid] = []
 
-        gt_ids = gt[rid]
+        gt_ids = gt.get(rid, [])
+        if not gt_ids:
+            # No ground-truth links. For an open-world gap query the correct
+            # behaviour is to abstain; ranking metrics are undefined here.
+            if rid in gap_ids:
+                gap_total += 1
+                if d.status == "abstain":
+                    gap_abstained += 1
+            continue
         gt_set = set(gt_ids)
         ranked = pred[rid]
 
-        per_query_top1.append(1.0 if (ranked and ranked[0] in gt_set) else 0.0)
-        per_query_rr.append(mrr_at_k(gt_ids, ranked, 5))
+        q_top1 = 1.0 if (ranked and ranked[0] in gt_set) else 0.0
+        q_rr = mrr_at_k(gt_ids, ranked, 5)
+        per_query_records.append((rid, q_top1, q_rr))
+        per_query_top1.append(q_top1)
+        per_query_rr.append(q_rr)
         per_query_ap.append(ap_at_k(gt_ids, ranked, 5))
         per_query_ndcg.append(ndcg_at_k(gt_ids, ranked, 5))
         per_query_r1.append(len(gt_set & set(ranked[:1])) / len(gt_set))
@@ -1593,7 +1666,7 @@ def evaluate_run(
     f1_5 = (2.0 * precision5 * recall5 / (precision5 + recall5)) if (precision5 + recall5) > 0 else 0.0
 
     coverage = len(accepted) / max(1, len(test_ids))
-    sel_acc = safe_mean([1.0 if (pred[rid] and pred[rid][0] in set(gt[rid])) else 0.0 for rid in accepted]) if accepted else 0.0
+    sel_acc = safe_mean([1.0 if (pred[rid] and pred[rid][0] in set(gt.get(rid, []))) else 0.0 for rid in accepted]) if accepted else 0.0
 
     micro_p1, micro_r1 = micro_precision_recall_at_k(gt, pred, test_ids, 1)
     micro_p5, micro_r5 = micro_precision_recall_at_k(gt, pred, test_ids, 5)
@@ -1606,9 +1679,63 @@ def evaluate_run(
         "micro_precision@5": micro_p5, "micro_recall@5": micro_r5,
         "conf_thr": conf_thr, "gap_thr": gap_thr, "n_test": float(len(test_ids)),
     }
+    if gap_total > 0:
+        # Gap detection: fraction of unanswerable (no-match) queries on which
+        # the system correctly abstained instead of asserting a mapping.
+        out["gap_detection"] = gap_abstained / gap_total
+        out["n_gap"] = float(gap_total)
     if total_steps:
         out["avg_steps"] = safe_mean(total_steps)
+    # Per-query (rid, top1, rr) records enable query-level statistics that
+    # avoid the pseudoreplication of testing across overlapping seed splits.
+    out["_per_query"] = per_query_records
+
+    # Export reasoning traces if requested (agent variants only). The example
+    # trace tables in the paper are generated directly from this output.
+    if getattr(args, "export_traces", False) and traces:
+        export_traces(traces, regs, controls, gt, backend_name, seed,
+                      getattr(args, "output_dir", "."))
     return out
+
+
+def _step_to_dict(step: "AgentStep") -> Dict[str, Any]:
+    return {
+        "step": step.step_num,
+        "thought": step.thought,
+        "action": step.action,
+        "action_input": step.action_input,
+        "observation": step.observation,
+    }
+
+
+def export_traces(traces, regs, controls, gt, backend_name, seed, output_dir):
+    """Serialize agent reasoning traces to JSON for auditing and for
+    regenerating the example-trace tables in the paper."""
+    reg_by_id = {r.regulation_id: r for r in regs}
+    records = []
+    for tr in traces:
+        reg = reg_by_id.get(tr.regulation_id)
+        top_id = int(tr.decision.ranked[0].control_id) if tr.decision.ranked else -1
+        records.append({
+            "regulation_id": tr.regulation_id,
+            "framework": reg.framework if reg else "?",
+            "requirement_text": reg.text if reg else "",
+            "decision": tr.decision.status,
+            "confidence": tr.decision.confidence,
+            "gap": tr.decision.gap,
+            "predicted_control_id": top_id,
+            "predicted_control_text": controls[top_id].text if 0 <= top_id < len(controls) else "",
+            "gold_control_ids": gt.get(tr.regulation_id, []),
+            "correct": top_id in set(gt.get(tr.regulation_id, [])),
+            "n_steps": tr.n_steps,
+            "tools_used": tr.tools_used,
+            "steps": [_step_to_dict(s) for s in tr.steps],
+        })
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, f"traces_{backend_name}_seed{seed}.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(records, f, indent=2)
+    print(f"Exported {len(records)} reasoning traces to {path}")
 
 
 def summarize(runs, keys):
@@ -1661,7 +1788,7 @@ File formats:
 
     # Experiment settings
     p.add_argument("--backend", choices=["tfidf", "bm25", "lsi", "semantic", "reranker",
-                                          "single", "multi", "reform", "crossref", "agent"],
+                                          "single", "multi", "reform", "decomp", "crossref", "agent"],
                     default="agent")
     p.add_argument("--runs", type=int, default=5)
     p.add_argument("--seed", type=int, default=42)
@@ -1671,23 +1798,52 @@ File formats:
     p.add_argument("--target-coverage", type=float, default=0.80)
     p.add_argument("--ablation", action="store_true", help="Run all variants and produce ablation table")
     p.add_argument("--output-dir", default="./output")
-    p.add_argument("--export-traces", action="store_true", help="Export agent reasoning traces")
+    p.add_argument("--export-traces", action="store_true", help="Export agent reasoning traces to JSON")
+    p.add_argument("--open-world-frac", type=float, default=0.0,
+                   help="Fraction of controls to hold out to create no-match (gap) "
+                        "queries for open-world abstention evaluation (0 = disabled)")
+    # Heuristic constants (exposed for sensitivity analysis).
+    p.add_argument("--rel-retry", type=float, default=0.10,
+                   help="Relative top-2 margin below which reformulation triggers")
+    p.add_argument("--crossref-relax-conf", type=float, default=0.15,
+                   help="Max fractional relaxation of the confidence threshold under corroboration")
+    p.add_argument("--crossref-relax-gap", type=float, default=0.20,
+                   help="Max fractional relaxation of the gap threshold under corroboration")
+    p.add_argument("--verify-tighten", type=float, default=0.10,
+                   help="Fractional threshold tightening when the bidirectional check fails")
     return p.parse_args()
 
 
 def run_variant(variant_name, regs, ctrls, gt, args):
-    """Run a single variant across all seeds."""
+    """Run a single variant across all seeds, writing full-precision per-seed
+    and per-query CSVs for reproducibility and query-level statistics."""
     runs = []
+    per_seed_rows = []
+    per_query_rows = []
     for i in range(args.runs):
         seed = args.seed + i
         m = evaluate_run(regs, ctrls, gt, backend_name=variant_name, seed=seed,
                          holdout_ratio=args.holdout, cal_ratio=args.cal,
                          top_k=args.top_k, target_cov=args.target_coverage, args=args)
+        pq = m.pop("_per_query", [])
         runs.append(m)
+        row = {"variant": variant_name, "seed": seed}
+        row.update({k: v for k, v in m.items() if isinstance(v, (int, float))})
+        per_seed_rows.append(row)
+        for rid, q_top1, q_rr in pq:
+            per_query_rows.append({"variant": variant_name, "seed": seed,
+                                   "rid": rid, "top1": q_top1, "rr": q_rr})
         print(f"  {variant_name:>10} run {i+1}/{args.runs} seed={seed} | "
               f"Top1={m['top1']:.3f} MRR@5={m['mrr@5']:.3f} nDCG@5={m['ndcg@5']:.3f} "
               f"R@5={m['recall@5']:.3f} Cov={m['coverage']:.3f} SelAcc={m['sel_acc@80']:.3f}"
+              + (f" GapDet={m['gap_detection']:.3f}" if 'gap_detection' in m else "")
               + (f" Steps={m.get('avg_steps', 0):.1f}" if 'avg_steps' in m else ""))
+    out_dir = args.output_dir
+    pd.DataFrame(per_seed_rows).to_csv(
+        os.path.join(out_dir, f"perseed_{variant_name}.csv"), index=False)
+    if per_query_rows:
+        pd.DataFrame(per_query_rows).to_csv(
+            os.path.join(out_dir, f"perquery_{variant_name}.csv"), index=False)
     return runs
 
 
@@ -1719,10 +1875,12 @@ def main():
         "precision@5", "f1@5", "coverage", "sel_acc@80",
         "micro_precision@1", "micro_recall@1", "micro_precision@5", "micro_recall@5"
     ]
+    if args.open_world_frac > 0:
+        metric_keys.append("gap_detection")
 
     if args.ablation:
         # Run all variants
-        variants = ["tfidf", "bm25", "lsi", "single", "multi", "reform", "crossref", "agent"]
+        variants = ["tfidf", "bm25", "lsi", "single", "multi", "reform", "decomp", "crossref", "agent"]
         all_results = {}
 
         for variant in variants:

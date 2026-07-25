@@ -1,0 +1,18 @@
+# Exact environment used for all reported results (Python 3.10.2).
+# Core (required for lexical baselines and the agent):
+numpy==1.26.4
+pandas==2.3.3
+scikit-learn==1.7.2
+scipy==1.15.3
+
+# Neural baselines only (dual-encoder and cross-encoder). Run with USE_TF=0 to
+# avoid the TensorFlow/Keras 3 import path.
+sentence-transformers==5.2.0
+torch==2.6.0
+transformers==4.57.3
+
+# Neural model checkpoints (downloaded on first use):
+#   dual-encoder : sentence-transformers/all-MiniLM-L6-v2
+#   cross-encoder: cross-encoder/ms-marco-MiniLM-L-6-v2
+# openpyxl is needed only to read the NIST .xlsx crosswalk in build_csf_benchmark.py:
+openpyxl>=3.1

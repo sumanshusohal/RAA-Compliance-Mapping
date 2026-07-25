@@ -1,0 +1,49 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\signature{Sumanshu Sohal\\
+Department of Information Technology\\
+University of the Cumberlands\\
+Williamsburg, KY 40769, USA\\
+sumanshu.95s@outlook.com}
+
+\address{Sumanshu Sohal\\
+Department of Information Technology\\
+University of the Cumberlands\\
+Williamsburg, KY 40769, USA}
+
+\date{\today}
+
+\begin{document}
+
+\begin{letter}{Editor-in-Chief\\
+Data \& Knowledge Engineering\\
+Elsevier}
+
+\opening{Dear Editor,}
+
+We are pleased to submit our manuscript entitled \textbf{``Regulatory Alignment Agent: Multi-Step Retrieval with Domain-Aware Query Reformulation for Automated Compliance Mapping''} for consideration for publication in \textit{Data \& Knowledge Engineering}.
+
+This paper introduces the Regulatory Alignment Agent (RAA), a multi-step retrieval system that automates compliance mapping---the task of linking regulatory requirements to organizational controls. The RAA employs a tool-augmented reasoning loop inspired by the ReAct paradigm, combining multi-backend retrieval with Reciprocal Rank Fusion, domain-aware query reformulation via a curated compliance thesaurus, cross-framework corroboration, bidirectional verification, and calibrated selective prediction.
+
+We believe this work is well suited to DKE for the following reasons:
+
+\begin{enumerate}
+    \item \textbf{Knowledge representation and retrieval:} The paper addresses how domain-specific knowledge (regulatory terminology, framework relationships, compliance concepts) can be systematically encoded and leveraged to improve information retrieval in specialized domains.
+
+    \item \textbf{System architecture:} The multi-step agent architecture, with its tool-augmented reasoning loop, presents a novel system design pattern for knowledge-intensive retrieval tasks that require auditability.
+
+    \item \textbf{Rigorous evaluation:} We present a controlled ablation study across 30 random seeds with statistical significance testing, demonstrating that domain-aware query reformulation is the dominant contributor ($\Delta$Top-1 = +0.116, $p < 0.001$).
+\end{enumerate}
+
+The manuscript has not been published previously and is not under consideration elsewhere. All authors have approved the manuscript and agree with its submission to \textit{Data \& Knowledge Engineering}.
+
+The benchmark, evaluation harness, and agent implementation are publicly available at \url{https://github.com/sumanshusohal/RAA-Compliance-Mapping}.
+
+Thank you for considering our submission. We look forward to your response.
+
+\closing{Sincerely,}
+
+\end{letter}
+\end{document}

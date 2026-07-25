@@ -1,35 +1,75 @@
 # RAA: Retrieval-Augmented Agentic Compliance Mapping
 
-A tool-augmented agent for automated regulatory compliance traceability recovery. RAA uses a ReAct-style reasoning loop with domain-aware query reformulation, multi-backend retrieval fusion, cross-framework corroboration, and calibrated selective prediction to map regulatory requirements to implementation controls.
+A deterministic, ReAct-inspired multi-stage retrieval workflow for automated regulatory
+compliance traceability recovery. RAA combines domain-aware query reformulation, multi-backend
+retrieval fusion, cross-framework corroboration, bidirectional verification, and calibrated
+selective prediction to map regulatory requirements to implementation controls. It executes a
+fixed conditional sequence of deterministic tools (not an open-ended language-model loop) and
+emits a structured, auditable trace for every decision.
 
 ## Key Results (30-seed evaluation)
 
-| Method | Top-1 | MRR@5 | nDCG@5 | Recall@5 |
-|--------|-------|-------|--------|----------|
-| TF-IDF | 0.511 | 0.588 | 0.548 | 0.593 |
-| BM25 | 0.481 | 0.537 | 0.504 | 0.535 |
-| LSI | 0.500 | 0.623 | 0.586 | 0.659 |
-| Full Agent (RAA) | **0.617** | **0.705** | **0.643** | **0.706** |
+All ranking metrics are computed from the **full candidate ranking**, independent of the
+accept/abstain decision; coverage, selective accuracy, and open-world gap detection are
+reported separately as decision metrics. (Conflating the two — computing ranking only over
+accepted queries — inflates ranking metrics with coverage and is a bug we fixed.)
 
-The full agent achieves +21% Top-1 accuracy over the best lexical baseline, with domain-aware query reformulation as the dominant contributor (+28%).
+Significance uses **query-level paired tests** (aggregate each metric to one value per unique
+requirement, then a paired sign-flip randomization test + bootstrap), which avoid the
+pseudoreplication of testing across overlapping seed splits. Agent variants are calibrated
+end-to-end to a 0.80 coverage target.
+
+**Diagnostic benchmark** (engineered vocabulary mismatch, 58 reqs / 110 controls / 86 links):
+
+| Method | Top-1 | MRR@5 | Coverage |
+|--------|-------|-------|----------|
+| TF-IDF | 0.572 | 0.662 | 0.803 |
+| Dual-encoder | **0.672** | **0.762** | 0.758 |
+| Cross-encoder | 0.647 | 0.733 | 0.719 |
+| Full Agent (RAA) | 0.644 | 0.737 | 0.833 |
+
+Domain-aware reformulation is the one component that significantly improves ranking here
+(query-level +0.14 Top-1 over fusion, p = 0.009). Neural retrieval is not out-ranked by the agent,
+but does not beat it either (agent vs dual-encoder p ≈ 1.0). No method wins on coverage —
+LSI (0.922) is highest.
+
+**Real-world benchmark** (NIST CSF → SP 800-53r5 official crosswalk, 106 reqs / 300 controls / 495 links):
+
+| Method | Top-1 | MRR@5 | Coverage |
+|--------|-------|-------|----------|
+| TF-IDF | 0.390 | 0.505 | 0.792 |
+| Dual-encoder | 0.402 | 0.530 | 0.733 |
+| Cross-encoder | **0.562** | **0.666** | 0.775 |
+| Full Agent (RAA) | 0.406 | 0.508 | 0.721 |
+
+On same-institution text, **no deterministic component significantly improves ranking**
+(reformulation +0.01 Top-1 p = 0.65; fusion +0.03 p = 0.51). The cross-encoder reranker
+significantly beats the agent (+0.154, p = 0.002). The agent has no coverage or
+selective-accuracy edge. Its value is qualitative — deterministic, reproducible execution and
+auditable traces — not accuracy. An open-world stress test shows abstention detects only ~24% of
+genuine no-match gaps (avg 4.4 gaps/seed) — an open limitation.
 
 ## Architecture
 
-RAA implements a genuine agentic reasoning loop with five tools:
+RAA is a fixed multi-stage sequence (not an open-ended reasoning loop) whose tools are split into
+**ranking-shaping** and **decision-shaping** groups, so that ranking and decision effects can be
+attributed separately:
 
-1. **Retrieve** - Multi-backend retrieval (TF-IDF, BM25, LSI) with Reciprocal Rank Fusion
-2. **Reformulate** - Domain-aware query expansion using a curated compliance thesaurus (20 concept families, 32 regex patterns)
-3. **Decompose** - Query decomposition for complex multi-concept regulations
-4. **Cross-Reference** - Cross-framework corroboration using regulatory family relationships
-5. **Verify** - Bidirectional reverse-retrieval consistency check
+Ranking tools:
+1. **Retrieve + Fuse** — Multi-backend retrieval (TF-IDF, BM25, LSI) with Reciprocal Rank Fusion
+2. **Reformulate** — Domain-aware query expansion via a curated compliance thesaurus (20 concept families, 32 regex patterns), triggered by a scale-invariant top-2 relative margin
+3. **Decompose** — Query decomposition for compound regulations (own ablation flag)
 
-## Benchmark
+Decision tools (never reorder the ranking):
+4. **Cross-Reference** — Cross-framework corroboration from a static family→framework taxonomy (no ground-truth leakage)
+5. **Verify** — Bidirectional check: query the requirement corpus with the control's text; if the requirement is not recovered in the top decile, tighten the acceptance threshold
+6. **Selective decision** — Calibrated accept/abstain thresholds
 
-Hardened benchmark with:
-- **110 controls** (66 vocabulary-matched + 20 vocabulary-mismatched + 24 adversarial hard negatives)
-- **58 regulations** across 7 regulatory frameworks
-- **86 ground-truth positive links**
-- Stratified holdout splitting by framework family
+## Benchmarks
+
+Two corpora are included:
+- **Diagnostic** (`diagnostic_benchmark/`): 58 regulations / 110 controls (66 vocabulary-matched + 20 vocabulary-mismatched + 24 hard negatives) / 86 links, built to isolate vocabulary mismatch.
+- **Real-world NIST** (`csf_benchmark/`): 106 CSF 1.1 subcategories / 300 SP 800-53r5 base controls / 495 links, regenerated from NIST's published OSCAL catalog and official crosswalk by `build_csf_benchmark.py`. Ground truth is authored by NIST, independent of this system. Note: NIST describes these as concept-relationship mappings (NIST IR 8477), so this is a reference-link recovery task, not implemented-compliance verification.
 
 ## Project Structure
 
@@ -84,21 +124,34 @@ Only `text` column is required.
 | 0 | 0 |
 | 0 | 3 |
 
-### Run built-in benchmark
+### Reproduce the paper's tables
 ```bash
-python raa_agent.py --ablation --runs 30
-python raa_agent.py --backend agent --runs 5
-```
+# Diagnostic benchmark ablation (Table 2/3)
+python raa_agent.py --regs diagnostic_benchmark/diag_regs.csv \
+  --controls diagnostic_benchmark/diag_controls.csv \
+  --mappings diagnostic_benchmark/diag_mappings.csv --ablation --runs 30
 
-### Evaluate with ground truth
-```bash
-python raa_agent.py --regs regs.csv --controls ctrls.csv --mappings ground_truth.csv
+# Real-world NIST ablation (Table 4)
+python raa_agent.py --regs csf_benchmark/csf_regs.csv \
+  --controls csf_benchmark/csf_controls.csv \
+  --mappings csf_benchmark/csf_mappings.csv --ablation --runs 30
+
+# Neural baselines (add --backend semantic or reranker)
+
+# Open-world gap detection (Table 5): hold out 50% of controls
+python raa_agent.py --regs diagnostic_benchmark/diag_regs.csv \
+  --controls diagnostic_benchmark/diag_controls.csv \
+  --mappings diagnostic_benchmark/diag_mappings.csv \
+  --backend agent --runs 30 --open-world-frac 0.5
+
+# Export reasoning traces (Table 6)
+python raa_agent.py ... --backend agent --export-traces
 ```
 
 ### Available backends
 - Baselines: `tfidf`, `bm25`, `lsi`
 - Semantic: `semantic`, `reranker` (requires `sentence-transformers`)
-- Agent ablation: `single`, `multi`, `reform`, `crossref`, `agent`
+- Agent ablation: `single`, `multi`, `reform`, `decomp`, `crossref`, `agent`
 
 ## Requirements
 

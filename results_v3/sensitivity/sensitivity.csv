@@ -1,0 +1,8 @@
+constant,value,variant,top1,mrr@5,gap_detection,coverage,sel_acc
+rel_retry,0.05,reform,0.658 ± 0.042,0.745 ± 0.033,,,
+rel_retry,0.10,reform,0.658 ± 0.042,0.745 ± 0.033,,,
+rel_retry,0.15,reform,0.658 ± 0.042,0.745 ± 0.033,,,
+rel_retry,0.20,reform,0.658 ± 0.042,0.745 ± 0.033,,,
+verify_tighten,0.05,agent(open-world),,,0.267,0.778,0.438
+verify_tighten,0.10,agent(open-world),,,0.245,0.783,0.434
+verify_tighten,0.20,agent(open-world),,,0.311,0.794,0.47
