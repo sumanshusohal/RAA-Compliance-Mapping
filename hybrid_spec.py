@@ -568,9 +568,22 @@ PROHIBITED = (
 
 
 def spec_hash():
-    """SHA-256 of this file: the frozen-specification fingerprint."""
+    """SHA-256 of this file, line-ending normalized: the frozen fingerprint.
+
+    CRLF is folded to LF before hashing. Without that, the same commit yields
+    a different hash on Windows than on Linux, because this repository was
+    authored with core.autocrlf=true: git stores LF and checks out CRLF. A
+    reviewer who cloned on Windows, ran this, and compared against a
+    registration made on Linux would see a mismatch and reasonably conclude
+    the registered file had been altered.
+
+    .gitattributes pins LF on checkout as the primary fix. This normalization
+    is the second line of defence, so the registered value survives a
+    checkout, an export, or a download that ignores it.
+    """
     with open(__file__, "rb") as f:
-        return hashlib.sha256(f.read()).hexdigest()
+        payload = f.read().replace(b"\r\n", b"\n")
+    return hashlib.sha256(payload).hexdigest()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,25 @@
+# Line endings are part of this repository's evidence, not a cosmetic detail.
+#
+# gap_metrics.py and hybrid_spec.py are frozen specifications whose SHA-256 is
+# recorded in results_v3/confirmatory/*.json and is intended for public
+# registration. spec_hash() hashes the file on disk, so a checkout that
+# rewrites line endings changes the hash and makes a correct registration look
+# falsified.
+#
+# This repository was authored with core.autocrlf=true, which stores LF and
+# checks out CRLF on Windows. Without the rule below, the same commit yields
+# be694e9b... on Linux and 5b80aec1... on Windows for the identical file.
+#
+# LF is pinned everywhere so every checkout reproduces the registered hash.
+# hybrid_spec.spec_hash() additionally normalizes CRLF before hashing, so the
+# registered value survives even a checkout that ignores this file.
+* text=auto eol=lf
+
+# Binary and vendored files that must not be touched.
+*.png binary
+*.jpg binary
+*.pdf binary
+*.xlsx binary
+*.bst -text
+*.cls -text
+*.sty -text
