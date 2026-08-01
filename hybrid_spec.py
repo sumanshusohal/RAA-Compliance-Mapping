@@ -7,6 +7,13 @@ fusion, not the gate, not the endpoint, not the margin, not the decision
 rule. Changes go in a new file with a new hash and a new timestamp, and the
 change is reported.
 
+Revision note: an earlier draft of this file was committed and reviewed
+BEFORE any public timestamp, and four defects were corrected as a result
+(gate normalization, an estimand that the named test did not implement, a
+backend conflation in the motivation, and unspecified tie-breaking). That
+history is deliberately left visible in the repository rather than amended
+away. Nothing in this file has been run against any arm.
+
 WHY THIS FILE EXISTS AND WHY IT IS FIRST
 ----------------------------------------
 HANDOFF.md opens by recording that all four corpora lost confirmatory status
@@ -27,11 +34,9 @@ Freezing now is necessary but not sufficient, and the writeup must not
 overclaim it.
 
 The gate below is motivated by complementarity ALREADY OBSERVED on these
-corpora: five methods tie at 35/94 on PF while TF-IDF and the dual-encoder
-each uniquely solve 15 requirements the other misses, and the oracle union of
-lexical RRF and the cross-encoder reaches 53/94. That observation is why a
-gated hybrid is worth testing rather than an equal-weight one. It is also why
-a result on these four corpora is PREREGISTERED BUT STILL EXPLORATORY: the
+corpora (see MOTIVATING_COMPLEMENTARITY). That observation is why a gated
+hybrid is worth testing rather than an equal-weight one. It is also why a
+result on these four corpora is PREREGISTERED BUT STILL EXPLORATORY: the
 design was frozen before the outcome, but the hypothesis was generated from
 the same corpora that will test it.
 
@@ -45,15 +50,44 @@ below is the placeholder for it. Do not quietly promote the exploratory run.
 WHAT IS BEING ASKED
 -------------------
 One question, stated before the answer is known: does a gate recover the
-requirements lexical RRF uniquely solves without giving up the ones semantic
-retrieval already solves? A hybrid that gains on one side and loses the same
-amount on the other is a null result, and the design has to be able to say so,
-which is why non-inferiority is tested alongside superiority rather than
-accuracy alone being reported.
+requirements lexical RRF uniquely solves without giving up the ones the
+dual-encoder already solves? A hybrid that gains on one side and loses the
+same amount on the other is a null result, and the design has to be able to
+say so, which is why non-inferiority is tested alongside superiority rather
+than accuracy alone being reported.
 """
 import hashlib
 
 import numpy as np
+
+# =====================================================================
+# Motivating observation, stated with the exact pairing it came from
+# =====================================================================
+# These two pairings are DIFFERENT and an earlier draft conflated them. The
+# 53/94 union belongs to the cross-encoder; the symmetric 15/15 split belongs
+# to the dual-encoder. The primary hybrid uses the DUAL-ENCODER, so the second
+# row is the one that motivates it.
+#
+#   pairing                                  union   unique A / unique B
+#   rrf_lexical + reranker (cross-encoder)   53/94        10 / 18
+#   rrf_lexical + semantic (dual-encoder)    50/94        15 / 15   <- primary
+#
+# Both are on PF, where five methods tie at 35/94. The dual-encoder pairing is
+# the relevant one because the primary comparison is END-TO-END: the
+# cross-encoder only reranks a dual-encoder top-20 and is bounded by that
+# candidate ceiling, so it cannot be an arm in a full-corpus comparison.
+#
+# Consequence for interpretation, stated now: a successful primary hybrid
+# retains DUAL-ENCODER performance while recovering lexical-only wins. It is
+# not required, and should not be reported as failing, if it does not reach
+# the cross-encoder numbers observed on CSF and PF.
+MOTIVATING_COMPLEMENTARITY = {
+    "corpus": "pf",
+    "primary_pairing": {"a": "rrf_lexical", "b": "semantic",
+                        "union": 50, "n": 94, "a_only": 15, "b_only": 15},
+    "conditional_pairing": {"a": "rrf_lexical", "b": "reranker",
+                            "union": 53, "n": 94, "a_only": 10, "b_only": 18},
+}
 
 # =====================================================================
 # Inherited constants. NOT free parameters.
@@ -86,27 +120,39 @@ def rel_margin(scores):
     time. It stays what it already is, the RQ2 moderator, and plays no part in
     routing.
 
-    Deviation from raa_agent._ambiguous, stated because it is a deviation:
-    that method computes gap / max(conf, 1e-9) on raw backend scores, which is
-    safe for BM25 and RRF because both are non-negative. The dual-encoder
-    returns cosine similarities that can be near zero or negative, and there
-    the raw form degenerates: a negative top score collapses the denominator
-    to 1e-9, the ratio explodes, and the gate silently never fires exactly on
-    the low-confidence queries it exists to catch. Scores are therefore
-    shifted to non-negative per query before the ratio is taken. The statistic
-    remains scale-invariant and the threshold remains 0.10.
+    Definition:
+
+        rel_margin = (s_1 - s_2) / max(|s_1|, |s_2|, 1e-9)
+
+    Relationship to raa_agent._ambiguous, which computes gap / max(conf,
+    1e-9) on raw scores. For a NON-NEGATIVE score vector s_1 >= s_2 >= 0, so
+    max(|s_1|, |s_2|) = s_1 and this reduces to the RAA definition exactly.
+    BM25 and RRF are non-negative, so on every backend RAA actually uses, the
+    statistic and the 0.10 threshold are unchanged.
+
+    Why the extension is needed: the dual-encoder returns cosine similarities
+    that can be near zero or negative, and there the raw form degenerates. A
+    negative top score collapses the denominator to 1e-9, the ratio explodes,
+    and the gate silently never fires exactly on the low-confidence queries it
+    exists to catch. Top-2 scores of -0.30 and -0.31 are a 3% margin and
+    return 1e7 under the raw form.
+
+    Why NOT min-subtraction: an earlier draft normalized by subtracting the
+    per-query minimum. That also fixes the sign problem, but it makes the
+    statistic depend on the WORST-scoring control, so a single extreme
+    negative score compresses every margin toward zero and the gate fires
+    almost everywhere. It would also mean 0.10 no longer denotes the quantity
+    RAA thresholded, which would break the claim that no constant here is new.
+    The max-magnitude denominator depends only on the top two scores.
     """
     s = np.asarray(scores, dtype=float)
     if s.size < 2:
         return float("inf")
-    s = s - s.min()
-    order = np.sort(s)[::-1]
-    top = order[0]
-    if top <= 1e-12:
-        # Every control scored identically. There is no signal to be
-        # confident about, so the query is maximally ambiguous.
-        return 0.0
-    return float((top - order[1]) / top)
+    if not np.all(np.isfinite(s)):
+        raise ValueError("gate received non-finite scores")
+    top2 = np.sort(s)[::-1][:2]
+    s1, s2 = float(top2[0]), float(top2[1])
+    return (s1 - s2) / max(abs(s1), abs(s2), 1e-9)
 
 
 def is_ambiguous(scores):
@@ -115,48 +161,84 @@ def is_ambiguous(scores):
 
 
 # =====================================================================
+# Deterministic ordering
+# =====================================================================
+
+def stable_order(scores, control_ids):
+    """Rank controls by score descending, breaking ties by control id.
+
+    score_all.rrf_fuse uses np.argsort's default quicksort, so ties break by
+    an order that is arbitrary, undocumented, and not guaranteed stable across
+    NumPy versions or platforms. That is tolerable for an exploratory result
+    and NOT tolerable for a registered one, which a third party has to be able
+    to reproduce exactly.
+
+    Ties are common: on PF, TF-IDF assigns exactly zero to a mean of 211 of
+    300 controls per query, and RRF ranks all 300, so tail placement feeds
+    back into every fused score.
+
+    Adopting this rule was measured before it was adopted, not assumed safe.
+    Re-running lexical RRF under four random control re-orderings, which is
+    what an alternative tie-break amounts to, changed the fused top-1 on ZERO
+    queries across all three real corpora (PF 35/94, CSF 43/106, HIPAA 19/68,
+    identical every time). So the deterministic rule costs nothing in
+    comparability with existing numbers, and the reason the earlier draft gave
+    for keeping the unstable sort does not survive contact with the data.
+    """
+    scores = np.asarray(scores, dtype=float)
+    ids = np.asarray(control_ids)
+    return np.lexsort((ids, -scores))
+
+
+# =====================================================================
 # Fusion
 # =====================================================================
 
-def rrf_fuse(score_arrays):
-    """Reciprocal rank fusion. Replicates score_all.rrf_fuse exactly.
+def rrf_fuse(score_arrays, control_ids):
+    """Reciprocal rank fusion with a deterministic tie-break.
 
-    Held byte-identical in behaviour to the existing implementation rather
-    than improved, so hybrid arms and the existing rrf_lexical rows differ
-    only in which backends are fused. verify_fusion_matches_score_all()
-    asserts this and must pass before any arm is run.
-
-    Known and deliberately preserved: np.argsort defaults to quicksort, so
-    ties between equal scores break by an arbitrary but deterministic order.
-    Making the sort stable would be an improvement and would also make every
-    existing RRF number incomparable, so it is not done here.
+    Same constant and same formula as score_all.rrf_fuse; the only difference
+    is that ties resolve by control id instead of by quicksort accident. See
+    stable_order for the evidence that this changes no existing result.
     """
     arrays = [np.asarray(s, dtype=float) for s in score_arrays]
     n = len(arrays[0])
+    if any(a.shape != (n,) for a in arrays):
+        raise ValueError("backend score vectors have mismatched lengths")
+    if len(control_ids) != n:
+        raise ValueError("control_ids length does not match score vectors")
     fused = np.zeros(n, dtype=float)
     for scores in arrays:
-        order = np.argsort(-scores)
-        ranks = np.empty(len(scores), dtype=float)
-        ranks[order] = np.arange(1, len(scores) + 1)
+        order = stable_order(scores, control_ids)
+        ranks = np.empty(n, dtype=float)
+        ranks[order] = np.arange(1, n + 1)
         fused += 1.0 / (RRF_K + ranks)
     return fused
 
 
 def verify_fusion_matches_score_all(n_trials=25, n_items=300, seed=20260801):
-    """Assert this module's fusion agrees with score_all.py's on random input.
+    """Assert this module's fusion agrees with score_all.py's on TIE-FREE input.
+
+    Restricted to continuous random scores, where ties have probability zero,
+    because on tied input the two are INTENDED to differ: that is the whole
+    point of stable_order. This checks that the constant and the formula match,
+    not that the tie-break matches.
 
     Run as a precondition, not at import: score_all imports raa_agent, which
     loads models.
     """
     import score_all
     rng = np.random.default_rng(seed)
-    ids = list(range(n_items))
+    ids = np.arange(n_items)
     for _ in range(n_trials):
         arrays = [rng.normal(size=n_items) for _ in range(3)]
-        mine = rrf_fuse(arrays)
-        theirs = score_all.rrf_fuse(arrays, ids)
-        if not np.array_equal(np.argsort(-mine), np.argsort(-theirs)):
+        mine = rrf_fuse(arrays, ids)
+        theirs = score_all.rrf_fuse(arrays, list(ids))
+        if not np.allclose(np.sort(mine), np.sort(theirs)):
             raise AssertionError("fusion diverged from score_all.rrf_fuse")
+        if not np.array_equal(stable_order(mine, ids),
+                              np.argsort(-theirs, kind="stable")):
+            raise AssertionError("ordering diverged on tie-free input")
     return True
 
 
@@ -168,27 +250,27 @@ def verify_fusion_matches_score_all(n_trials=25, n_items=300, seed=20260801):
 # Neither sees a label.
 
 LEXICAL_BACKENDS = ("tfidf", "bm25", "lsi")
-SEMANTIC_BACKEND = "semantic"
+SEMANTIC_BACKEND = "semantic"   # the DUAL-ENCODER, all-MiniLM-L6-v2
 
 
-def hybrid_equal(scores_by_backend):
+def hybrid_equal(scores_by_backend, control_ids):
     """Equal-weight arm: one RRF over the three lexical backends and semantic.
 
     The straw man the gated arm has to beat. If complementarity were uniform
     across queries this would capture it, and no gate would be needed.
     """
     keys = list(LEXICAL_BACKENDS) + [SEMANTIC_BACKEND]
-    return rrf_fuse([scores_by_backend[k] for k in keys])
+    return rrf_fuse([scores_by_backend[k] for k in keys], control_ids)
 
 
-def hybrid_gated(scores_by_backend):
+def hybrid_gated(scores_by_backend, control_ids):
     """Semantic-primary gated arm. THE PRIMARY ARM.
 
-    Semantic retrieval ranks the corpus. Only when its own top-2 relative
-    margin falls below REL_MARGIN_GATE is the lexical side consulted, and then
-    the query is re-ranked by RRF over all four backends.
+    The dual-encoder ranks the corpus. Only when its own top-2 relative margin
+    falls below REL_MARGIN_GATE is the lexical side consulted, and then the
+    query is re-ranked by RRF over all four backends.
 
-    The gate reads ONLY the semantic score vector, so routing is decided
+    The gate reads ONLY the dual-encoder score vector, so routing is decided
     before any lexical work and before any label is touched.
 
     Returns (fused_scores, gate_fired).
@@ -196,10 +278,10 @@ def hybrid_gated(scores_by_backend):
     sem = np.asarray(scores_by_backend[SEMANTIC_BACKEND], dtype=float)
     if not is_ambiguous(sem):
         return sem, False
-    return hybrid_equal(scores_by_backend), True
+    return hybrid_equal(scores_by_backend, control_ids), True
 
 
-def hybrid_gated_fallback(scores_by_backend):
+def hybrid_gated_fallback(scores_by_backend, control_ids):
     """Pre-declared SECONDARY variant: hard fallback instead of fusion.
 
     Identical gate, different action. When the gate fires this hands the query
@@ -212,7 +294,8 @@ def hybrid_gated_fallback(scores_by_backend):
     sem = np.asarray(scores_by_backend[SEMANTIC_BACKEND], dtype=float)
     if not is_ambiguous(sem):
         return sem, False
-    return rrf_fuse([scores_by_backend[k] for k in LEXICAL_BACKENDS]), True
+    return rrf_fuse([scores_by_backend[k] for k in LEXICAL_BACKENDS],
+                    control_ids), True
 
 
 # =====================================================================
@@ -231,8 +314,8 @@ ARMS = {
     "hybrid_equal":           ("end_to_end", "new",       "hybrid_spec.py"),
     "hybrid_gated":           ("end_to_end", "PRIMARY",   "hybrid_spec.py"),
     "hybrid_gated_fallback":  ("end_to_end", "secondary", "hybrid_spec.py"),
-    "raa_full":               ("end_to_end", "reference", "pending item 2"),
-    "raa_no_reform":          ("end_to_end", "reference", "pending item 2"),
+    "raa_full":               ("end_to_end", "reference", "pending item 3"),
+    "raa_no_reform":          ("end_to_end", "reference", "pending item 3"),
     "reranker":               ("conditional", "context",  "score_all.py"),
 }
 
@@ -261,12 +344,29 @@ RESERVED_CONFIRMATORY_CORPUS = None   # set only when such a corpus exists
 
 
 # =====================================================================
-# Endpoint
+# Endpoint and estimand
 # =====================================================================
 
 PRIMARY_ENDPOINT = "top1"
-ENDPOINT_UNIT = "one value per requirement, scored once over the full corpus"
 SECONDARY_ENDPOINTS = ("rr@5", "recall@5", "first_gold_rank")
+
+# ESTIMAND: requirement-weighted. The primary quantity is the mean paired
+# Top-1 difference over the concatenated requirements of the three real
+# corpora (n = 106 + 68 + 94 = 268), each requirement contributing once.
+#
+# An earlier draft said "pooled, corpus fixed effects" while naming
+# confirmatory_stats.tost, which takes a vector of differences and runs a
+# one-sample paired t-test with no fixed effects anywhere in it. The prose
+# described a model the code did not implement. Corrected by choosing the
+# estimand the code actually computes and saying so plainly.
+#
+# Consequence, stated rather than hidden: requirement weighting means CSF
+# contributes 106/268 = 40% of the primary estimate and HIPAA 25%. Corpora are
+# NOT equally weighted. Per-corpus results are reported descriptively so an
+# unequal-weighting objection can be checked directly against them.
+PRIMARY_ESTIMAND = "mean paired Top-1 difference over 268 requirements"
+CORPUS_WEIGHTING = "requirement-proportional, not equal-per-corpus"
+ENDPOINT_UNIT = "one value per requirement, scored once over the full corpus"
 
 # Protocol rule 1: one estimand. Every arm is scored once per requirement over
 # the full control corpus via score_all.py. The repeated-holdout rows are not
@@ -280,6 +380,34 @@ SECONDARY_ENDPOINTS = ("rr@5", "recall@5", "first_gold_rank")
 # requirement and the paired difference is exactly {-1, 0, +1}.
 
 
+def stratified_bootstrap_ci(diffs, corpus_labels, alpha=0.05,
+                            n_boot=10000, seed=20260801):
+    """Requirement-level bootstrap resampled WITHIN corpus.
+
+    Lives here rather than in confirmatory_stats.py so that module stays
+    byte-stable: its SHA-256 is recorded inside the already-committed
+    reform-vs-multi records, and those hashes should keep resolving.
+
+    Resampling within corpus holds the corpus composition of each replicate
+    fixed at the observed 106/68/94, so the interval reflects sampling of
+    requirements and not sampling of how much of each corpus happened to land
+    in a replicate. The point estimate is unaffected; only the interval is.
+    """
+    diffs = np.asarray(diffs, dtype=float)
+    labels = np.asarray(corpus_labels)
+    if diffs.shape != labels.shape:
+        raise ValueError("diffs and corpus_labels must align")
+    blocks = [np.flatnonzero(labels == c) for c in np.unique(labels)]
+    rng = np.random.default_rng(seed)
+    draws = np.empty(n_boot, dtype=float)
+    for b in range(n_boot):
+        idx = np.concatenate([rng.choice(bl, size=len(bl), replace=True)
+                              for bl in blocks])
+        draws[b] = diffs[idx].mean()
+    lo, hi = np.quantile(draws, [alpha, 1.0 - alpha])
+    return float(lo), float(hi), draws
+
+
 # =====================================================================
 # Hypotheses, tests and margins
 # =====================================================================
@@ -290,17 +418,66 @@ SECONDARY_ENDPOINTS = ("rr@5", "recall@5", "first_gold_rank")
 
 ALPHA = 0.05
 
-# Non-inferiority margin, absolute Top-1. Adopted from the equivalence margin
-# already fixed for the reform-vs-multi contrast (precision_analysis.py:43,
-# run_confirmatory.py --delta default), so it is not a number invented for
-# this test with the answer in view.
+# Non-inferiority margin, absolute Top-1.
+#
+# Provenance: 0.05 is the equivalence margin already fixed for the
+# reform-vs-multi contrast (precision_analysis.py:43, run_confirmatory.py
+# --delta default). Reusing it means it was not chosen with this outcome in
+# view. That is a provenance argument, and provenance alone is NOT a
+# justification, so the operational one follows.
+#
+# Operational justification: the endpoint is Top-1 over a 300-control
+# catalogue, and the deliverable is a ranked shortlist an analyst reviews, not
+# an autonomous decision. Five absolute Top-1 points on a corpus of this size
+# is three to five requirements whose top suggestion changes position while
+# the gold control remains available further down the same shortlist; the
+# secondary endpoints rr@5 and recall@5 are reported precisely so that a
+# hybrid which trades Top-1 for shortlist quality is visible rather than
+# scored as a loss. A margin materially tighter than 0.05 is not decidable at
+# these sample sizes, as the precision statement below shows, so declaring one
+# would be declaring a test that cannot return an answer.
 DELTA_NI = 0.05
+
+# PRECISION, computed before running and outcome-blind.
+#
+# Estimated from the DIAGNOSTIC corpus only, which is the one corpus excluded
+# from the primary estimand, so the planning estimate does not touch the test
+# set. Note the honest limitation: when precision_analysis.py was written,
+# HIPAA and PF were the confirmatory corpora and diagnostic plus CSF were the
+# exploratory sources. All four are now exploratory, so no fully clean
+# planning source exists; the diagnostic corpus is the least contaminated one
+# available because it is excluded from the primary estimate by design.
+#
+#   discordance (semantic vs rrf_lexical, diagnostic) = 0.241
+#   sd of the paired difference                       = 0.476
+#   SE at n = 268                                     = 0.0291
+#   one-sided 95% half-width                          = 0.0478
+#
+# The margin therefore clears the half-width by 0.0022. Read plainly: at
+# n = 268 non-inferiority at delta = 0.05 can be established only if the true
+# difference is at least -0.0022, which is to say only if the gated hybrid is
+# essentially not worse at all. This test can confirm "no cost"; it CANNOT
+# confirm "a cost smaller than 5 points". Stated here so the result is not
+# over-read later, and so that a failure to establish non-inferiority is
+# understood as possibly a power limit rather than evidence of harm.
+PRECISION_NOTE = {
+    "planning_source": "diagnostic corpus only (excluded from primary)",
+    "discordance": 0.241,
+    "sd_paired_diff": 0.476,
+    "se_at_n_268": 0.0291,
+    "one_sided_95_half_width": 0.0478,
+    "margin": DELTA_NI,
+    "slack": 0.0022,
+    "reading": "confirms 'no cost'; cannot confirm 'cost below 5 points'",
+}
 
 PRIMARY_HYPOTHESIS = {
     "arm": "hybrid_gated",
     "comparator": "semantic",
-    "population": "PRIMARY_CORPORA pooled, corpus fixed effects",
+    "population": "268 requirements from PRIMARY_CORPORA, concatenated",
+    "estimand": PRIMARY_ESTIMAND,
     "endpoint": PRIMARY_ENDPOINT,
+    "interval": "hybrid_spec.stratified_bootstrap_ci, resampled within corpus",
     # Non-inferiority FIRST. The question is whether gating costs anything,
     # and a gate that gains on lexical-friendly queries while losing an equal
     # number of semantic-friendly ones is the outcome most worth detecting.
@@ -313,6 +490,11 @@ PRIMARY_HYPOTHESIS = {
     # Superiority is tested only if non-inferiority is established. A gated
     # hybrid that is not non-inferior has no superiority claim worth making,
     # and this ordering fixes the multiplicity without a correction.
+    #
+    # BINDING ON THE IMPLEMENTATION: when test 1 does not reject, the
+    # superiority p-value must not be reported as a finding at all. Gatekeeping
+    # controls the family-wise error rate only if the second claim is actually
+    # suppressed, not merely annotated. assert_gatekeeping below enforces it.
     "test_2_superiority": {
         "null": "mean(hybrid_gated - semantic) = 0",
         "method": "confirmatory_stats.sign_flip_test",
@@ -320,6 +502,19 @@ PRIMARY_HYPOTHESIS = {
         "reject_if": "p_value < ALPHA and mean_difference > 0",
     },
 }
+
+
+def assert_gatekeeping(ni_result, superiority_result):
+    """Suppress the superiority claim unless non-inferiority was established.
+
+    Returns the reportable superiority result, or None. Call this instead of
+    reading the superiority dict directly, so the gatekeeping rule cannot be
+    satisfied by a footnote.
+    """
+    if not ni_result.get("p_lower", 1.0) < ALPHA:
+        return None
+    return superiority_result
+
 
 SECONDARY_ANALYSES = (
     # Pre-declared, reported with their own labels, never promoted to primary.
@@ -329,7 +524,7 @@ SECONDARY_ANALYSES = (
     "per-corpus breakdown of the primary contrast, descriptive only",
     "gate firing rate per corpus, with Top-1 among fired and unfired queries",
     "diagnostic corpus, all of the above, labelled engineered",
-    "raa_full and raa_no_reform against hybrid_gated, once item 2 lands",
+    "raa_full and raa_no_reform against hybrid_gated, once that arm lands",
 )
 
 # The complementarity check the whole design exists to answer. Descriptive by
@@ -360,9 +555,12 @@ PROHIBITED = (
     "Promoting hybrid_gated_fallback to primary if it does better.",
     "Pooling the diagnostic corpus into the primary estimate.",
     "Reporting end-to-end and conditional arms in one table.",
+    "Reporting the superiority p-value when non-inferiority did not reject.",
+    "Judging the primary hybrid against cross-encoder numbers; it is an "
+    "end-to-end arm and the cross-encoder is candidate-constrained.",
     "Calling any arm here RAA. rrf_lexical is not RAA and neither is a "
-    "hybrid built on it; only pending item 2 produces an arm that may carry "
-    "the name.",
+    "hybrid built on it; only the pending full-RAA item produces an arm that "
+    "may carry the name.",
     "Describing a NIST crosswalk prediction as a false positive merely "
     "because it is unlisted. The crosswalks are a silver standard and the "
     "HIPAA OLIR is marked 'Comprehensive: No'.",
@@ -379,9 +577,12 @@ if __name__ == "__main__":
     print(__doc__)
     print(f"hybrid_spec.py specification hash: {spec_hash()}")
     print(f"\nprimary arm      : {PRIMARY_HYPOTHESIS['arm']}")
-    print(f"comparator       : {PRIMARY_HYPOTHESIS['comparator']}")
-    print(f"endpoint         : {PRIMARY_ENDPOINT}")
-    print(f"NI margin        : {DELTA_NI}")
+    print(f"comparator       : {PRIMARY_HYPOTHESIS['comparator']} "
+          f"(dual-encoder, end-to-end)")
+    print(f"estimand         : {PRIMARY_ESTIMAND}")
+    print(f"weighting        : {CORPUS_WEIGHTING}")
+    print(f"NI margin        : {DELTA_NI}  (half-width {PRECISION_NOTE['one_sided_95_half_width']}, "
+          f"slack {PRECISION_NOTE['slack']})")
     print(f"gate threshold   : {REL_MARGIN_GATE} (inherited)")
     print(f"primary corpora  : {', '.join(PRIMARY_CORPORA)}")
     print(f"\nstatus on existing corpora: preregistered, EXPLORATORY")
