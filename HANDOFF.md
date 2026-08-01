@@ -126,13 +126,32 @@ plus evaluation queries (`include_regs_in_fit=True`) and never said so.
    approximation is approximate; and PF and CSF both return
    `equivalent=True` at δ=0.05 while HIPAA does not (p_tost=0.114), so the
    superiority prediction is neither supported nor excluded there.
-2. **Full RAA on the shared protocol**, so the pipeline can be labelled
-   honestly.
-3. **Hybrid**, frozen BEFORE running: equal-weight semantic RRF and a
-   semantic-primary gated variant, against semantic alone, lexical RRF, full
-   RAA, and hybrid-without-reformulation. Pre-declare a non-inferiority
-   margin. The question is whether a gate recovers the requirements lexical
-   RRF uniquely solves without losing the cross-encoder's.
+2. ~~**Hybrid spec**~~ **DRAFTED, NOT YET TIMESTAMPED.** `hybrid_spec.py`
+   freezes the design: equal-weight semantic RRF and a semantic-primary gated
+   variant, against semantic alone, lexical RRF, full RAA, and the
+   reformulation-off control. Primary arm `hybrid_gated`, primary endpoint
+   Top-1, non-inferiority tested before superiority at δ=0.05, which is the
+   margin already fixed for the reform-vs-multi contrast rather than a new
+   one. The gate reuses RAA's existing relative top-2 margin at 0.10, so it
+   adds no tuned constant.
+
+   **This item moved ahead of full RAA deliberately.** Full RAA is an ARM of
+   the hybrid comparison, so running it first and writing the spec afterwards
+   would set the gate and the margin with one arm's results already visible.
+   That is the failure at the top of this file, in miniature.
+
+   Two things to carry forward. The gap metric CANNOT be the gate:
+   `compute_gaps` maximizes overlap over the gold set, so it is not computable
+   at query time and stays the RQ2 moderator. And freezing now does not buy
+   confirmatory status on these four corpora, because the gate is motivated by
+   complementarity already observed on them; the result is preregistered but
+   still exploratory, and confirmatory status needs this file applied
+   unchanged to a corpus that does not exist yet.
+
+   Remaining before any arm runs: a PUBLIC timestamp of the spec hash. A local
+   commit is not one.
+3. **Full RAA on the shared protocol**, so the pipeline can be labelled
+   honestly. Runs only after the spec above is timestamped.
 4. **Corpus sensitivities**: 800-53 5.1.1 as the HIPAA-native target
    (5.2.0 differs by one control, SA-24, and all 1,241 links resolve in
    both); enhancement collapsing; a `vocab_regime` field for the diagnostic
