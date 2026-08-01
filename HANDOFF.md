@@ -155,8 +155,18 @@ plus evaluation queries (`include_regs_in_fit=True`) and never said so.
 4. **Corpus sensitivities**: 800-53 5.1.1 as the HIPAA-native target
    (5.2.0 differs by one control, SA-24, and all 1,241 links resolve in
    both); enhancement collapsing; a `vocab_regime` field for the diagnostic
-   corpus. The manuscript says 66 vocabulary-matched and 20 mismatched
-   positives; the released data has `perfect`=59 and `good`=27.
+   corpus.
+
+   ~~66 vs 59 vocabulary-matched positives~~ **RESOLVED.** The released data
+   is authoritative and the docs were wrong. `match_type` is the vocabulary
+   regime label: `good` averages 0.043 IDF-weighted overlap with its
+   requirement against 0.250 for `perfect` (medians 0.000 and 0.197), and the
+   control the manuscript cites as its mismatch example is labelled `good`.
+   Corrected to 59 / 27 / 20 / 4 in manuscript3_revised.tex, SOURCES.md and
+   README.md. The results claim "23% of positive links (20/86)" was wrong in
+   the understating direction and is now 41% (35/86), because 14 matched
+   positives also share no content words. `dke_manuscript2.tex` is left
+   uncorrected on purpose: it is the version that was submitted to DKE.
 5. **LLM**: candidate-order sensitivity (candidates are currently supplied in
    first-stage rank order), pinned Hugging Face model and tokenizer
    revisions, a strict shared validator rejecting duplicate IDs and

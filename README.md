@@ -68,7 +68,7 @@ Decision tools (never reorder the ranking):
 ## Benchmarks
 
 Two corpora are included:
-- **Diagnostic** (`diagnostic_benchmark/`): 58 regulations / 110 controls (66 vocabulary-matched + 20 vocabulary-mismatched + 24 hard negatives) / 86 links, built to isolate vocabulary mismatch.
+- **Diagnostic** (`diagnostic_benchmark/`): 58 regulations / 110 controls (59 vocabulary-matched + 27 vocabulary-mismatched + 20 hard negatives + 4 unrelated) / 86 links, built to isolate vocabulary mismatch. Counts are the `match_type` column of `diag_controls.csv`; see SOURCES.md.
 - **Real-world NIST** (`csf_benchmark/`): 106 CSF 1.1 subcategories / 300 SP 800-53r5 base controls / 495 links, regenerated from NIST's published OSCAL catalog and official crosswalk by `build_csf_benchmark.py`. Ground truth is authored by NIST, independent of this system. Note: NIST describes these as concept-relationship mappings (NIST IR 8477), so this is a reference-link recovery task, not implemented-compliance verification.
 
 ## Project Structure
