@@ -24,9 +24,21 @@ verification.
 The diagnostic benchmark is author-constructed to isolate vocabulary mismatch.
 Every requirement is a simplified single-clause statement adapted from official
 regulatory text (GDPR, NIST CSF/800-53, HIPAA, PCI DSS, ISO 27001, SOX, SOC 2).
-Controls comprise 66 vocabulary-matched positives, 20 vocabulary-mismatched
-positives, and 24 hard negatives; the thesaurus and concept patterns were frozen
-before the NIST benchmark was assembled. This benchmark is a controlled diagnostic
+Controls comprise 59 vocabulary-matched positives (`match_type=perfect`), 27
+vocabulary-mismatched positives (`good`), 20 hard negatives (`hard_neg`), and 4
+unrelated negatives (`neg`), as released in `diag_controls.csv`; the thesaurus
+and concept patterns were frozen before the NIST benchmark was assembled.
+
+An earlier version of this file and of the manuscript stated 66 matched and 20
+mismatched positives. The totals were right, 86 positives and 24 negatives, but
+the split was not, and the released data is authoritative. The `good` stratum
+averages 0.043 IDF-weighted overlap with its requirement against 0.250 for
+`perfect` (medians 0.000 and 0.197), which is what makes it the mismatched
+stratum. Note also that 14 of the 59 matched positives share no content words
+with their requirement, so 35 of the 86 positive links are lexically disjoint,
+not 27.
+
+This benchmark is a controlled diagnostic
 instrument, not a validated gold standard: it has not undergone independent expert
 annotation, adjudication, or inter-rater agreement, and results on it should be
 read accordingly (see the manuscript's Threats to Validity).
