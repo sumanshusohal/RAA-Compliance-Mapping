@@ -195,14 +195,14 @@
     }
   },
   "git": {
-    "commit": "a63ff6f8878b78d6a0d233f52449649809965472",
-    "dirty": true
+    "commit": "05093dac044129105cfc51b7f0ebbd1fda827422",
+    "dirty": false
   },
   "metric": "top1",
   "moderation_pooled": {
-    "ci_high": 0.0508234646355221,
-    "ci_low": -0.002365258372121598,
-    "coefficient": 0.023648862442019646,
+    "ci_high": 0.05082346463552204,
+    "ci_low": -0.0023652583721216047,
+    "coefficient": 0.02364886244201967,
     "interpretation": "benefit grows with gap",
     "n": 326,
     "n_permutations": 100000,
@@ -264,5 +264,5 @@
       "p_value": 0.953380466195338
     }
   },
-  "timestamp_utc": "2026-08-01T23:03:21.531492+00:00"
+  "timestamp_utc": "2026-08-01T23:20:44.599348+00:00"
 }
