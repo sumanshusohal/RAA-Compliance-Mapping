@@ -44,15 +44,17 @@
 \begin{abstract}
 Regulatory compliance mapping, the task of linking natural-language regulatory requirements to the organizational controls that implement them, remains a predominantly manual activity in software-intensive organizations.
 We frame compliance mapping as a selective traceability recovery problem and introduce the \emph{Regulatory Alignment Agent} (RAA), a deterministic, ReAct-inspired multi-stage retrieval workflow that interleaves retrieval, domain-aware query reformulation, cross-framework corroboration, and a calibrated accept-or-abstain decision.
-Every decision is accompanied by an auditable reasoning trace, a property we argue is essential in regulated environments.
+Every decision is accompanied by a structured trace of the steps that produced it.
 
 We evaluate the RAA on two complementary benchmarks, measuring ranking quality and decision quality separately so that neither is mistaken for the other.
 The first is a controlled diagnostic benchmark (58~requirements from 7~frameworks, 110~controls, 86~links) constructed to isolate the effect of \emph{vocabulary mismatch} between regulatory language and implementation-level control descriptions.
 The second is a real-world benchmark derived entirely from artifacts published by NIST: 106~subcategories of the NIST Cybersecurity Framework mapped to 300~controls of SP~800-53 Revision~5 through NIST's official crosswalk (495~links), giving ground truth authored independently of our system.
 Using query-level paired tests that avoid seed-level pseudoreplication, domain-aware query reformulation is the one component that significantly improves ranking on the diagnostic benchmark ($\Delta\text{Top-1} = +0.14$, $p = 0.009$) but is inert on the real-world benchmark ($\Delta\text{Top-1} = +0.01$, $p = 0.65$); no deterministic component significantly improves ranking on real NIST text.
 Reformulation earns its cost precisely where the regulation-to-implementation vocabulary gap is widest.
-When ranking is measured independently of the accept/abstain decision, the deterministic agent does not out-rank neural retrieval on either benchmark---it is statistically tied with a dual-encoder on the diagnostic corpus and significantly beaten by a cross-encoder reranker on the real one ($p = 0.002$)---and it holds no coverage or selective-accuracy advantage either.
-Its distinguishing value is therefore not any metric but its qualitative properties: deterministic, reproducible execution and an auditable reasoning trace for every decision.
+When ranking is measured independently of the accept/abstain decision, the deterministic agent does not out-rank neural retrieval on either benchmark: it is statistically tied with a dual-encoder on both, and it holds no coverage or selective-accuracy advantage.
+A two-stage cross-encoder pipeline scores higher still on the real benchmark, but it reranks a 20-candidate shortlist rather than the full corpus, so we report it separately rather than as a like-for-like comparison.
+We do not put a qualitative claim in place of the missing metric advantage.
+The traces record what the pipeline did, which establishes provenance rather than demonstrated usefulness to an auditor, and we do not measure execution determinism under controlled conditions.
 We further stress-test its abstention with an open-world evaluation in which some requirements have no valid control, and find that abstention calibrated for coverage detects only a minority of true gaps, an explicit limitation we quantify.
 Both benchmarks, the evaluation harness, and the agent implementation are released as supplementary materials.
 \end{abstract}
@@ -62,7 +64,7 @@ Both benchmarks, the evaluation harness, and the agent implementation are releas
 \item Real-world evaluation on NIST's official CSF to SP 800-53r5 crosswalk (495 links)
 \item Reformulation dominates under vocabulary mismatch but is inert on same-institution text
 \item Ranking and decision quality measured separately; open-world gap detection quantified
-\item Auditable multi-step reasoning traces exported for every mapping decision
+\item Structured multi-step reasoning traces exported for every mapping decision
 \end{highlights}
 
 \begin{keywords}
@@ -101,11 +103,12 @@ The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving rea
 \paragraph{Contributions.}
 This paper makes four contributions.
 First, we formalize compliance mapping as a \emph{selective} traceability recovery problem (Section~\ref{sec:formulation}), distinguishing ranking quality (how well candidate controls are ordered) from decision quality (when the system should commit to a mapping rather than escalate to a human).
-Second, we introduce a multi-step agent architecture (Section~\ref{sec:architecture}) whose tools---multi-backend rank fusion, domain-aware query reformulation, cross-framework corroboration, bidirectional verification, and calibrated abstention---are deterministic and produce auditable reasoning traces.
+Second, we introduce a multi-step agent architecture (Section~\ref{sec:architecture}) whose tools---multi-backend rank fusion, domain-aware query reformulation, cross-framework corroboration, bidirectional verification, and calibrated abstention---are rule-based and produce structured reasoning traces.
 Third, we evaluate the agent on two complementary benchmarks (Section~\ref{sec:dataset}): a controlled diagnostic benchmark designed to isolate vocabulary mismatch, and a real-world benchmark whose ground truth is NIST's official crosswalk between the Cybersecurity Framework and SP~800-53 Revision~5, authored independently of this work.
 Fourth, through ablations on both benchmarks (Section~\ref{sec:results}), computing ranking and decision metrics separately and using query-level paired tests, we characterize \emph{when} curated domain knowledge pays off: query reformulation significantly improves ranking under severe vocabulary mismatch ($\Delta\text{Top-1}=+0.14$, $p=0.009$) but is inert when requirements and controls share an institutional vocabulary, where no deterministic component yields a significant gain.
 We also report results that temper the case for a purely deterministic agent: once ranking is decoupled from the accept/abstain decision and compared at the query level, the agent neither out-ranks neural retrieval (it ties a dual-encoder and is beaten by a cross-encoder) nor holds any coverage or selective-accuracy advantage, and an open-world evaluation shows its abstention detects only a minority of genuine no-match gaps.
-The agent's defensible advantages are thus qualitative---deterministic, reproducible execution and per-decision auditable traces---rather than a metric edge.
+We draw no compensating qualitative claim from this.
+The traces record the steps behind each decision, which is a provenance property; whether they help an auditor is an empirical question this paper does not test.
 All datasets, baselines, and the agent implementation are released as supplementary material.
 
 
@@ -174,7 +177,7 @@ Selective prediction has been applied to classification~\citep{Geifman2019} and 
 
 The ReAct framework~\citep{Yao2023} demonstrated that interleaving reasoning traces with tool invocations enables language model agents to solve complex tasks through multi-step planning.
 Subsequent work has applied agentic patterns to code generation~\citep{Yang2024}, scientific discovery~\citep{Bran2024}, and information retrieval~\citep{Shao2024}.
-We adapt the ReAct pattern to compliance mapping, where the ``tools'' are retrieval backends, a domain thesaurus, and cross-framework knowledge---all deterministic and auditable, a key requirement for regulated environments.
+We adapt the ReAct pattern to compliance mapping, where the ``tools'' are retrieval backends, a domain thesaurus, and cross-framework knowledge---all rule-based, so each step and its inputs can be recorded.
 
 
 %% ================================================================
@@ -299,10 +302,11 @@ The diagnostic benchmark tells us \emph{why} a component helps; the real-world b
 The diagnostic benchmark contains 58 requirements drawn from seven frameworks: GDPR (8), NIST CSF and SP~800-53 (12), HIPAA (10), PCI~DSS (10), ISO~27001 (8), SOX ITGC (4), and SOC~2 (6).
 Requirements are sourced from official regulatory text and simplified to single-clause statements.
 The 110-control corpus is stratified by design.
-Sixty-six controls are \emph{vocabulary-matched positives}: near-paraphrases of the corresponding requirement that represent the easy retrieval case.
-Twenty controls are \emph{vocabulary-mismatched positives}: correct mappings expressed in entirely different terminology.
+Fifty-nine controls are \emph{vocabulary-matched positives}: near-paraphrases of the corresponding requirement that represent the easy retrieval case.
+Twenty-seven controls are \emph{vocabulary-mismatched positives}: correct mappings expressed in entirely different terminology.
 For example, the GDPR Art.~32 encryption requirement is matched by ``Cryptographic safeguards applied to individually identifiable records stored in relational databases,'' a control sharing no content words with the requirement.
-The remaining 24 controls are \emph{hard negatives}, spanning scope confounders (in-transit encryption as a distractor for at-rest encryption requirements), cross-family distractors, and near-miss negatives (development-only logging).
+The remaining 24 controls are negatives: 20 \emph{hard negatives} spanning scope confounders (in-transit encryption as a distractor for at-rest encryption requirements), cross-family distractors, and near-miss negatives (development-only logging), plus four unrelated controls.
+These counts are the \texttt{match\_type} labels in the released \texttt{diag\_controls.csv}, where the two positive strata appear as \texttt{perfect} and \texttt{good}.
 The ground truth contains 86 positive links and is multi-label: 15 requirements map to two or more controls.
 
 Because the authors constructed both the control corpus and the domain thesaurus used by the reformulation tool, results on this benchmark alone could overstate the value of reformulation: the mismatched controls and the thesaurus could encode the same design intuitions.
@@ -381,7 +385,9 @@ All ranking metrics are computed from the full candidate ranking, independent of
 
 Three observations warrant discussion.
 First, lexical baselines plateau near 0.51--0.57~Top-1, with TF-IDF leading.
-This is consistent with the benchmark's vocabulary-mismatched controls: approximately 23\% of positive links (20/86) use terminology that shares no content words with the corresponding requirement, creating a retrieval ceiling for term-matching methods.
+This is consistent with the benchmark's vocabulary-mismatched controls: 41\% of positive links (35/86) share no content words with the corresponding requirement, creating a retrieval ceiling for term-matching methods.
+The share exceeds the 27 links in the mismatched stratum because 14 matched positives also share no content words with their requirement.
+Lexical mismatch in this corpus is therefore wider than the design labels indicate.
 Second, LSI achieves competitive Recall@5 (0.676) at the highest coverage (0.922) but the lowest selective accuracy (0.542): its latent space aids recall but yields poorly calibrated confidence scores, a liability for a system that must decide when to escalate.
 Third, the neural encoders are the strongest rankers on this benchmark: the dual-encoder reaches 0.672~Top-1 and 0.762~MRR@5, and even the general-purpose cross-encoder (0.647~Top-1) exceeds every lexical baseline. Pre-trained sentence embeddings clearly capture the cross-vocabulary similarity that term matching misses.
 
@@ -412,7 +418,7 @@ First, query reformulation is the only component that significantly improves ran
 On this benchmark, where a fifth of the positive links share no content words with their requirement, vocabulary mismatch is the primary bottleneck and domain-aware reformulation is an effective mitigation.
 Second, multi-backend fusion does \emph{not} yield a significant ranking gain at the query level (Top-1 $+0.010$, $p = 0.88$; the seed-averaged means still nudge up from 0.533 to 0.550, but the effect does not survive a query-level test).
 Third, the components beyond reformulation do not improve ranking at all: query decomposition leaves the ranking unchanged (few diagnostic requirements are genuinely compound), and cross-framework corroboration and bidirectional verification are decision-only tools that by construction never reorder candidates---hence the identical Top-1, MRR@5, and R@5 across the +Reform through Full Agent rows. Their effect is confined to the decision profile: relative to +Reform (coverage 0.889), corroboration and verification trade coverage (down to 0.833) for calibration, the full agent abstaining more often on mappings that lack corroboration or fail the bidirectional check.
-Fourth, the deterministic agent does not out-rank the neural baselines: the dual-encoder reaches 0.672 Top-1 and the cross-encoder 0.647, both nominally above the agent's 0.644, and at the query level the agent is statistically indistinguishable from each (agent vs.\ dual-encoder $p \approx 1.0$; agent vs.\ cross-encoder $p = 0.68$). Nor does the agent hold a decision-quality advantage: its coverage (0.833) is below LSI's (0.922) and its selective accuracy (0.648) below the dual-encoder's (0.783). What distinguishes the agent is not a metric edge but its deterministic execution and per-decision auditable trace. We return to this in Section~\ref{sec:discussion}.
+Fourth, the deterministic agent does not out-rank the neural baselines: the dual-encoder reaches 0.672 Top-1 and the cross-encoder 0.647, both nominally above the agent's 0.644, and at the query level the agent is statistically indistinguishable from each (agent vs.\ dual-encoder $p \approx 1.0$; agent vs.\ cross-encoder $p = 0.68$). Nor does the agent hold a decision-quality advantage: its coverage (0.833) is below LSI's (0.922) and its selective accuracy (0.648) below the dual-encoder's (0.783). The agent therefore shows no measured edge on this benchmark. We return to what does and does not follow from that in Section~\ref{sec:discussion}.
 
 For methodological continuity with the traceability literature, Table~\ref{tab:legacy} additionally reports micro-precision and micro-recall at cut points 1 and 5, following the aggregation protocol of \citet{MarcusMaletic2003}.
 
@@ -445,7 +451,7 @@ Table~\ref{tab:real} reports the same protocol applied to the NIST CSF to SP~800
 Absolute numbers are markedly lower across the board, reflecting a genuinely harder task: 300 candidate controls instead of 110, an average of 4.7 gold controls per requirement, and no controls authored to be easy.
 
 \begin{table}[t]
-\caption{Results on the real-world NIST benchmark (mean $\pm$ 95\% CI, 30 seeds, 106 requirements, 300 controls, 495 links).}
+\caption{Results on the real-world NIST benchmark (mean $\pm$ 95\% CI, 30 seeds, 106 requirements, 300 controls, 495 links). The two blocks use different retrieval protocols and are not directly comparable; see the text.}
 \label{tab:real}
 \centering
 \small
@@ -453,11 +459,11 @@ Absolute numbers are markedly lower across the board, reflecting a genuinely har
 \toprule
 Method & Top-1 & MRR@5 & nDCG@5 & R@5 & Cov. & SelAcc \\
 \midrule
+\multicolumn{7}{@{}l}{\emph{End-to-end: ranks all 300 controls}} \\
 TF-IDF        & .390 $\pm$ .036 & .505 $\pm$ .028 & .307 $\pm$ .022 & .262 $\pm$ .021 & .792 & .423 \\
 BM25          & .368 $\pm$ .036 & .489 $\pm$ .027 & .303 $\pm$ .022 & .275 $\pm$ .022 & .778 & .448 \\
 LSI           & .360 $\pm$ .033 & .471 $\pm$ .030 & .306 $\pm$ .023 & .269 $\pm$ .022 & .797 & .419 \\
-Dual-enc.     & .402 $\pm$ .035 & .530 $\pm$ .029 & .352 $\pm$ .024 & .313 $\pm$ .021 & .733 & .489 \\
-Cross-enc.    & \textbf{.562} $\pm$ .032 & \textbf{.666} $\pm$ .026 & \textbf{.454} $\pm$ .021 & \textbf{.398} $\pm$ .022 & .775 & \textbf{.639} \\
+Dual-enc.     & \textbf{.402} $\pm$ .035 & \textbf{.530} $\pm$ .029 & \textbf{.352} $\pm$ .024 & \textbf{.313} $\pm$ .021 & .733 & .489 \\
 \midrule
 Single        & .368 $\pm$ .036 & .489 $\pm$ .027 & .303 $\pm$ .022 & .275 $\pm$ .022 & .778 & .448 \\
 +Multi        & .403 $\pm$ .027 & .516 $\pm$ .023 & .328 $\pm$ .021 & .288 $\pm$ .021 & .746 & .460 \\
@@ -465,6 +471,9 @@ Single        & .368 $\pm$ .036 & .489 $\pm$ .027 & .303 $\pm$ .022 & .275 $\pm$
 +Decomp       & .406 $\pm$ .028 & .508 $\pm$ .025 & .317 $\pm$ .022 & .275 $\pm$ .021 & .733 & .489 \\
 +CrossRef     & .406 $\pm$ .028 & .508 $\pm$ .025 & .317 $\pm$ .022 & .275 $\pm$ .021 & .733 & .489 \\
 Full Agent    & .406 $\pm$ .028 & .508 $\pm$ .025 & .317 $\pm$ .022 & .275 $\pm$ .021 & .721 & .478 \\
+\midrule
+\multicolumn{7}{@{}l}{\emph{Conditional: reranks the dual-encoder top-20, Recall@20 ceiling .906}} \\
+Cross-enc.    & .562 $\pm$ .032 & .666 $\pm$ .026 & .454 $\pm$ .021 & .398 $\pm$ .022 & .775 & .639 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -475,15 +484,21 @@ At the query level, neither fusion (multi vs.\ single Top-1 $+0.026$, $p = 0.51$
 The seed-averaged means drift upward slightly (single 0.368 to multi 0.403), which a naive across-seed $t$-test would flag as significant, but that apparent effect does not survive the pseudoreplication-safe query-level test.
 CSF subcategories and SP~800-53 controls are both written in NIST's institutional vocabulary, so the abstraction gap the thesaurus is designed to bridge is largely absent; the reformulation gain seen under engineered mismatch does not transfer to same-institution text.
 Decomposition and corroboration again leave the ranking untouched (decomposition rarely triggers on single-clause subcategories; a single-framework corpus offers no related frameworks to corroborate against), and verification, a decision-only tool, lowers coverage from 0.733 to 0.721 while nudging selective accuracy, correctly abstaining on some mappings at a coverage cost.
-Second, no deterministic configuration is competitive with the best neural method.
-The full agent (0.406 Top-1) is statistically indistinguishable from the strongest lexical baseline (TF-IDF, 0.390; query-level $\Delta=+0.016$, $p=0.65$) and from the dual-encoder (0.402; $p=0.78$), but the cross-encoder reranker dominates every method at 0.562 Top-1, 0.666 MRR@5, and 0.639 selective accuracy, beating the agent by a query-level $+0.154$ (95\% CI $[+0.058, +0.250]$, $p=0.002$).
-Third, taken with Section~\ref{sec:results-synth}, this establishes that the deterministic agent never significantly out-ranks any neural baseline on either benchmark, and is decisively out-ranked by the cross-encoder on real data.
-The agent also holds no decision-quality edge here: TF-IDF has higher coverage (0.792 vs.\ 0.721) and the cross-encoder far higher selective accuracy (0.639 vs.\ 0.478).
+Second, no deterministic configuration out-ranks neural retrieval under the same protocol.
+The full agent (0.406 Top-1) is statistically indistinguishable from the strongest lexical baseline (TF-IDF, 0.390; query-level $\Delta=+0.016$, $p=0.65$) and from the dual-encoder (0.402; $p=0.78$).
+Every method in that comparison ranks all 300 controls.
+The cross-encoder does not, which is why Table~\ref{tab:real} places it in a separate block.
+It reranks the 20 candidates the dual-encoder returns, so its 0.562 Top-1 is the score of a two-stage pipeline and is capped by that shortlist: the dual-encoder puts a gold control in the top 20 for 90.6\% of requirements, and for the remaining 10 the cross-encoder cannot recover a correct answer at any rank.
+The query-level difference of $+0.154$ against the agent (95\% CI $[+0.058, +0.250]$, $p=0.002$) therefore compares a pipeline against a single-stage method, and we do not read it as a like-for-like ranking win.
+What it does show is that a cheap first stage followed by a reranker is a strong configuration on this corpus, which is a statement about pipeline design rather than about the reranker as a retrieval method.
+Third, taken with Section~\ref{sec:results-synth}, the deterministic agent never significantly out-ranks a neural baseline under a matched protocol on either benchmark.
+It holds no decision-quality edge either: TF-IDF has higher coverage (0.792 vs.\ 0.721) and the cross-encoder pipeline higher selective accuracy (0.639 vs.\ 0.478).
 
 These cross-benchmark results delimit the contribution honestly.
 The single robust, significant positive finding across both benchmarks is that domain-aware reformulation helps under wide regulatory-to-implementation vocabulary mismatch (diagnostic benchmark); on same-institution text it is inert, and neural reranking is the stronger ranker.
-The agent's remaining case therefore does not rest on accuracy at all but on properties the neural baselines do not provide: deterministic, reproducible execution and a step-by-step auditable trace for every decision.
-A natural synthesis, which we leave to future work, is to admit the cross-encoder as a backend \emph{inside} the agent's fusion loop, retaining the audit trail while inheriting the learned relevance signal.
+This leaves the agent without a demonstrated case on accuracy, and we do not construct one from its other properties.
+Recording each step establishes where a mapping came from; it does not establish that the record is useful to an auditor, which would need a study with practitioners, and we did not measure execution determinism under pinned dependencies.
+A natural synthesis, which we leave to future work, is to admit the cross-encoder as a backend \emph{inside} the agent's fusion loop, keeping the step record while inheriting the learned relevance signal.
 
 \subsection{Open-world gap detection}
 \label{sec:results-openworld}
@@ -571,13 +586,14 @@ This is not random lexical variation but a systematic gap between abstraction le
 On the diagnostic benchmark, where a fifth of gold links cross this gap with no shared content words, reformulation is worth a query-level $+0.140$ Top-1 ($p=0.009$).
 On the NIST corpus, where requirements and controls are written by the same institution in a shared vocabulary, the gap is narrow and reformulation's ranking effect vanishes---no ranking metric improves significantly, and Top-1 moves by only $+0.009$ ($p=0.65$).
 The practical implication for organizations building compliance automation is conditional: invest in domain glossaries when mapping \emph{across} vocabularies (regulation to implementation, one framework's language to another's), and expect no ranking benefit when both sides of the mapping share an institutional house style.
-In either regime the thesaurus approach remains more transparent and auditable than an opaque neural reranker~\citep{Nogueira2019}, an advantage in regulated environments where explainability is required.
+The thesaurus approach does expose the terms driving each expansion, which a neural reranker~\citep{Nogueira2019} does not.
+Whether that inspectability changes an auditor's work is untested here, so we record it as a property of the method rather than as a measured advantage.
 
 \subsection{Decision quality vs.\ ranking quality}
 
 A recurring theme in our results is the distinction between \emph{ranking quality} (how well are controls ordered?) and \emph{decision quality} (when should the system commit to a mapping, and when abstain?).
 Our first revision of this work inadvertently conflated the two by computing ranking metrics only over accepted queries, which let a coverage change masquerade as a ranking gain; the present results compute ranking from the full candidate list regardless of the decision, and report coverage, selective accuracy, and open-world gap detection as separate decision metrics.
-This separation is what makes the component analysis trustworthy, and it changes the conclusions: several apparent ranking gains dissolve once decoupled from coverage, and once we also apply query-level rather than seed-level inference (Section~\ref{sec:protocol}), the agent turns out to hold neither a ranking edge nor a decision-quality edge over the strongest baselines. Its remaining distinction is qualitative---determinism and auditability---rather than a metric advantage.
+This separation is what makes the component analysis trustworthy, and it changes the conclusions: several apparent ranking gains dissolve once decoupled from coverage, and once we also apply query-level rather than seed-level inference (Section~\ref{sec:protocol}), the agent turns out to hold neither a ranking edge nor a decision-quality edge over the strongest baselines. What remains is a negative result about the components, not a qualitative advantage recovered in their place.
 
 The distinction is nonetheless underappreciated in the traceability literature, which focuses almost exclusively on ranking metrics.
 We argue that for deployment in compliance settings, decision quality is at least as important as ranking quality, because incorrect mappings in an accepted state carry real regulatory risk---and because, as Section~\ref{sec:results-openworld} shows, recognizing the \emph{absence} of a valid mapping is itself an unsolved problem.
@@ -589,8 +605,9 @@ Once ranking is measured independently of the decision and compared with a query
 On the diagnostic corpus it is statistically indistinguishable from both the dual-encoder (0.672 vs.\ 0.644 Top-1, $p\approx1.0$) and the cross-encoder; on the NIST corpus the cross-encoder reranker leads decisively (0.562 vs.\ 0.406, $p=0.002$).
 We draw two conclusions.
 First, general-purpose learned representations are strong retrievers for compliance text, and a deterministic pipeline built from lexical backends and a curated thesaurus does not beat them on ranking, even where the thesaurus helps most.
-Second, and consequently, the agent's value proposition is not a metric advantage---it holds neither the best ranking nor the best coverage nor the best selective accuracy on either benchmark---but the qualitative properties it adds around retrieval: deterministic, reproducible execution and a step-by-step auditable trace for every decision, which the neural rerankers do not provide and which matter specifically in regulated deployments where a mapping must be defensible under audit.
-The most promising architecture is therefore a hybrid: admitting the cross-encoder as an additional backend within the agent's fusion step would let the workflow inherit its relevance signal while preserving the audit trail and abstention machinery around it, at the cost of making individual retrieval scores less interpretable.
+Second, the agent holds neither the best ranking nor the best coverage nor the best selective accuracy on either benchmark, and we do not offer its other properties as a substitute.
+It does record each step and its inputs, and the neural rerankers do not. That establishes where a mapping came from. It does not establish that the record is useful under audit, which is a claim about practitioners and would need to be tested on them.
+The most promising architecture is therefore a hybrid: admitting the cross-encoder as an additional backend within the agent's fusion step would let the workflow inherit its relevance signal while keeping the step record and abstention machinery around it, at the cost of making individual retrieval scores less interpretable.
 Quantifying that trade-off is a priority for future work.
 
 
@@ -627,7 +644,7 @@ We have presented the Regulatory Alignment Agent, a multi-step retrieval system 
 The paired evaluation supports three principal findings.
 First, domain-aware query reformulation significantly improves ranking under severe vocabulary mismatch (query-level $\Delta\text{Top-1} = +0.14$, $p = 0.009$) but is inert on same-institution text ($\Delta\text{Top-1} = +0.01$, $p = 0.65$), where no deterministic component yields a significant gain; the value of a curated compliance thesaurus is thus real but conditional on the width of the regulation-to-implementation vocabulary gap.
 Second, once ranking is decoupled from the accept/abstain decision and tested at the query level, the deterministic agent does not out-rank neural retrieval on either benchmark: it ties a dual-encoder on the diagnostic corpus and is significantly beaten by a cross-encoder reranker on the real one, and it holds no coverage or selective-accuracy advantage.
-Third, and consequently, the case for a deterministic agent in regulated environments rests not on any metric superiority but on qualitative properties---deterministic, reproducible execution and step-by-step auditable reasoning traces---while an open-world stress test shows its calibrated abstention detects only a minority of genuine no-match gaps and is not yet deployment-ready for gap discovery.
+Third, we are left without a metric case for a deterministic agent in this setting, and we do not replace it with an untested one about auditability. An open-world stress test also shows that its calibrated abstention detects only a minority of genuine no-match gaps, so it is not ready for gap discovery.
 
 These findings suggest concrete directions for future work: admitting neural models (the cross-encoder, and domain-adapted encoders such as Legal-BERT~\citep{Chalkidis2020} or SecureBERT~\citep{Aghaei2022}) as backends inside the agent's fusion step while preserving the audit trail; designing a dedicated no-match signal to make open-world gap detection reliable; evaluating against organizational control catalogs, where the implementation-side vocabulary gap should be wider than in the NIST-to-NIST setting; and investigating temporal drift, where regulations and controls evolve and previously valid mappings become stale~\citep{Gama2014}.
 
