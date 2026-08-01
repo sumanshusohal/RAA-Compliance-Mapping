@@ -1,0 +1,49 @@
+loading Qwen/Qwen2.5-3B-Instruct (4bit=True)
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|#####     | 1/2 [00:05<00:05,  5.99s/it]Loading checkpoint shards: 100%|##########| 2/2 [00:09<00:00,  4.51s/it]Loading checkpoint shards: 100%|##########| 2/2 [00:09<00:00,  4.73s/it]
+loaded on cuda:0
+
+  === diagnostic_benchmark ===
+    diagnostic_benchmark 20/58  82s elapsed, 4.1s/req, ~156s left
+    diagnostic_benchmark 40/58  165s elapsed, 4.1s/req, ~74s left
+    diagnostic_benchmark 58/58  243s elapsed, 4.2s/req, ~0s left
+    wrote diagnostic_benchmark/local_rerank_run0.csv
+    availability 1.000  Top-1 valid 0.724  Top-1 strict 0.724
+
+  === csf_benchmark ===
+    csf_benchmark 20/106  102s elapsed, 5.1s/req, ~439s left
+    csf_benchmark 40/106  212s elapsed, 5.3s/req, ~350s left
+    csf_benchmark 60/106  316s elapsed, 5.3s/req, ~243s left
+    csf_benchmark 80/106  420s elapsed, 5.3s/req, ~137s left
+    csf_benchmark 100/106  529s elapsed, 5.3s/req, ~32s left
+    csf_benchmark 106/106  561s elapsed, 5.3s/req, ~0s left
+    wrote csf_benchmark/local_rerank_run0.csv
+    availability 1.000  Top-1 valid 0.491  Top-1 strict 0.491
+
+  === hipaa_benchmark ===
+    hipaa_benchmark 20/68  210s elapsed, 10.5s/req, ~505s left
+    hipaa_benchmark 40/68  401s elapsed, 10.0s/req, ~281s left
+    hipaa_benchmark 60/68  598s elapsed, 10.0s/req, ~80s left
+    hipaa_benchmark 68/68  753s elapsed, 11.1s/req, ~0s left
+    wrote hipaa_benchmark/local_rerank_run0.csv
+    availability 0.971  Top-1 valid 0.470  Top-1 strict 0.456
+
+  === pf_benchmark ===
+    pf_benchmark 20/94  98s elapsed, 4.9s/req, ~364s left
+    pf_benchmark 40/94  220s elapsed, 5.5s/req, ~297s left
+    pf_benchmark 60/94  319s elapsed, 5.3s/req, ~181s left
+    pf_benchmark 80/94  420s elapsed, 5.2s/req, ~73s left
+    pf_benchmark 94/94  485s elapsed, 5.2s/req, ~0s left
+    wrote pf_benchmark/local_rerank_run0.csv
+    availability 1.000  Top-1 valid 0.447  Top-1 strict 0.447
+
+====================================================================
+              corpus   n  valid  availability_rate  top1_among_valid  top1_invalid_as_failure  mean_latency_s
+diagnostic_benchmark  58     58             1.0000            0.7241                   0.7241           4.188
+       csf_benchmark 106    106             1.0000            0.4906                   0.4906           5.290
+     hipaa_benchmark  68     66             0.9706            0.4697                   0.4559          11.080
+        pf_benchmark  94     94             1.0000            0.4468                   0.4468           5.159
+====================================================================
+
+The gap between top1_among_valid and top1_invalid_as_failure is
+the availability effect. Reporting only the former overstates the
+backend by exactly that margin.

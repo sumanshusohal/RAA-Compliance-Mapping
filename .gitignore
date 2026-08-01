@@ -5,4 +5,22 @@ checkpoints/
 *.egg-info/
 dist/
 build/
+
+# Credentials. This repository is public and ships as the replication
+# package; no API key may ever reach it.
 .env
+.env.*
+*.key
+*.pem
+secrets.json
+
+# LLM response cache. Regenerable, large, and derived from a paid API; it is
+# released as a separate archive rather than tracked here.
+llm_cache/
+
+# Downloaded source artifacts. These are fetched and SHA-256 verified by the
+# builders (see SOURCES.md); tracking them would duplicate NIST's copies and
+# bloat the repo.
+*.xlsx
+sp800-53-catalog.json
+sp800-53r5-catalog.json

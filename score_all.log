@@ -1,0 +1,20 @@
+=== diagnostic_benchmark ===
+  building scorers (110 controls)...
+=== csf_benchmark ===
+  building scorers (300 controls)...
+=== hipaa_benchmark ===
+  building scorers (300 controls)...
+=== pf_benchmark ===
+  building scorers (300 controls)...
+
+wrote shared_ranking_scores.csv  (1956 rows)
+
+Top-1 by corpus and method, one value per requirement, common population:
+method                 bm25    lsi  reranker  rrf_lexical  semantic  tfidf
+corpus                                                                    
+csf_benchmark         0.358  0.349     0.547        0.406     0.406  0.377
+diagnostic_benchmark  0.466  0.431     0.586        0.483     0.621  0.500
+hipaa_benchmark       0.221  0.206     0.412        0.279     0.456  0.221
+pf_benchmark          0.372  0.372     0.457        0.372     0.372  0.372
+
+Every cell above is a macro mean over the SAME requirements.

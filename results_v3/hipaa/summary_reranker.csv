@@ -1,0 +1,15 @@
+metric,mean_ci95
+top1,0.408 ± 0.047
+mrr@5,0.527 ± 0.044
+map@5,0.313 ± 0.033
+ndcg@5,0.397 ± 0.035
+recall@1,0.176 ± 0.029
+recall@5,0.403 ± 0.036
+precision@5,0.221 ± 0.017
+f1@5,0.282 ± 0.021
+coverage,0.690 ± 0.065
+sel_acc@80,0.542 ± 0.069
+micro_precision@1,0.408 ± 0.047
+micro_recall@1,0.115 ± 0.014
+micro_precision@5,0.221 ± 0.017
+micro_recall@5,0.311 ± 0.024

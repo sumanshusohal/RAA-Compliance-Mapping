@@ -1,0 +1,5 @@
+corpus,n,k,requirement_recall_at_k,link_recall_at_k,unreachable_requirements
+diagnostic_benchmark,58,20,0.9828,0.9186,1
+csf_benchmark,106,20,0.9057,0.5212,10
+hipaa_benchmark,68,20,0.8824,0.562,8
+pf_benchmark,94,20,0.8404,0.4759,15

@@ -1,0 +1,108 @@
+Loaded from files: 68 regulations, 300 controls, 274 ground-truth links
+Benchmark: 68 regulations, 300 controls, 274 positive links
+Negative controls: 300
+
+Running: semantic
+    semantic run 1/30 seed=42 | Top1=0.692 MRR@5=0.718 nDCG@5=0.475 R@5=0.451 Cov=0.769 SelAcc=0.600
+    semantic run 2/30 seed=43 | Top1=0.308 MRR@5=0.323 nDCG@5=0.203 R@5=0.205 Cov=0.538 SelAcc=0.143
+    semantic run 3/30 seed=44 | Top1=0.615 MRR@5=0.615 nDCG@5=0.383 R@5=0.300 Cov=0.462 SelAcc=1.000
+    semantic run 4/30 seed=45 | Top1=0.385 MRR@5=0.419 nDCG@5=0.324 R@5=0.351 Cov=0.615 SelAcc=0.500
+    semantic run 5/30 seed=46 | Top1=0.538 MRR@5=0.579 nDCG@5=0.371 R@5=0.333 Cov=0.923 SelAcc=0.583
+    semantic run 6/30 seed=47 | Top1=0.615 MRR@5=0.631 nDCG@5=0.393 R@5=0.345 Cov=0.385 SelAcc=0.600
+    semantic run 7/30 seed=48 | Top1=0.462 MRR@5=0.519 nDCG@5=0.314 R@5=0.277 Cov=0.769 SelAcc=0.500
+    semantic run 8/30 seed=49 | Top1=0.462 MRR@5=0.503 nDCG@5=0.289 R@5=0.272 Cov=0.538 SelAcc=0.571
+    semantic run 9/30 seed=50 | Top1=0.462 MRR@5=0.462 nDCG@5=0.249 R@5=0.190 Cov=0.385 SelAcc=0.400
+    semantic run 10/30 seed=51 | Top1=0.462 MRR@5=0.569 nDCG@5=0.374 R@5=0.369 Cov=0.615 SelAcc=0.500
+    semantic run 11/30 seed=52 | Top1=0.385 MRR@5=0.423 nDCG@5=0.284 R@5=0.217 Cov=0.846 SelAcc=0.364
+    semantic run 12/30 seed=53 | Top1=0.538 MRR@5=0.622 nDCG@5=0.486 R@5=0.435 Cov=0.615 SelAcc=0.750
+    semantic run 13/30 seed=54 | Top1=0.385 MRR@5=0.518 nDCG@5=0.370 R@5=0.353 Cov=0.692 SelAcc=0.222
+    semantic run 14/30 seed=55 | Top1=0.385 MRR@5=0.499 nDCG@5=0.378 R@5=0.450 Cov=0.538 SelAcc=0.429
+    semantic run 15/30 seed=56 | Top1=0.692 MRR@5=0.708 nDCG@5=0.426 R@5=0.342 Cov=1.000 SelAcc=0.692
+    semantic run 16/30 seed=57 | Top1=0.385 MRR@5=0.526 nDCG@5=0.405 R@5=0.397 Cov=0.615 SelAcc=0.375
+    semantic run 17/30 seed=58 | Top1=0.462 MRR@5=0.535 nDCG@5=0.321 R@5=0.317 Cov=0.615 SelAcc=0.500
+    semantic run 18/30 seed=59 | Top1=0.692 MRR@5=0.733 nDCG@5=0.458 R@5=0.402 Cov=0.923 SelAcc=0.667
+    semantic run 19/30 seed=60 | Top1=0.308 MRR@5=0.349 nDCG@5=0.215 R@5=0.199 Cov=0.769 SelAcc=0.300
+    semantic run 20/30 seed=61 | Top1=0.615 MRR@5=0.631 nDCG@5=0.430 R@5=0.415 Cov=0.769 SelAcc=0.600
+    semantic run 21/30 seed=62 | Top1=0.538 MRR@5=0.595 nDCG@5=0.419 R@5=0.451 Cov=0.385 SelAcc=0.800
+    semantic run 22/30 seed=63 | Top1=0.385 MRR@5=0.445 nDCG@5=0.330 R@5=0.331 Cov=0.923 SelAcc=0.417
+    semantic run 23/30 seed=64 | Top1=0.308 MRR@5=0.323 nDCG@5=0.250 R@5=0.276 Cov=0.923 SelAcc=0.333
+    semantic run 24/30 seed=65 | Top1=0.385 MRR@5=0.436 nDCG@5=0.309 R@5=0.227 Cov=0.769 SelAcc=0.400
+    semantic run 25/30 seed=66 | Top1=0.308 MRR@5=0.423 nDCG@5=0.288 R@5=0.316 Cov=0.923 SelAcc=0.333
+    semantic run 26/30 seed=67 | Top1=0.231 MRR@5=0.308 nDCG@5=0.279 R@5=0.295 Cov=0.615 SelAcc=0.125
+    semantic run 27/30 seed=68 | Top1=0.462 MRR@5=0.487 nDCG@5=0.365 R@5=0.300 Cov=0.385 SelAcc=0.800
+    semantic run 28/30 seed=69 | Top1=0.231 MRR@5=0.368 nDCG@5=0.307 R@5=0.279 Cov=0.846 SelAcc=0.182
+    semantic run 29/30 seed=70 | Top1=0.154 MRR@5=0.246 nDCG@5=0.205 R@5=0.264 Cov=0.615 SelAcc=0.125
+    semantic run 30/30 seed=71 | Top1=0.615 MRR@5=0.654 nDCG@5=0.466 R@5=0.387 Cov=0.846 SelAcc=0.545
+
+=== SEMANTIC Summary (mean ± 95% CI) ===
+              top1: 0.449 ± 0.054
+             mrr@5: 0.506 ± 0.048
+             map@5: 0.268 ± 0.027
+            ndcg@5: 0.346 ± 0.030
+          recall@1: 0.170 ± 0.026
+          recall@5: 0.325 ± 0.029
+       precision@5: 0.202 ± 0.020
+              f1@5: 0.245 ± 0.021
+          coverage: 0.687 ± 0.070
+        sel_acc@80: 0.479 ± 0.080
+ micro_precision@1: 0.449 ± 0.054
+    micro_recall@1: 0.127 ± 0.017
+ micro_precision@5: 0.202 ± 0.020
+    micro_recall@5: 0.279 ± 0.021
+         avg_steps: N/A
+
+Wrote: results_v3/hipaa\summary_semantic.csv
+Loaded from files: 68 regulations, 300 controls, 274 ground-truth links
+Benchmark: 68 regulations, 300 controls, 274 positive links
+Negative controls: 300
+
+Running: reranker
+    reranker run 1/30 seed=42 | Top1=0.385 MRR@5=0.515 nDCG@5=0.310 R@5=0.291 Cov=0.769 SelAcc=0.500
+    reranker run 2/30 seed=43 | Top1=0.308 MRR@5=0.474 nDCG@5=0.422 R@5=0.471 Cov=0.846 SelAcc=0.364
+    reranker run 3/30 seed=44 | Top1=0.615 MRR@5=0.667 nDCG@5=0.439 R@5=0.392 Cov=0.692 SelAcc=0.667
+    reranker run 4/30 seed=45 | Top1=0.385 MRR@5=0.513 nDCG@5=0.393 R@5=0.409 Cov=0.615 SelAcc=0.625
+    reranker run 5/30 seed=46 | Top1=0.615 MRR@5=0.712 nDCG@5=0.504 R@5=0.471 Cov=0.769 SelAcc=0.800
+    reranker run 6/30 seed=47 | Top1=0.385 MRR@5=0.506 nDCG@5=0.370 R@5=0.381 Cov=0.692 SelAcc=0.556
+    reranker run 7/30 seed=48 | Top1=0.462 MRR@5=0.551 nDCG@5=0.419 R@5=0.406 Cov=0.538 SelAcc=0.571
+    reranker run 8/30 seed=49 | Top1=0.462 MRR@5=0.551 nDCG@5=0.382 R@5=0.398 Cov=0.846 SelAcc=0.545
+    reranker run 9/30 seed=50 | Top1=0.231 MRR@5=0.336 nDCG@5=0.255 R@5=0.299 Cov=0.615 SelAcc=0.375
+    reranker run 10/30 seed=51 | Top1=0.538 MRR@5=0.679 nDCG@5=0.520 R@5=0.510 Cov=0.538 SelAcc=0.571
+    reranker run 11/30 seed=52 | Top1=0.538 MRR@5=0.564 nDCG@5=0.403 R@5=0.373 Cov=0.385 SelAcc=0.800
+    reranker run 12/30 seed=53 | Top1=0.462 MRR@5=0.631 nDCG@5=0.482 R@5=0.463 Cov=1.000 SelAcc=0.462
+    reranker run 13/30 seed=54 | Top1=0.462 MRR@5=0.624 nDCG@5=0.463 R@5=0.488 Cov=0.846 SelAcc=0.545
+    reranker run 14/30 seed=55 | Top1=0.385 MRR@5=0.541 nDCG@5=0.438 R@5=0.463 Cov=0.923 SelAcc=0.417
+    reranker run 15/30 seed=56 | Top1=0.538 MRR@5=0.622 nDCG@5=0.364 R@5=0.301 Cov=0.923 SelAcc=0.583
+    reranker run 16/30 seed=57 | Top1=0.385 MRR@5=0.538 nDCG@5=0.472 R@5=0.460 Cov=0.692 SelAcc=0.556
+    reranker run 17/30 seed=58 | Top1=0.385 MRR@5=0.503 nDCG@5=0.331 R@5=0.326 Cov=0.769 SelAcc=0.500
+    reranker run 18/30 seed=59 | Top1=0.538 MRR@5=0.673 nDCG@5=0.499 R@5=0.473 Cov=0.923 SelAcc=0.583
+    reranker run 19/30 seed=60 | Top1=0.231 MRR@5=0.355 nDCG@5=0.271 R@5=0.329 Cov=0.538 SelAcc=0.429
+    reranker run 20/30 seed=61 | Top1=0.615 MRR@5=0.692 nDCG@5=0.538 R@5=0.533 Cov=0.615 SelAcc=0.875
+    reranker run 21/30 seed=62 | Top1=0.462 MRR@5=0.590 nDCG@5=0.463 R@5=0.490 Cov=0.462 SelAcc=0.833
+    reranker run 22/30 seed=63 | Top1=0.231 MRR@5=0.368 nDCG@5=0.272 R@5=0.309 Cov=0.923 SelAcc=0.250
+    reranker run 23/30 seed=64 | Top1=0.308 MRR@5=0.487 nDCG@5=0.453 R@5=0.565 Cov=0.769 SelAcc=0.400
+    reranker run 24/30 seed=65 | Top1=0.231 MRR@5=0.310 nDCG@5=0.178 R@5=0.126 Cov=0.615 SelAcc=0.250
+    reranker run 25/30 seed=66 | Top1=0.385 MRR@5=0.513 nDCG@5=0.378 R@5=0.364 Cov=0.846 SelAcc=0.455
+    reranker run 26/30 seed=67 | Top1=0.231 MRR@5=0.333 nDCG@5=0.295 R@5=0.346 Cov=0.538 SelAcc=0.429
+    reranker run 27/30 seed=68 | Top1=0.385 MRR@5=0.474 nDCG@5=0.344 R@5=0.353 Cov=0.462 SelAcc=0.667
+    reranker run 28/30 seed=69 | Top1=0.308 MRR@5=0.449 nDCG@5=0.350 R@5=0.368 Cov=0.615 SelAcc=0.375
+    reranker run 29/30 seed=70 | Top1=0.231 MRR@5=0.359 nDCG@5=0.321 R@5=0.356 Cov=0.538 SelAcc=0.286
+    reranker run 30/30 seed=71 | Top1=0.538 MRR@5=0.679 nDCG@5=0.590 R@5=0.576 Cov=0.385 SelAcc=1.000
+
+=== RERANKER Summary (mean ± 95% CI) ===
+              top1: 0.408 ± 0.047
+             mrr@5: 0.527 ± 0.044
+             map@5: 0.313 ± 0.033
+            ndcg@5: 0.397 ± 0.035
+          recall@1: 0.176 ± 0.029
+          recall@5: 0.403 ± 0.036
+       precision@5: 0.221 ± 0.017
+              f1@5: 0.282 ± 0.021
+          coverage: 0.690 ± 0.065
+        sel_acc@80: 0.542 ± 0.069
+ micro_precision@1: 0.408 ± 0.047
+    micro_recall@1: 0.115 ± 0.014
+ micro_precision@5: 0.221 ± 0.017
+    micro_recall@5: 0.311 ± 0.024
+         avg_steps: N/A
+
+Wrote: results_v3/hipaa\summary_reranker.csv

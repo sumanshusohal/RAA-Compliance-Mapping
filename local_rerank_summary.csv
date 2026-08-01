@@ -1,0 +1,5 @@
+corpus,n,valid,availability_rate,top1_among_valid,top1_invalid_as_failure,mean_latency_s
+diagnostic_benchmark,58,58,1.0,0.7241,0.7241,4.188
+csf_benchmark,106,106,1.0,0.4906,0.4906,5.29
+hipaa_benchmark,68,66,0.9706,0.4697,0.4559,11.08
+pf_benchmark,94,94,1.0,0.4468,0.4468,5.159

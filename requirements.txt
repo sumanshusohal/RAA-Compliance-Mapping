@@ -16,3 +16,15 @@ transformers==4.57.3
 #   cross-encoder: cross-encoder/ms-marco-MiniLM-L-6-v2
 # openpyxl is needed only to read the NIST .xlsx crosswalk in build_csf_benchmark.py:
 openpyxl>=3.1
+
+# Corpus builders: download and SHA-256 verify the pinned NIST sources.
+requests==2.32.5
+
+# LLM comparison. The open-weight path is the reproducible half and needs no
+# account or key; the API path is optional and reads its credential from the
+# environment (ANTHROPIC_API_KEY), never from a file or a flag.
+anthropic==0.109.1
+bitsandbytes==0.50.0        # 4-bit quantization, so a 3B model fits 6 GB VRAM
+# Open-weight checkpoints (downloaded on first use):
+#   Qwen/Qwen2.5-3B-Instruct   generative reranking, 4-bit, validated on 6 GB
+#   Qwen/Qwen2.5-7B-Instruct   stronger variant where VRAM allows

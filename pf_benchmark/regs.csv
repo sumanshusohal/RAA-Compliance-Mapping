@@ -1,0 +1,95 @@
+id,framework,text
+0,PF-Identify-P,ID.IM-P1: Systems/products/services that process data are inventoried.
+1,PF-Identify-P,"ID.IM-P2: Owners or operators (e.g., the organization or third parties such as service providers, partners, customers, and developers) and their roles with respect to the systems/products/services and components (e.g., internal or external) that process data are inventoried."
+2,PF-Identify-P,"ID.IM-P3: Categories of individuals (e.g., customers, employees or prospective employees, consumers) whose data are being processed are inventoried."
+3,PF-Identify-P,ID.IM-P4: Data actions of the systems/products/services are inventoried.
+4,PF-Identify-P,ID.IM-P5: The purposes for the data actions are inventoried.
+5,PF-Identify-P,ID.IM-P6: Data elements within the data actions are inventoried.
+6,PF-Identify-P,"ID.IM-P7: The data processing environment is identified (e.g., geographic location, internal, cloud, third parties)."
+7,PF-Identify-P,"ID.IM-P8: Data processing is mapped, illustrating the data actions and associated data elements for systems/products/services, including components; roles of the component owners/operators; and interactions of individuals or third parties with the systems/products/services."
+8,PF-Identify-P,ID.BE-P1: The organization’s role(s) in the data processing ecosystem are identified and communicated.
+9,PF-Identify-P,"ID.BE-P2: Priorities for organizational mission, objectives, and activities are established and communicated."
+10,PF-Identify-P,ID.BE-P3: Systems/products/services that support organizational priorities are identified and key requirements communicated.
+11,PF-Identify-P,"ID.RA-P1: Contextual factors related to the systems/products/services and the data actions are identified (e.g., individuals’ demographics and privacy interests or perceptions, data sensitivity and/or types, visibility of data processing to individuals and third parties)."
+12,PF-Identify-P,ID.RA-P3: Potential problematic data actions and associated problems are identified.
+13,PF-Identify-P,"ID.RA-P4: Problematic data actions, likelihoods, and impacts are used to determine and prioritize risk."
+14,PF-Identify-P,"ID.RA-P5: Risk responses are identified, prioritized, and implemented."
+15,PF-Identify-P,"ID.DE-P1: Data processing ecosystem risk management policies, processes, and procedures are identified, established, assessed, managed, and agreed to by organizational stakeholders."
+16,PF-Identify-P,"ID.DE-P2: Data processing ecosystem parties (e.g., service providers, customers, partners, product manufacturers, application developers) are identified, prioritized, and assessed using a privacy risk assessment process."
+17,PF-Identify-P,ID.DE-P3: Contracts with data processing ecosystem parties are used to implement appropriate measures designed to meet the objectives of an organization’s privacy program.
+18,PF-Identify-P,"ID.DE-P5: Data processing ecosystem parties are routinely assessed using audits, test results, or other forms of evaluations to confirm they are meeting their contractual, interoperability framework, or other obligations."
+19,PF-Govern-P,GV.PO-P2: Processes to instill organizational privacy values within system/product/service development and operations are established and in place.
+20,PF-Govern-P,GV.PO-P3: Roles and responsibilities for the workforce are established with respect to privacy.
+21,PF-Govern-P,"GV.PO-P4: Privacy roles and responsibilities are coordinated and aligned with third-party stakeholders (e.g., service providers, customers, partners)."
+22,PF-Govern-P,"GV.PO-P6: Governance and risk management policies, processes, and procedures address privacy risks."
+23,PF-Govern-P,"GV.RM-P1: Risk management processes are established, managed, and agreed to by organizational stakeholders."
+24,PF-Govern-P,GV.RM-P2: Organizational risk tolerance is determined and clearly expressed.
+25,PF-Govern-P,GV.RM-P3: The organization’s determination of risk tolerance is informed by its role(s) in the data processing ecosystem.
+26,PF-Govern-P,GV.AT-P1: The workforce is informed and trained on its roles and responsibilities.
+27,PF-Govern-P,GV.AT-P2: Senior executives understand their roles and responsibilities.
+28,PF-Govern-P,GV.AT-P3: Privacy personnel understand their roles and responsibilities.
+29,PF-Govern-P,"GV.AT-P4: Third parties (e.g., service providers, customers, partners) understand their roles and responsibilities."
+30,PF-Govern-P,"GV.MT-P1: Privacy risk is re-evaluated on an ongoing basis and as key factors, including the organization’s business environment (e.g., introduction of new technologies), governance (e.g., legal obligations, risk tolerance), data processing, and systems/products/services change."
+31,PF-Govern-P,"GV.MT-P3: Policies, processes, and procedures for assessing compliance with legal requirements and privacy policies are established and in place."
+32,PF-Govern-P,"GV.MT-P4: Policies, processes, and procedures for communicating progress on managing privacy risks are established and in place."
+33,PF-Govern-P,"GV.MT-P5: Policies, processes, and procedures are established and in place to receive, analyze, and respond to problematic data actions disclosed to the organization from internal and external sources (e.g., internal discovery, privacy researchers, professional events)."
+34,PF-Govern-P,"GV.MT-P6: Policies, processes, and procedures incorporate lessons learned from problematic data actions."
+35,PF-Govern-P,"GV.MT-P7: Policies, processes, and procedures for receiving, tracking, and responding to complaints, concerns, and questions from individuals about organizational privacy practices are established and in place."
+36,PF-Control-P,"CT.PO-P1: Policies, processes, and procedures for authorizing data processing (e.g., organizational decisions, individual consent), revoking authorizations, and maintaining authorizations are established and in place."
+37,PF-Control-P,"CT.PO-P2: Policies, processes, and procedures for enabling data review, transfer, sharing or disclosure, alteration, and deletion are established and in place (e.g., to maintain data quality, manage data retention)."
+38,PF-Control-P,"CT.PO-P3: Policies, processes, and procedures for enabling individuals’ data processing preferences and requests are established and in place."
+39,PF-Control-P,CT.PO-P4: A data life cycle to manage data is aligned and implemented with the system development life cycle to manage systems.
+40,PF-Control-P,CT.DM-P1: Data elements can be accessed for review.
+41,PF-Control-P,CT.DM-P2: Data elements can be accessed for transmission or disclosure.
+42,PF-Control-P,CT.DM-P3: Data elements can be accessed for alteration.
+43,PF-Control-P,CT.DM-P4: Data elements can be accessed for deletion.
+44,PF-Control-P,CT.DM-P5: Data are destroyed according to policy.
+45,PF-Control-P,CT.DM-P6: Data are transmitted using standardized formats.
+46,PF-Control-P,CT.DM-P7: Mechanisms for transmitting processing permissions and related data values with data elements are established and in place.
+47,PF-Control-P,"CT.DM-P8: Audit/log records are determined, documented, implemented, and reviewed in accordance with policy and incorporating the principle of data minimization."
+48,PF-Control-P,CT.DM-P9: Technical measures implemented to manage data processing are tested and assessed.
+49,PF-Control-P,"CT.DP-P1: Data are processed to limit observability and linkability (e.g., data actions take place on local devices, privacy-preserving cryptography)."
+50,PF-Control-P,"CT.DP-P2: Data are processed to limit the identification of individuals (e.g., de-identification privacy techniques, tokenization)."
+51,PF-Control-P,"CT.DP-P3: Data are processed to limit the formulation of inferences about individuals’ behavior or activities (e.g., data processing is decentralized, distributed architectures)."
+52,PF-Control-P,CT.DP-P4: System or device configurations permit selective collection or disclosure of data elements.
+53,PF-Control-P,CT.DP-P5: Attribute references are substituted for attribute values.
+54,PF-Communicate-P,"CM.PO-P1: Transparency policies, processes, and procedures for communicating data processing purposes, practices, and associated privacy risks are established and in place."
+55,PF-Communicate-P,"CM.PO-P2: Roles and responsibilities (e.g., public relations) for communicating data processing purposes, practices, and associated privacy risks are established."
+56,PF-Communicate-P,"CM.AW-P1: Mechanisms (e.g., notices, internal or public reports) for communicating data processing purposes, practices, associated privacy risks, and options for enabling individuals’ data processing preferences and requests are established and in place."
+57,PF-Communicate-P,"CM.AW-P2: Mechanisms for obtaining feedback from individuals (e.g., surveys or focus groups) about data processing and associated privacy risks are established and in place."
+58,PF-Communicate-P,CM.AW-P3: System/product/service design enables data processing visibility.
+59,PF-Communicate-P,CM.AW-P4: Records of data disclosures and sharing are maintained and can be accessed for review or transmission/disclosure.
+60,PF-Communicate-P,"CM.AW-P5: Data corrections or deletions can be communicated to individuals or organizations (e.g., data sources) in the data processing ecosystem."
+61,PF-Communicate-P,CM.AW-P6: Data provenance and lineage are maintained and can be accessed for review or transmission/disclosure.
+62,PF-Communicate-P,CM.AW-P7: Impacted individuals and organizations are notified about a privacy breach or event.
+63,PF-Communicate-P,"CM.AW-P8: Individuals are provided with mitigation mechanisms (e.g., credit monitoring, consent withdrawal, data alteration or deletion) to address impacts of problematic data actions."
+64,PF-Protect-P,"PR.PO-P1: A baseline configuration of information technology is created and maintained incorporating security principles (e.g., concept of least functionality)."
+65,PF-Protect-P,PR.PO-P2: Configuration change control processes are established and in place.
+66,PF-Protect-P,"PR.PO-P3: Backups of information are conducted, maintained, and tested."
+67,PF-Protect-P,PR.PO-P4: Policy and regulations regarding the physical operating environment for organizational assets are met.
+68,PF-Protect-P,PR.PO-P5: Protection processes are improved.
+69,PF-Protect-P,PR.PO-P6: Effectiveness of protection technologies is shared.
+70,PF-Protect-P,"PR.PO-P7: Response plans (Incident Response and Business Continuity) and recovery plans (Incident Recovery and Disaster Recovery) are established, in place, and managed."
+71,PF-Protect-P,PR.PO-P8: Response and recovery plans are tested.
+72,PF-Protect-P,"PR.PO-P9: Privacy procedures are included in human resources practices (e.g., deprovisioning, personnel screening)."
+73,PF-Protect-P,PR.PO-P10: A vulnerability management plan is developed and implemented.
+74,PF-Protect-P,"PR.AC-P1: Identities and credentials are issued, managed, verified, revoked, and audited for authorized individuals, processes, and devices."
+75,PF-Protect-P,PR.AC-P2: Physical access to data and devices is managed.
+76,PF-Protect-P,PR.AC-P3: Remote access is managed.
+77,PF-Protect-P,"PR.AC-P4: Access permissions and authorizations are managed, incorporating the principles of least privilege and separation of duties."
+78,PF-Protect-P,"PR.AC-P5: Network integrity is protected (e.g., network segregation, network segmentation)."
+79,PF-Protect-P,"PR.AC-P6: Individuals and devices are proofed and bound to credentials, and authenticated commensurate with the risk of the transaction (e.g., individuals’ security and privacy risks and other organizational risks)."
+80,PF-Protect-P,PR.DS-P1: Data-at-rest are protected.
+81,PF-Protect-P,PR.DS-P2: Data-in-transit are protected.
+82,PF-Protect-P,"PR.DS-P3: Systems/products/services and associated data are formally managed throughout removal, transfers, and disposition."
+83,PF-Protect-P,PR.DS-P4: Adequate capacity to ensure availability is maintained.
+84,PF-Protect-P,PR.DS-P5: Protections against data leaks are implemented.
+85,PF-Protect-P,"PR.DS-P6: Integrity checking mechanisms are used to verify software, firmware, and information integrity."
+86,PF-Protect-P,PR.DS-P7: The development and testing environment(s) are separate from the production environment.
+87,PF-Protect-P,PR.DS-P8: Integrity checking mechanisms are used to verify hardware integrity.
+88,PF-Protect-P,"PR.MA-P1: Maintenance and repair of organizational assets are performed and logged, with approved and controlled tools."
+89,PF-Protect-P,"PR.MA-P2: Remote maintenance of organizational assets is approved, logged, and performed in a manner that prevents unauthorized access."
+90,PF-Protect-P,PR.PT-P1: Removable media is protected and its use restricted according to policy.
+91,PF-Protect-P,PR.PT-P2: The principle of least functionality is incorporated by configuring systems to provide only essential capabilities.
+92,PF-Protect-P,PR.PT-P3: Communications and control networks are protected.
+93,PF-Protect-P,"PR.PT-P4: Mechanisms (e.g., failsafe, load balancing, hot swap) are implemented to achieve resilience requirements in normal and adverse situations."

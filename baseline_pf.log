@@ -1,0 +1,309 @@
+Loaded from files: 94 regulations, 300 controls, 456 ground-truth links
+Benchmark: 94 regulations, 300 controls, 456 positive links
+Negative controls: 300
+
+
+--- TFIDF ---
+       tfidf run 1/30 seed=42 | Top1=0.526 MRR@5=0.578 nDCG@5=0.358 R@5=0.298 Cov=0.895 SelAcc=0.529
+       tfidf run 2/30 seed=43 | Top1=0.368 MRR@5=0.462 nDCG@5=0.290 R@5=0.249 Cov=0.737 SelAcc=0.429
+       tfidf run 3/30 seed=44 | Top1=0.263 MRR@5=0.360 nDCG@5=0.229 R@5=0.173 Cov=0.842 SelAcc=0.312
+       tfidf run 4/30 seed=45 | Top1=0.526 MRR@5=0.603 nDCG@5=0.386 R@5=0.312 Cov=0.842 SelAcc=0.562
+       tfidf run 5/30 seed=46 | Top1=0.474 MRR@5=0.544 nDCG@5=0.314 R@5=0.258 Cov=0.842 SelAcc=0.500
+       tfidf run 6/30 seed=47 | Top1=0.316 MRR@5=0.386 nDCG@5=0.247 R@5=0.192 Cov=0.842 SelAcc=0.375
+       tfidf run 7/30 seed=48 | Top1=0.263 MRR@5=0.458 nDCG@5=0.258 R@5=0.198 Cov=0.263 SelAcc=0.400
+       tfidf run 8/30 seed=49 | Top1=0.368 MRR@5=0.456 nDCG@5=0.291 R@5=0.265 Cov=0.526 SelAcc=0.400
+       tfidf run 9/30 seed=50 | Top1=0.316 MRR@5=0.473 nDCG@5=0.256 R@5=0.234 Cov=0.737 SelAcc=0.429
+       tfidf run 10/30 seed=51 | Top1=0.263 MRR@5=0.364 nDCG@5=0.247 R@5=0.256 Cov=0.789 SelAcc=0.267
+       tfidf run 11/30 seed=52 | Top1=0.368 MRR@5=0.461 nDCG@5=0.229 R@5=0.168 Cov=0.737 SelAcc=0.429
+       tfidf run 12/30 seed=53 | Top1=0.316 MRR@5=0.379 nDCG@5=0.207 R@5=0.186 Cov=0.895 SelAcc=0.353
+       tfidf run 13/30 seed=54 | Top1=0.105 MRR@5=0.167 nDCG@5=0.108 R@5=0.143 Cov=0.579 SelAcc=0.182
+       tfidf run 14/30 seed=55 | Top1=0.368 MRR@5=0.475 nDCG@5=0.304 R@5=0.289 Cov=0.895 SelAcc=0.412
+       tfidf run 15/30 seed=56 | Top1=0.263 MRR@5=0.344 nDCG@5=0.199 R@5=0.166 Cov=0.579 SelAcc=0.364
+       tfidf run 16/30 seed=57 | Top1=0.211 MRR@5=0.299 nDCG@5=0.212 R@5=0.232 Cov=0.579 SelAcc=0.364
+       tfidf run 17/30 seed=58 | Top1=0.368 MRR@5=0.456 nDCG@5=0.292 R@5=0.282 Cov=0.842 SelAcc=0.250
+       tfidf run 18/30 seed=59 | Top1=0.421 MRR@5=0.484 nDCG@5=0.253 R@5=0.209 Cov=0.789 SelAcc=0.533
+       tfidf run 19/30 seed=60 | Top1=0.421 MRR@5=0.513 nDCG@5=0.274 R@5=0.171 Cov=1.000 SelAcc=0.421
+       tfidf run 20/30 seed=61 | Top1=0.368 MRR@5=0.462 nDCG@5=0.282 R@5=0.254 Cov=0.895 SelAcc=0.412
+       tfidf run 21/30 seed=62 | Top1=0.526 MRR@5=0.629 nDCG@5=0.435 R@5=0.386 Cov=0.737 SelAcc=0.571
+       tfidf run 22/30 seed=63 | Top1=0.368 MRR@5=0.445 nDCG@5=0.283 R@5=0.226 Cov=0.632 SelAcc=0.500
+       tfidf run 23/30 seed=64 | Top1=0.421 MRR@5=0.445 nDCG@5=0.312 R@5=0.268 Cov=0.789 SelAcc=0.400
+       tfidf run 24/30 seed=65 | Top1=0.421 MRR@5=0.478 nDCG@5=0.318 R@5=0.276 Cov=0.368 SelAcc=0.714
+       tfidf run 25/30 seed=66 | Top1=0.474 MRR@5=0.579 nDCG@5=0.334 R@5=0.271 Cov=0.632 SelAcc=0.583
+       tfidf run 26/30 seed=67 | Top1=0.211 MRR@5=0.302 nDCG@5=0.188 R@5=0.155 Cov=0.526 SelAcc=0.400
+       tfidf run 27/30 seed=68 | Top1=0.211 MRR@5=0.254 nDCG@5=0.158 R@5=0.158 Cov=0.474 SelAcc=0.333
+       tfidf run 28/30 seed=69 | Top1=0.526 MRR@5=0.544 nDCG@5=0.316 R@5=0.228 Cov=0.632 SelAcc=0.583
+       tfidf run 29/30 seed=70 | Top1=0.263 MRR@5=0.418 nDCG@5=0.270 R@5=0.246 Cov=0.842 SelAcc=0.312
+       tfidf run 30/30 seed=71 | Top1=0.368 MRR@5=0.497 nDCG@5=0.334 R@5=0.279 Cov=0.947 SelAcc=0.389
+
+--- BM25 ---
+        bm25 run 1/30 seed=42 | Top1=0.474 MRR@5=0.554 nDCG@5=0.322 R@5=0.267 Cov=0.526 SelAcc=0.600
+        bm25 run 2/30 seed=43 | Top1=0.316 MRR@5=0.412 nDCG@5=0.240 R@5=0.200 Cov=0.895 SelAcc=0.353
+        bm25 run 3/30 seed=44 | Top1=0.211 MRR@5=0.329 nDCG@5=0.191 R@5=0.143 Cov=0.789 SelAcc=0.267
+        bm25 run 4/30 seed=45 | Top1=0.421 MRR@5=0.537 nDCG@5=0.336 R@5=0.255 Cov=0.895 SelAcc=0.412
+        bm25 run 5/30 seed=46 | Top1=0.421 MRR@5=0.458 nDCG@5=0.279 R@5=0.229 Cov=0.263 SelAcc=0.600
+        bm25 run 6/30 seed=47 | Top1=0.316 MRR@5=0.395 nDCG@5=0.235 R@5=0.178 Cov=0.842 SelAcc=0.375
+        bm25 run 7/30 seed=48 | Top1=0.263 MRR@5=0.447 nDCG@5=0.233 R@5=0.166 Cov=0.895 SelAcc=0.294
+        bm25 run 8/30 seed=49 | Top1=0.368 MRR@5=0.414 nDCG@5=0.263 R@5=0.275 Cov=0.474 SelAcc=0.444
+        bm25 run 9/30 seed=50 | Top1=0.316 MRR@5=0.432 nDCG@5=0.246 R@5=0.171 Cov=0.842 SelAcc=0.375
+        bm25 run 10/30 seed=51 | Top1=0.421 MRR@5=0.465 nDCG@5=0.289 R@5=0.262 Cov=0.316 SelAcc=0.333
+        bm25 run 11/30 seed=52 | Top1=0.421 MRR@5=0.518 nDCG@5=0.291 R@5=0.221 Cov=0.737 SelAcc=0.429
+        bm25 run 12/30 seed=53 | Top1=0.368 MRR@5=0.430 nDCG@5=0.288 R@5=0.308 Cov=0.474 SelAcc=0.333
+        bm25 run 13/30 seed=54 | Top1=0.263 MRR@5=0.276 nDCG@5=0.164 R@5=0.160 Cov=0.842 SelAcc=0.312
+        bm25 run 14/30 seed=55 | Top1=0.421 MRR@5=0.458 nDCG@5=0.287 R@5=0.255 Cov=0.895 SelAcc=0.471
+        bm25 run 15/30 seed=56 | Top1=0.211 MRR@5=0.268 nDCG@5=0.178 R@5=0.167 Cov=0.895 SelAcc=0.235
+        bm25 run 16/30 seed=57 | Top1=0.263 MRR@5=0.331 nDCG@5=0.237 R@5=0.265 Cov=0.737 SelAcc=0.286
+        bm25 run 17/30 seed=58 | Top1=0.368 MRR@5=0.396 nDCG@5=0.241 R@5=0.217 Cov=0.579 SelAcc=0.364
+        bm25 run 18/30 seed=59 | Top1=0.474 MRR@5=0.518 nDCG@5=0.288 R@5=0.237 Cov=0.789 SelAcc=0.600
+        bm25 run 19/30 seed=60 | Top1=0.526 MRR@5=0.618 nDCG@5=0.342 R@5=0.244 Cov=0.789 SelAcc=0.667
+        bm25 run 20/30 seed=61 | Top1=0.368 MRR@5=0.462 nDCG@5=0.264 R@5=0.238 Cov=0.947 SelAcc=0.389
+        bm25 run 21/30 seed=62 | Top1=0.368 MRR@5=0.546 nDCG@5=0.376 R@5=0.361 Cov=0.842 SelAcc=0.438
+        bm25 run 22/30 seed=63 | Top1=0.316 MRR@5=0.396 nDCG@5=0.212 R@5=0.183 Cov=0.895 SelAcc=0.353
+        bm25 run 23/30 seed=64 | Top1=0.263 MRR@5=0.325 nDCG@5=0.248 R@5=0.267 Cov=0.579 SelAcc=0.455
+        bm25 run 24/30 seed=65 | Top1=0.316 MRR@5=0.373 nDCG@5=0.228 R@5=0.204 Cov=0.789 SelAcc=0.400
+        bm25 run 25/30 seed=66 | Top1=0.526 MRR@5=0.576 nDCG@5=0.345 R@5=0.263 Cov=0.684 SelAcc=0.692
+        bm25 run 26/30 seed=67 | Top1=0.105 MRR@5=0.221 nDCG@5=0.135 R@5=0.094 Cov=0.684 SelAcc=0.154
+        bm25 run 27/30 seed=68 | Top1=0.158 MRR@5=0.272 nDCG@5=0.186 R@5=0.215 Cov=0.895 SelAcc=0.176
+        bm25 run 28/30 seed=69 | Top1=0.526 MRR@5=0.557 nDCG@5=0.320 R@5=0.257 Cov=0.789 SelAcc=0.667
+        bm25 run 29/30 seed=70 | Top1=0.263 MRR@5=0.382 nDCG@5=0.254 R@5=0.243 Cov=0.947 SelAcc=0.278
+        bm25 run 30/30 seed=71 | Top1=0.421 MRR@5=0.478 nDCG@5=0.288 R@5=0.237 Cov=0.789 SelAcc=0.467
+
+--- LSI ---
+         lsi run 1/30 seed=42 | Top1=0.474 MRR@5=0.575 nDCG@5=0.385 R@5=0.348 Cov=0.789 SelAcc=0.467
+         lsi run 2/30 seed=43 | Top1=0.316 MRR@5=0.418 nDCG@5=0.298 R@5=0.294 Cov=0.789 SelAcc=0.400
+         lsi run 3/30 seed=44 | Top1=0.158 MRR@5=0.309 nDCG@5=0.224 R@5=0.194 Cov=0.895 SelAcc=0.176
+         lsi run 4/30 seed=45 | Top1=0.474 MRR@5=0.605 nDCG@5=0.405 R@5=0.345 Cov=0.895 SelAcc=0.529
+         lsi run 5/30 seed=46 | Top1=0.368 MRR@5=0.443 nDCG@5=0.318 R@5=0.311 Cov=0.632 SelAcc=0.500
+         lsi run 6/30 seed=47 | Top1=0.316 MRR@5=0.414 nDCG@5=0.268 R@5=0.214 Cov=0.842 SelAcc=0.375
+         lsi run 7/30 seed=48 | Top1=0.316 MRR@5=0.452 nDCG@5=0.270 R@5=0.210 Cov=0.474 SelAcc=0.556
+         lsi run 8/30 seed=49 | Top1=0.211 MRR@5=0.297 nDCG@5=0.231 R@5=0.272 Cov=0.842 SelAcc=0.250
+         lsi run 9/30 seed=50 | Top1=0.368 MRR@5=0.504 nDCG@5=0.315 R@5=0.279 Cov=0.737 SelAcc=0.429
+         lsi run 10/30 seed=51 | Top1=0.263 MRR@5=0.370 nDCG@5=0.251 R@5=0.267 Cov=0.684 SelAcc=0.231
+         lsi run 11/30 seed=52 | Top1=0.368 MRR@5=0.493 nDCG@5=0.296 R@5=0.262 Cov=0.737 SelAcc=0.500
+         lsi run 12/30 seed=53 | Top1=0.263 MRR@5=0.335 nDCG@5=0.239 R@5=0.249 Cov=0.842 SelAcc=0.312
+         lsi run 13/30 seed=54 | Top1=0.053 MRR@5=0.096 nDCG@5=0.096 R@5=0.136 Cov=0.474 SelAcc=0.000
+         lsi run 14/30 seed=55 | Top1=0.421 MRR@5=0.513 nDCG@5=0.333 R@5=0.310 Cov=1.000 SelAcc=0.421
+         lsi run 15/30 seed=56 | Top1=0.211 MRR@5=0.267 nDCG@5=0.178 R@5=0.182 Cov=0.632 SelAcc=0.250
+         lsi run 16/30 seed=57 | Top1=0.263 MRR@5=0.374 nDCG@5=0.251 R@5=0.287 Cov=0.789 SelAcc=0.333
+         lsi run 17/30 seed=58 | Top1=0.421 MRR@5=0.460 nDCG@5=0.347 R@5=0.330 Cov=0.789 SelAcc=0.467
+         lsi run 18/30 seed=59 | Top1=0.421 MRR@5=0.461 nDCG@5=0.263 R@5=0.213 Cov=1.000 SelAcc=0.421
+         lsi run 19/30 seed=60 | Top1=0.421 MRR@5=0.474 nDCG@5=0.260 R@5=0.152 Cov=0.789 SelAcc=0.533
+         lsi run 20/30 seed=61 | Top1=0.263 MRR@5=0.396 nDCG@5=0.284 R@5=0.304 Cov=0.842 SelAcc=0.312
+         lsi run 21/30 seed=62 | Top1=0.316 MRR@5=0.468 nDCG@5=0.389 R@5=0.376 Cov=0.579 SelAcc=0.455
+         lsi run 22/30 seed=63 | Top1=0.316 MRR@5=0.381 nDCG@5=0.258 R@5=0.226 Cov=0.895 SelAcc=0.353
+         lsi run 23/30 seed=64 | Top1=0.211 MRR@5=0.351 nDCG@5=0.260 R@5=0.289 Cov=0.947 SelAcc=0.222
+         lsi run 24/30 seed=65 | Top1=0.368 MRR@5=0.482 nDCG@5=0.322 R@5=0.298 Cov=0.632 SelAcc=0.500
+         lsi run 25/30 seed=66 | Top1=0.368 MRR@5=0.502 nDCG@5=0.349 R@5=0.326 Cov=0.579 SelAcc=0.545
+         lsi run 26/30 seed=67 | Top1=0.158 MRR@5=0.225 nDCG@5=0.177 R@5=0.145 Cov=0.632 SelAcc=0.250
+         lsi run 27/30 seed=68 | Top1=0.158 MRR@5=0.268 nDCG@5=0.205 R@5=0.222 Cov=0.895 SelAcc=0.118
+         lsi run 28/30 seed=69 | Top1=0.421 MRR@5=0.493 nDCG@5=0.329 R@5=0.265 Cov=0.632 SelAcc=0.583
+         lsi run 29/30 seed=70 | Top1=0.263 MRR@5=0.443 nDCG@5=0.275 R@5=0.256 Cov=0.947 SelAcc=0.278
+         lsi run 30/30 seed=71 | Top1=0.211 MRR@5=0.388 nDCG@5=0.279 R@5=0.291 Cov=0.895 SelAcc=0.235
+
+--- SINGLE ---
+      single run 1/30 seed=42 | Top1=0.474 MRR@5=0.554 nDCG@5=0.322 R@5=0.267 Cov=0.526 SelAcc=0.600 Steps=2.0
+      single run 2/30 seed=43 | Top1=0.316 MRR@5=0.412 nDCG@5=0.240 R@5=0.200 Cov=0.895 SelAcc=0.353 Steps=2.0
+      single run 3/30 seed=44 | Top1=0.211 MRR@5=0.329 nDCG@5=0.191 R@5=0.143 Cov=0.789 SelAcc=0.267 Steps=2.0
+      single run 4/30 seed=45 | Top1=0.421 MRR@5=0.537 nDCG@5=0.336 R@5=0.255 Cov=0.895 SelAcc=0.412 Steps=2.0
+      single run 5/30 seed=46 | Top1=0.421 MRR@5=0.458 nDCG@5=0.279 R@5=0.229 Cov=0.263 SelAcc=0.600 Steps=2.0
+      single run 6/30 seed=47 | Top1=0.316 MRR@5=0.395 nDCG@5=0.235 R@5=0.178 Cov=0.842 SelAcc=0.375 Steps=2.0
+      single run 7/30 seed=48 | Top1=0.263 MRR@5=0.447 nDCG@5=0.233 R@5=0.166 Cov=0.895 SelAcc=0.294 Steps=2.0
+      single run 8/30 seed=49 | Top1=0.368 MRR@5=0.414 nDCG@5=0.263 R@5=0.275 Cov=0.474 SelAcc=0.444 Steps=2.0
+      single run 9/30 seed=50 | Top1=0.316 MRR@5=0.432 nDCG@5=0.246 R@5=0.171 Cov=0.842 SelAcc=0.375 Steps=2.0
+      single run 10/30 seed=51 | Top1=0.421 MRR@5=0.465 nDCG@5=0.289 R@5=0.262 Cov=0.316 SelAcc=0.333 Steps=2.0
+      single run 11/30 seed=52 | Top1=0.421 MRR@5=0.518 nDCG@5=0.291 R@5=0.221 Cov=0.737 SelAcc=0.429 Steps=2.0
+      single run 12/30 seed=53 | Top1=0.368 MRR@5=0.430 nDCG@5=0.288 R@5=0.308 Cov=0.474 SelAcc=0.333 Steps=2.0
+      single run 13/30 seed=54 | Top1=0.263 MRR@5=0.276 nDCG@5=0.164 R@5=0.160 Cov=0.842 SelAcc=0.312 Steps=2.0
+      single run 14/30 seed=55 | Top1=0.421 MRR@5=0.458 nDCG@5=0.287 R@5=0.255 Cov=0.895 SelAcc=0.471 Steps=2.0
+      single run 15/30 seed=56 | Top1=0.211 MRR@5=0.268 nDCG@5=0.178 R@5=0.167 Cov=0.895 SelAcc=0.235 Steps=2.0
+      single run 16/30 seed=57 | Top1=0.263 MRR@5=0.331 nDCG@5=0.237 R@5=0.265 Cov=0.737 SelAcc=0.286 Steps=2.0
+      single run 17/30 seed=58 | Top1=0.368 MRR@5=0.396 nDCG@5=0.241 R@5=0.217 Cov=0.579 SelAcc=0.364 Steps=2.0
+      single run 18/30 seed=59 | Top1=0.474 MRR@5=0.518 nDCG@5=0.288 R@5=0.237 Cov=0.789 SelAcc=0.600 Steps=2.0
+      single run 19/30 seed=60 | Top1=0.526 MRR@5=0.618 nDCG@5=0.342 R@5=0.244 Cov=0.789 SelAcc=0.667 Steps=2.0
+      single run 20/30 seed=61 | Top1=0.368 MRR@5=0.462 nDCG@5=0.264 R@5=0.238 Cov=0.947 SelAcc=0.389 Steps=2.0
+      single run 21/30 seed=62 | Top1=0.368 MRR@5=0.546 nDCG@5=0.376 R@5=0.361 Cov=0.842 SelAcc=0.438 Steps=2.0
+      single run 22/30 seed=63 | Top1=0.316 MRR@5=0.396 nDCG@5=0.212 R@5=0.183 Cov=0.895 SelAcc=0.353 Steps=2.0
+      single run 23/30 seed=64 | Top1=0.263 MRR@5=0.325 nDCG@5=0.248 R@5=0.267 Cov=0.579 SelAcc=0.455 Steps=2.0
+      single run 24/30 seed=65 | Top1=0.316 MRR@5=0.373 nDCG@5=0.228 R@5=0.204 Cov=0.789 SelAcc=0.400 Steps=2.0
+      single run 25/30 seed=66 | Top1=0.526 MRR@5=0.576 nDCG@5=0.345 R@5=0.263 Cov=0.684 SelAcc=0.692 Steps=2.0
+      single run 26/30 seed=67 | Top1=0.105 MRR@5=0.221 nDCG@5=0.135 R@5=0.094 Cov=0.684 SelAcc=0.154 Steps=2.0
+      single run 27/30 seed=68 | Top1=0.158 MRR@5=0.272 nDCG@5=0.186 R@5=0.215 Cov=0.895 SelAcc=0.176 Steps=2.0
+      single run 28/30 seed=69 | Top1=0.526 MRR@5=0.557 nDCG@5=0.320 R@5=0.257 Cov=0.789 SelAcc=0.667 Steps=2.0
+      single run 29/30 seed=70 | Top1=0.263 MRR@5=0.382 nDCG@5=0.254 R@5=0.243 Cov=0.947 SelAcc=0.278 Steps=2.0
+      single run 30/30 seed=71 | Top1=0.421 MRR@5=0.478 nDCG@5=0.288 R@5=0.237 Cov=0.789 SelAcc=0.467 Steps=2.0
+
+--- MULTI ---
+       multi run 1/30 seed=42 | Top1=0.474 MRR@5=0.552 nDCG@5=0.355 R@5=0.343 Cov=0.737 SelAcc=0.643 Steps=3.0
+       multi run 2/30 seed=43 | Top1=0.368 MRR@5=0.458 nDCG@5=0.293 R@5=0.268 Cov=0.526 SelAcc=0.500 Steps=3.0
+       multi run 3/30 seed=44 | Top1=0.316 MRR@5=0.395 nDCG@5=0.233 R@5=0.172 Cov=0.632 SelAcc=0.333 Steps=3.0
+       multi run 4/30 seed=45 | Top1=0.474 MRR@5=0.576 nDCG@5=0.381 R@5=0.326 Cov=0.842 SelAcc=0.500 Steps=3.0
+       multi run 5/30 seed=46 | Top1=0.421 MRR@5=0.487 nDCG@5=0.317 R@5=0.291 Cov=1.000 SelAcc=0.421 Steps=3.0
+       multi run 6/30 seed=47 | Top1=0.421 MRR@5=0.439 nDCG@5=0.271 R@5=0.199 Cov=0.368 SelAcc=0.571 Steps=3.0
+       multi run 7/30 seed=48 | Top1=0.316 MRR@5=0.484 nDCG@5=0.283 R@5=0.217 Cov=0.684 SelAcc=0.231 Steps=3.0
+       multi run 8/30 seed=49 | Top1=0.263 MRR@5=0.368 nDCG@5=0.280 R@5=0.327 Cov=0.579 SelAcc=0.364 Steps=3.0
+       multi run 9/30 seed=50 | Top1=0.368 MRR@5=0.480 nDCG@5=0.284 R@5=0.264 Cov=0.579 SelAcc=0.364 Steps=3.0
+       multi run 10/30 seed=51 | Top1=0.316 MRR@5=0.383 nDCG@5=0.273 R@5=0.267 Cov=0.684 SelAcc=0.385 Steps=3.0
+       multi run 11/30 seed=52 | Top1=0.421 MRR@5=0.504 nDCG@5=0.287 R@5=0.257 Cov=0.474 SelAcc=0.667 Steps=3.0
+       multi run 12/30 seed=53 | Top1=0.263 MRR@5=0.350 nDCG@5=0.240 R@5=0.249 Cov=0.684 SelAcc=0.385 Steps=3.0
+       multi run 13/30 seed=54 | Top1=0.105 MRR@5=0.162 nDCG@5=0.122 R@5=0.143 Cov=0.579 SelAcc=0.091 Steps=3.0
+       multi run 14/30 seed=55 | Top1=0.368 MRR@5=0.440 nDCG@5=0.312 R@5=0.298 Cov=0.895 SelAcc=0.412 Steps=3.0
+       multi run 15/30 seed=56 | Top1=0.105 MRR@5=0.232 nDCG@5=0.166 R@5=0.190 Cov=0.368 SelAcc=0.143 Steps=3.0
+       multi run 16/30 seed=57 | Top1=0.211 MRR@5=0.284 nDCG@5=0.218 R@5=0.274 Cov=0.737 SelAcc=0.286 Steps=3.0
+       multi run 17/30 seed=58 | Top1=0.368 MRR@5=0.443 nDCG@5=0.315 R@5=0.318 Cov=0.842 SelAcc=0.438 Steps=3.0
+       multi run 18/30 seed=59 | Top1=0.474 MRR@5=0.500 nDCG@5=0.290 R@5=0.219 Cov=0.895 SelAcc=0.529 Steps=3.0
+       multi run 19/30 seed=60 | Top1=0.421 MRR@5=0.509 nDCG@5=0.284 R@5=0.191 Cov=0.789 SelAcc=0.467 Steps=3.0
+       multi run 20/30 seed=61 | Top1=0.368 MRR@5=0.471 nDCG@5=0.331 R@5=0.344 Cov=0.895 SelAcc=0.412 Steps=3.0
+       multi run 21/30 seed=62 | Top1=0.526 MRR@5=0.596 nDCG@5=0.447 R@5=0.394 Cov=0.737 SelAcc=0.714 Steps=3.0
+       multi run 22/30 seed=63 | Top1=0.316 MRR@5=0.392 nDCG@5=0.259 R@5=0.213 Cov=0.789 SelAcc=0.400 Steps=3.0
+       multi run 23/30 seed=64 | Top1=0.263 MRR@5=0.333 nDCG@5=0.266 R@5=0.284 Cov=0.737 SelAcc=0.357 Steps=3.0
+       multi run 24/30 seed=65 | Top1=0.421 MRR@5=0.489 nDCG@5=0.342 R@5=0.311 Cov=0.737 SelAcc=0.500 Steps=3.0
+       multi run 25/30 seed=66 | Top1=0.421 MRR@5=0.541 nDCG@5=0.359 R@5=0.335 Cov=0.737 SelAcc=0.500 Steps=3.0
+       multi run 26/30 seed=67 | Top1=0.158 MRR@5=0.224 nDCG@5=0.148 R@5=0.116 Cov=0.684 SelAcc=0.231 Steps=3.0
+       multi run 27/30 seed=68 | Top1=0.211 MRR@5=0.261 nDCG@5=0.184 R@5=0.198 Cov=0.579 SelAcc=0.273 Steps=3.0
+       multi run 28/30 seed=69 | Top1=0.474 MRR@5=0.524 nDCG@5=0.343 R@5=0.264 Cov=0.632 SelAcc=0.750 Steps=3.0
+       multi run 29/30 seed=70 | Top1=0.263 MRR@5=0.391 nDCG@5=0.269 R@5=0.254 Cov=0.842 SelAcc=0.250 Steps=3.0
+       multi run 30/30 seed=71 | Top1=0.368 MRR@5=0.465 nDCG@5=0.295 R@5=0.254 Cov=0.895 SelAcc=0.412 Steps=3.0
+
+--- REFORM ---
+      reform run 1/30 seed=42 | Top1=0.579 MRR@5=0.686 nDCG@5=0.427 R@5=0.404 Cov=0.737 SelAcc=0.714 Steps=4.8
+      reform run 2/30 seed=43 | Top1=0.421 MRR@5=0.484 nDCG@5=0.304 R@5=0.289 Cov=0.579 SelAcc=0.545 Steps=4.8
+      reform run 3/30 seed=44 | Top1=0.316 MRR@5=0.395 nDCG@5=0.249 R@5=0.182 Cov=0.632 SelAcc=0.250 Steps=4.8
+      reform run 4/30 seed=45 | Top1=0.474 MRR@5=0.563 nDCG@5=0.376 R@5=0.318 Cov=0.789 SelAcc=0.533 Steps=4.8
+      reform run 5/30 seed=46 | Top1=0.421 MRR@5=0.487 nDCG@5=0.312 R@5=0.284 Cov=1.000 SelAcc=0.421 Steps=4.9
+      reform run 6/30 seed=47 | Top1=0.421 MRR@5=0.447 nDCG@5=0.274 R@5=0.199 Cov=0.474 SelAcc=0.556 Steps=4.9
+      reform run 7/30 seed=48 | Top1=0.474 MRR@5=0.596 nDCG@5=0.341 R@5=0.240 Cov=0.684 SelAcc=0.462 Steps=4.9
+      reform run 8/30 seed=49 | Top1=0.263 MRR@5=0.368 nDCG@5=0.281 R@5=0.327 Cov=0.632 SelAcc=0.333 Steps=4.7
+      reform run 9/30 seed=50 | Top1=0.421 MRR@5=0.522 nDCG@5=0.297 R@5=0.269 Cov=0.474 SelAcc=0.667 Steps=4.7
+      reform run 10/30 seed=51 | Top1=0.211 MRR@5=0.320 nDCG@5=0.235 R@5=0.249 Cov=0.737 SelAcc=0.286 Steps=4.8
+      reform run 11/30 seed=52 | Top1=0.474 MRR@5=0.518 nDCG@5=0.266 R@5=0.189 Cov=0.579 SelAcc=0.636 Steps=4.9
+      reform run 12/30 seed=53 | Top1=0.263 MRR@5=0.363 nDCG@5=0.242 R@5=0.270 Cov=0.842 SelAcc=0.312 Steps=4.9
+      reform run 13/30 seed=54 | Top1=0.053 MRR@5=0.129 nDCG@5=0.089 R@5=0.143 Cov=0.737 SelAcc=0.071 Steps=4.8
+      reform run 14/30 seed=55 | Top1=0.368 MRR@5=0.440 nDCG@5=0.312 R@5=0.298 Cov=0.684 SelAcc=0.538 Steps=4.8
+      reform run 15/30 seed=56 | Top1=0.105 MRR@5=0.232 nDCG@5=0.157 R@5=0.186 Cov=0.368 SelAcc=0.286 Steps=4.8
+      reform run 16/30 seed=57 | Top1=0.263 MRR@5=0.313 nDCG@5=0.216 R@5=0.230 Cov=0.895 SelAcc=0.294 Steps=4.9
+      reform run 17/30 seed=58 | Top1=0.368 MRR@5=0.425 nDCG@5=0.280 R@5=0.255 Cov=0.842 SelAcc=0.438 Steps=4.7
+      reform run 18/30 seed=59 | Top1=0.421 MRR@5=0.474 nDCG@5=0.259 R@5=0.209 Cov=0.895 SelAcc=0.471 Steps=4.9
+      reform run 19/30 seed=60 | Top1=0.421 MRR@5=0.504 nDCG@5=0.284 R@5=0.186 Cov=0.789 SelAcc=0.467 Steps=4.9
+      reform run 20/30 seed=61 | Top1=0.421 MRR@5=0.497 nDCG@5=0.332 R@5=0.344 Cov=0.684 SelAcc=0.538 Steps=4.9
+      reform run 21/30 seed=62 | Top1=0.474 MRR@5=0.610 nDCG@5=0.440 R@5=0.408 Cov=0.632 SelAcc=0.667 Steps=4.8
+      reform run 22/30 seed=63 | Top1=0.316 MRR@5=0.418 nDCG@5=0.272 R@5=0.226 Cov=0.684 SelAcc=0.385 Steps=4.7
+      reform run 23/30 seed=64 | Top1=0.316 MRR@5=0.386 nDCG@5=0.278 R@5=0.293 Cov=0.895 SelAcc=0.353 Steps=4.8
+      reform run 24/30 seed=65 | Top1=0.421 MRR@5=0.471 nDCG@5=0.330 R@5=0.270 Cov=0.737 SelAcc=0.500 Steps=4.7
+      reform run 25/30 seed=66 | Top1=0.421 MRR@5=0.541 nDCG@5=0.348 R@5=0.320 Cov=0.737 SelAcc=0.500 Steps=4.8
+      reform run 26/30 seed=67 | Top1=0.211 MRR@5=0.272 nDCG@5=0.170 R@5=0.137 Cov=0.789 SelAcc=0.267 Steps=4.8
+      reform run 27/30 seed=68 | Top1=0.158 MRR@5=0.245 nDCG@5=0.165 R@5=0.211 Cov=0.421 SelAcc=0.250 Steps=4.8
+      reform run 28/30 seed=69 | Top1=0.474 MRR@5=0.524 nDCG@5=0.324 R@5=0.248 Cov=0.789 SelAcc=0.600 Steps=4.8
+      reform run 29/30 seed=70 | Top1=0.263 MRR@5=0.420 nDCG@5=0.289 R@5=0.281 Cov=0.895 SelAcc=0.294 Steps=4.8
+      reform run 30/30 seed=71 | Top1=0.316 MRR@5=0.465 nDCG@5=0.306 R@5=0.272 Cov=0.947 SelAcc=0.333 Steps=4.8
+
+--- DECOMP ---
+      decomp run 1/30 seed=42 | Top1=0.579 MRR@5=0.686 nDCG@5=0.427 R@5=0.404 Cov=0.737 SelAcc=0.714 Steps=5.4
+      decomp run 2/30 seed=43 | Top1=0.421 MRR@5=0.484 nDCG@5=0.304 R@5=0.289 Cov=0.579 SelAcc=0.545 Steps=5.4
+      decomp run 3/30 seed=44 | Top1=0.316 MRR@5=0.395 nDCG@5=0.249 R@5=0.182 Cov=0.632 SelAcc=0.250 Steps=5.3
+      decomp run 4/30 seed=45 | Top1=0.474 MRR@5=0.563 nDCG@5=0.376 R@5=0.318 Cov=0.789 SelAcc=0.533 Steps=5.5
+      decomp run 5/30 seed=46 | Top1=0.421 MRR@5=0.487 nDCG@5=0.312 R@5=0.284 Cov=1.000 SelAcc=0.421 Steps=5.4
+      decomp run 6/30 seed=47 | Top1=0.421 MRR@5=0.447 nDCG@5=0.274 R@5=0.199 Cov=0.474 SelAcc=0.556 Steps=5.4
+      decomp run 7/30 seed=48 | Top1=0.474 MRR@5=0.596 nDCG@5=0.341 R@5=0.240 Cov=0.684 SelAcc=0.462 Steps=5.4
+      decomp run 8/30 seed=49 | Top1=0.263 MRR@5=0.368 nDCG@5=0.281 R@5=0.327 Cov=0.632 SelAcc=0.333 Steps=5.3
+      decomp run 9/30 seed=50 | Top1=0.421 MRR@5=0.522 nDCG@5=0.297 R@5=0.269 Cov=0.474 SelAcc=0.667 Steps=5.3
+      decomp run 10/30 seed=51 | Top1=0.211 MRR@5=0.320 nDCG@5=0.235 R@5=0.249 Cov=0.737 SelAcc=0.286 Steps=5.2
+      decomp run 11/30 seed=52 | Top1=0.474 MRR@5=0.518 nDCG@5=0.266 R@5=0.189 Cov=0.579 SelAcc=0.636 Steps=5.4
+      decomp run 12/30 seed=53 | Top1=0.263 MRR@5=0.363 nDCG@5=0.242 R@5=0.270 Cov=0.842 SelAcc=0.312 Steps=5.3
+      decomp run 13/30 seed=54 | Top1=0.053 MRR@5=0.129 nDCG@5=0.089 R@5=0.143 Cov=0.737 SelAcc=0.071 Steps=5.3
+      decomp run 14/30 seed=55 | Top1=0.368 MRR@5=0.440 nDCG@5=0.312 R@5=0.298 Cov=0.684 SelAcc=0.538 Steps=5.6
+      decomp run 15/30 seed=56 | Top1=0.105 MRR@5=0.232 nDCG@5=0.157 R@5=0.186 Cov=0.368 SelAcc=0.286 Steps=5.4
+      decomp run 16/30 seed=57 | Top1=0.263 MRR@5=0.313 nDCG@5=0.216 R@5=0.230 Cov=0.895 SelAcc=0.294 Steps=5.5
+      decomp run 17/30 seed=58 | Top1=0.368 MRR@5=0.425 nDCG@5=0.280 R@5=0.255 Cov=0.842 SelAcc=0.438 Steps=5.3
+      decomp run 18/30 seed=59 | Top1=0.421 MRR@5=0.474 nDCG@5=0.259 R@5=0.209 Cov=0.895 SelAcc=0.471 Steps=5.4
+      decomp run 19/30 seed=60 | Top1=0.421 MRR@5=0.504 nDCG@5=0.284 R@5=0.186 Cov=0.789 SelAcc=0.467 Steps=5.5
+      decomp run 20/30 seed=61 | Top1=0.421 MRR@5=0.497 nDCG@5=0.332 R@5=0.344 Cov=0.684 SelAcc=0.538 Steps=5.5
+      decomp run 21/30 seed=62 | Top1=0.474 MRR@5=0.610 nDCG@5=0.440 R@5=0.408 Cov=0.632 SelAcc=0.667 Steps=5.3
+      decomp run 22/30 seed=63 | Top1=0.316 MRR@5=0.418 nDCG@5=0.272 R@5=0.226 Cov=0.684 SelAcc=0.385 Steps=5.3
+      decomp run 23/30 seed=64 | Top1=0.316 MRR@5=0.386 nDCG@5=0.278 R@5=0.293 Cov=0.895 SelAcc=0.353 Steps=5.4
+      decomp run 24/30 seed=65 | Top1=0.421 MRR@5=0.471 nDCG@5=0.330 R@5=0.270 Cov=0.737 SelAcc=0.500 Steps=5.4
+      decomp run 25/30 seed=66 | Top1=0.421 MRR@5=0.541 nDCG@5=0.348 R@5=0.320 Cov=0.737 SelAcc=0.500 Steps=5.4
+      decomp run 26/30 seed=67 | Top1=0.211 MRR@5=0.272 nDCG@5=0.170 R@5=0.137 Cov=0.789 SelAcc=0.267 Steps=5.4
+      decomp run 27/30 seed=68 | Top1=0.158 MRR@5=0.245 nDCG@5=0.165 R@5=0.211 Cov=0.421 SelAcc=0.250 Steps=5.4
+      decomp run 28/30 seed=69 | Top1=0.474 MRR@5=0.524 nDCG@5=0.324 R@5=0.248 Cov=0.789 SelAcc=0.600 Steps=5.2
+      decomp run 29/30 seed=70 | Top1=0.263 MRR@5=0.420 nDCG@5=0.289 R@5=0.281 Cov=0.895 SelAcc=0.294 Steps=5.5
+      decomp run 30/30 seed=71 | Top1=0.316 MRR@5=0.465 nDCG@5=0.306 R@5=0.272 Cov=0.947 SelAcc=0.333 Steps=5.4
+
+--- CROSSREF ---
+    crossref run 1/30 seed=42 | Top1=0.579 MRR@5=0.686 nDCG@5=0.427 R@5=0.404 Cov=0.737 SelAcc=0.714 Steps=6.4
+    crossref run 2/30 seed=43 | Top1=0.421 MRR@5=0.484 nDCG@5=0.304 R@5=0.289 Cov=0.579 SelAcc=0.545 Steps=6.4
+    crossref run 3/30 seed=44 | Top1=0.316 MRR@5=0.395 nDCG@5=0.249 R@5=0.182 Cov=0.632 SelAcc=0.250 Steps=6.3
+    crossref run 4/30 seed=45 | Top1=0.474 MRR@5=0.563 nDCG@5=0.376 R@5=0.318 Cov=0.789 SelAcc=0.533 Steps=6.5
+    crossref run 5/30 seed=46 | Top1=0.421 MRR@5=0.487 nDCG@5=0.312 R@5=0.284 Cov=1.000 SelAcc=0.421 Steps=6.4
+    crossref run 6/30 seed=47 | Top1=0.421 MRR@5=0.447 nDCG@5=0.274 R@5=0.199 Cov=0.474 SelAcc=0.556 Steps=6.4
+    crossref run 7/30 seed=48 | Top1=0.474 MRR@5=0.596 nDCG@5=0.341 R@5=0.240 Cov=0.684 SelAcc=0.462 Steps=6.4
+    crossref run 8/30 seed=49 | Top1=0.263 MRR@5=0.368 nDCG@5=0.281 R@5=0.327 Cov=0.632 SelAcc=0.333 Steps=6.3
+    crossref run 9/30 seed=50 | Top1=0.421 MRR@5=0.522 nDCG@5=0.297 R@5=0.269 Cov=0.474 SelAcc=0.667 Steps=6.3
+    crossref run 10/30 seed=51 | Top1=0.211 MRR@5=0.320 nDCG@5=0.235 R@5=0.249 Cov=0.737 SelAcc=0.286 Steps=6.2
+    crossref run 11/30 seed=52 | Top1=0.474 MRR@5=0.518 nDCG@5=0.266 R@5=0.189 Cov=0.579 SelAcc=0.636 Steps=6.4
+    crossref run 12/30 seed=53 | Top1=0.263 MRR@5=0.363 nDCG@5=0.242 R@5=0.270 Cov=0.842 SelAcc=0.312 Steps=6.3
+    crossref run 13/30 seed=54 | Top1=0.053 MRR@5=0.129 nDCG@5=0.089 R@5=0.143 Cov=0.737 SelAcc=0.071 Steps=6.3
+    crossref run 14/30 seed=55 | Top1=0.368 MRR@5=0.440 nDCG@5=0.312 R@5=0.298 Cov=0.684 SelAcc=0.538 Steps=6.6
+    crossref run 15/30 seed=56 | Top1=0.105 MRR@5=0.232 nDCG@5=0.157 R@5=0.186 Cov=0.368 SelAcc=0.286 Steps=6.4
+    crossref run 16/30 seed=57 | Top1=0.263 MRR@5=0.313 nDCG@5=0.216 R@5=0.230 Cov=0.895 SelAcc=0.294 Steps=6.5
+    crossref run 17/30 seed=58 | Top1=0.368 MRR@5=0.425 nDCG@5=0.280 R@5=0.255 Cov=0.842 SelAcc=0.438 Steps=6.3
+    crossref run 18/30 seed=59 | Top1=0.421 MRR@5=0.474 nDCG@5=0.259 R@5=0.209 Cov=0.895 SelAcc=0.471 Steps=6.4
+    crossref run 19/30 seed=60 | Top1=0.421 MRR@5=0.504 nDCG@5=0.284 R@5=0.186 Cov=0.789 SelAcc=0.467 Steps=6.5
+    crossref run 20/30 seed=61 | Top1=0.421 MRR@5=0.497 nDCG@5=0.332 R@5=0.344 Cov=0.684 SelAcc=0.538 Steps=6.5
+    crossref run 21/30 seed=62 | Top1=0.474 MRR@5=0.610 nDCG@5=0.440 R@5=0.408 Cov=0.632 SelAcc=0.667 Steps=6.3
+    crossref run 22/30 seed=63 | Top1=0.316 MRR@5=0.418 nDCG@5=0.272 R@5=0.226 Cov=0.684 SelAcc=0.385 Steps=6.3
+    crossref run 23/30 seed=64 | Top1=0.316 MRR@5=0.386 nDCG@5=0.278 R@5=0.293 Cov=0.895 SelAcc=0.353 Steps=6.4
+    crossref run 24/30 seed=65 | Top1=0.421 MRR@5=0.471 nDCG@5=0.330 R@5=0.270 Cov=0.737 SelAcc=0.500 Steps=6.4
+    crossref run 25/30 seed=66 | Top1=0.421 MRR@5=0.541 nDCG@5=0.348 R@5=0.320 Cov=0.737 SelAcc=0.500 Steps=6.4
+    crossref run 26/30 seed=67 | Top1=0.211 MRR@5=0.272 nDCG@5=0.170 R@5=0.137 Cov=0.789 SelAcc=0.267 Steps=6.4
+    crossref run 27/30 seed=68 | Top1=0.158 MRR@5=0.245 nDCG@5=0.165 R@5=0.211 Cov=0.421 SelAcc=0.250 Steps=6.4
+    crossref run 28/30 seed=69 | Top1=0.474 MRR@5=0.524 nDCG@5=0.324 R@5=0.248 Cov=0.789 SelAcc=0.600 Steps=6.2
+    crossref run 29/30 seed=70 | Top1=0.263 MRR@5=0.420 nDCG@5=0.289 R@5=0.281 Cov=0.895 SelAcc=0.294 Steps=6.5
+    crossref run 30/30 seed=71 | Top1=0.316 MRR@5=0.465 nDCG@5=0.306 R@5=0.272 Cov=0.947 SelAcc=0.333 Steps=6.4
+
+--- AGENT ---
+       agent run 1/30 seed=42 | Top1=0.579 MRR@5=0.686 nDCG@5=0.427 R@5=0.404 Cov=0.632 SelAcc=0.667 Steps=7.4
+       agent run 2/30 seed=43 | Top1=0.421 MRR@5=0.484 nDCG@5=0.304 R@5=0.289 Cov=0.632 SelAcc=0.500 Steps=7.4
+       agent run 3/30 seed=44 | Top1=0.316 MRR@5=0.395 nDCG@5=0.249 R@5=0.182 Cov=0.737 SelAcc=0.429 Steps=7.3
+       agent run 4/30 seed=45 | Top1=0.474 MRR@5=0.563 nDCG@5=0.376 R@5=0.318 Cov=0.895 SelAcc=0.529 Steps=7.5
+       agent run 5/30 seed=46 | Top1=0.421 MRR@5=0.487 nDCG@5=0.312 R@5=0.284 Cov=0.789 SelAcc=0.467 Steps=7.4
+       agent run 6/30 seed=47 | Top1=0.421 MRR@5=0.447 nDCG@5=0.274 R@5=0.199 Cov=0.368 SelAcc=0.714 Steps=7.4
+       agent run 7/30 seed=48 | Top1=0.474 MRR@5=0.596 nDCG@5=0.341 R@5=0.240 Cov=0.526 SelAcc=0.500 Steps=7.4
+       agent run 8/30 seed=49 | Top1=0.263 MRR@5=0.368 nDCG@5=0.281 R@5=0.327 Cov=0.526 SelAcc=0.300 Steps=7.3
+       agent run 9/30 seed=50 | Top1=0.421 MRR@5=0.522 nDCG@5=0.297 R@5=0.269 Cov=0.842 SelAcc=0.500 Steps=7.3
+       agent run 10/30 seed=51 | Top1=0.211 MRR@5=0.320 nDCG@5=0.235 R@5=0.249 Cov=0.842 SelAcc=0.188 Steps=7.2
+       agent run 11/30 seed=52 | Top1=0.474 MRR@5=0.518 nDCG@5=0.266 R@5=0.189 Cov=0.579 SelAcc=0.636 Steps=7.4
+       agent run 12/30 seed=53 | Top1=0.263 MRR@5=0.363 nDCG@5=0.242 R@5=0.270 Cov=0.737 SelAcc=0.286 Steps=7.3
+       agent run 13/30 seed=54 | Top1=0.053 MRR@5=0.129 nDCG@5=0.089 R@5=0.143 Cov=0.526 SelAcc=0.100 Steps=7.3
+       agent run 14/30 seed=55 | Top1=0.368 MRR@5=0.440 nDCG@5=0.312 R@5=0.298 Cov=0.789 SelAcc=0.467 Steps=7.6
+       agent run 15/30 seed=56 | Top1=0.105 MRR@5=0.232 nDCG@5=0.157 R@5=0.186 Cov=0.316 SelAcc=0.167 Steps=7.4
+       agent run 16/30 seed=57 | Top1=0.263 MRR@5=0.313 nDCG@5=0.216 R@5=0.230 Cov=0.579 SelAcc=0.364 Steps=7.5
+       agent run 17/30 seed=58 | Top1=0.368 MRR@5=0.425 nDCG@5=0.280 R@5=0.255 Cov=0.737 SelAcc=0.429 Steps=7.3
+       agent run 18/30 seed=59 | Top1=0.421 MRR@5=0.474 nDCG@5=0.259 R@5=0.209 Cov=0.842 SelAcc=0.500 Steps=7.4
+       agent run 19/30 seed=60 | Top1=0.421 MRR@5=0.504 nDCG@5=0.284 R@5=0.186 Cov=0.737 SelAcc=0.500 Steps=7.5
+       agent run 20/30 seed=61 | Top1=0.421 MRR@5=0.497 nDCG@5=0.332 R@5=0.344 Cov=0.895 SelAcc=0.471 Steps=7.5
+       agent run 21/30 seed=62 | Top1=0.474 MRR@5=0.610 nDCG@5=0.440 R@5=0.408 Cov=0.684 SelAcc=0.692 Steps=7.3
+       agent run 22/30 seed=63 | Top1=0.316 MRR@5=0.418 nDCG@5=0.272 R@5=0.226 Cov=0.895 SelAcc=0.353 Steps=7.3
+       agent run 23/30 seed=64 | Top1=0.316 MRR@5=0.386 nDCG@5=0.278 R@5=0.293 Cov=0.737 SelAcc=0.357 Steps=7.4
+       agent run 24/30 seed=65 | Top1=0.421 MRR@5=0.471 nDCG@5=0.330 R@5=0.270 Cov=0.842 SelAcc=0.500 Steps=7.4
+       agent run 25/30 seed=66 | Top1=0.421 MRR@5=0.541 nDCG@5=0.348 R@5=0.320 Cov=0.579 SelAcc=0.636 Steps=7.4
+       agent run 26/30 seed=67 | Top1=0.211 MRR@5=0.272 nDCG@5=0.170 R@5=0.137 Cov=0.947 SelAcc=0.222 Steps=7.4
+       agent run 27/30 seed=68 | Top1=0.158 MRR@5=0.245 nDCG@5=0.165 R@5=0.211 Cov=0.895 SelAcc=0.176 Steps=7.4
+       agent run 28/30 seed=69 | Top1=0.474 MRR@5=0.524 nDCG@5=0.324 R@5=0.248 Cov=0.789 SelAcc=0.533 Steps=7.2
+       agent run 29/30 seed=70 | Top1=0.263 MRR@5=0.420 nDCG@5=0.289 R@5=0.281 Cov=0.632 SelAcc=0.250 Steps=7.5
+       agent run 30/30 seed=71 | Top1=0.316 MRR@5=0.465 nDCG@5=0.306 R@5=0.272 Cov=1.000 SelAcc=0.316 Steps=7.4
+
+========================================================================================================================
+ABLATION TABLE (mean ± 95% CI)
+========================================================================================================================
+      Method              top1             mrr@5            ndcg@5          recall@5       precision@5          coverage        sel_acc@80         avg_steps
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+       tfidf     0.356 ± 0.040     0.444 ± 0.039     0.273 ± 0.025     0.234 ± 0.021     0.173 ± 0.018     0.723 ± 0.066     0.424 ± 0.043               N/A
+        bm25     0.349 ± 0.040     0.428 ± 0.038     0.260 ± 0.021     0.226 ± 0.020     0.161 ± 0.015     0.744 ± 0.068     0.407 ± 0.053               N/A
+         lsi     0.305 ± 0.039     0.409 ± 0.040     0.279 ± 0.025     0.262 ± 0.023     0.186 ± 0.019     0.770 ± 0.055     0.367 ± 0.054               N/A
+      single     0.349 ± 0.040     0.428 ± 0.038     0.260 ± 0.021     0.226 ± 0.020     0.161 ± 0.015     0.744 ± 0.068     0.407 ± 0.053     2.000 ± 0.000
+       multi     0.342 ± 0.041     0.424 ± 0.041     0.282 ± 0.026     0.259 ± 0.024     0.181 ± 0.019     0.705 ± 0.058     0.418 ± 0.059     3.000 ± 0.000
+      reform     0.351 ± 0.046     0.437 ± 0.045     0.282 ± 0.028     0.258 ± 0.025     0.186 ± 0.020     0.719 ± 0.058     0.432 ± 0.057     4.821 ± 0.025
+      decomp     0.351 ± 0.046     0.437 ± 0.045     0.282 ± 0.028     0.258 ± 0.025     0.186 ± 0.020     0.719 ± 0.058     0.432 ± 0.057     5.377 ± 0.035
+    crossref     0.351 ± 0.046     0.437 ± 0.045     0.282 ± 0.028     0.258 ± 0.025     0.186 ± 0.020     0.719 ± 0.058     0.432 ± 0.057     6.377 ± 0.035
+       agent     0.351 ± 0.046     0.437 ± 0.045     0.282 ± 0.028     0.258 ± 0.025     0.186 ± 0.020     0.718 ± 0.062     0.425 ± 0.062     7.377 ± 0.035
+
+Wrote: results_v3/pf\ablation_table.csv
