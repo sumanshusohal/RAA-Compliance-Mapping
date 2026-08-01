@@ -5,26 +5,42 @@ Kept separate from query_level_stats.py so the existing paired sign-flip and
 bootstrap results stay reproducible byte-for-byte. This module adds only what
 the confirmatory design needs:
 
-  * moderation_test  : the SINGLE primary RQ2 test. Paired Top-1 difference
-                       regressed on within-corpus standardized continuous gap
-                       with corpus fixed effects, requirement-level bootstrap.
-                       Stratum contrasts are descriptive and are NOT tests.
-  * tost             : equivalence with exhaustive verdicts on a 90% CI.
-  * risk_coverage    : risk-coverage curve and AURC from a continuous
-                       selective score.
-  * classify_outcome : the two-layer taxonomy, asserted exhaustive and
-                       mutually exclusive.
+  * moderation_test    : the SINGLE primary RQ2 test. Paired Top-1 difference
+                         regressed on within-corpus standardized continuous gap
+                         with corpus fixed effects. Sign-flip permutation
+                         p-value, requirement-level bootstrap CI. Stratum
+                         contrasts are descriptive and are NOT tests.
+  * sign_flip_test     : paired sign-flip permutation test of a mean
+                         difference, for the superiority prediction.
+  * tost               : real two one-sided tests for equivalence.
+  * equivalence_verdict: exhaustive descriptive verdicts read off a bootstrap
+                         CI. This is NOT TOST and must not be reported as one.
+  * risk_coverage      : risk-coverage curve and AURC from a continuous
+                         selective score.
+  * classify_outcome   : the two-layer taxonomy, asserted exhaustive and
+                         mutually exclusive.
 
 An effect in the high-gap stratum plus no effect in the low-gap stratum does
 not demonstrate moderation; only the interaction does. That is why the
 continuous model is primary.
+
+On p-values. An earlier version of moderation_test derived its p-value from
+how often the bootstrap distribution crossed zero. That is not a test: the
+bootstrap resamples under the observed data, not under the null, so the
+quantity has no calibrated Type I error rate. It is replaced here by a
+Freedman-Lane sign-flip permutation test, which builds a genuine null by
+re-signing the residuals of the nuisance-only model. The bootstrap is kept,
+but only for the interval it can legitimately produce.
 """
 import math
 
 import numpy as np
+from scipy import stats
 
 BOOTSTRAP_N = 10000
 BOOTSTRAP_SEED = 20260801
+PERMUTATION_N = 100000
+PERMUTATION_SEED = 20260801
 
 # --- Layer 1: availability -------------------------------------------------
 VALID = "valid"
@@ -133,19 +149,121 @@ def moderation_test(diffs, gaps, corpora, alpha=0.05):
         beta, *_ = np.linalg.lstsq(X, y, rcond=None)
         return beta[-1]
 
-    point = coef(np.arange(n))
+    full = np.arange(n)
+    point = coef(full)
     rng = np.random.default_rng(BOOTSTRAP_SEED)
-    lo, hi, draws = _bootstrap_ci(coef, n, rng, alpha)
-    # Two-sided bootstrap p: how often the sign flips relative to the point.
-    p = 2.0 * min((draws <= 0).mean(), (draws >= 0).mean())
+    lo, hi, _ = _bootstrap_ci(coef, n, rng, alpha)
+
+    # --- Freedman-Lane sign-flip permutation p-value ----------------------
+    # X = [Z | g] with Z the nuisance block (intercept + corpus fixed
+    # effects). Let c be the row of pinv(X) that produces the gap
+    # coefficient, so coef = c @ y and, because pinv(X) @ X = I, c @ Z = 0.
+    # Regress y on Z alone, keep the residuals e, and re-sign them: the
+    # permuted coefficient is c @ (Z b_z + s * e) = (c * e) @ s, since the
+    # nuisance fit is annihilated by c. Under H0 (no moderation) the errors
+    # are symmetric about the nuisance fit, so every sign vector is equally
+    # likely and the resulting distribution is a real null.
+    X = design(full)
+    Z = X[:, :-1]
+    c = np.linalg.pinv(X)[-1]
+    resid = diffs - Z @ np.linalg.lstsq(Z, diffs, rcond=None)[0]
+    weights = c * resid
+    prng = np.random.default_rng(PERMUTATION_SEED)
+    signs = prng.choice([-1.0, 1.0], size=(PERMUTATION_N, n))
+    null = signs @ weights
+    # +1 in both terms: the observed sign vector is itself a valid draw, so
+    # the p-value is never exactly zero.
+    p = (1.0 + np.sum(np.abs(null) >= abs(point) - 1e-12)) / (PERMUTATION_N + 1.0)
+
     return {"coefficient": float(point), "ci_low": lo, "ci_high": hi,
-            "p_value": float(min(1.0, p)), "n": n,
+            "p_value": float(p), "p_method": "sign_flip_permutation",
+            "n_permutations": PERMUTATION_N, "n": n,
             "interpretation": ("benefit grows with gap" if point > 0
                                else "benefit shrinks with gap")}
 
 
-def tost(diffs, delta, conf=0.90):
-    """Equivalence test with EXHAUSTIVE verdicts on a two-sided CI.
+def sign_flip_test(diffs, alpha=0.05):
+    """Paired sign-flip permutation test of a mean difference.
+
+    Used for the HIPAA superiority prediction. The null is that the paired
+    per-requirement differences are symmetric about zero, so re-signing any
+    subset of them is equally likely; the two-sided p-value is the share of
+    re-signed means at least as extreme as the observed one. Reported with a
+    requirement-level bootstrap CI, which is an interval, not the test.
+    """
+    diffs = np.asarray(diffs, dtype=float)
+    n = len(diffs)
+    if n < 2:
+        raise ValueError("need at least two requirements")
+    obs = float(diffs.mean())
+    prng = np.random.default_rng(PERMUTATION_SEED)
+    signs = prng.choice([-1.0, 1.0], size=(PERMUTATION_N, n))
+    null = (signs @ diffs) / n
+    p = (1.0 + np.sum(np.abs(null) >= abs(obs) - 1e-12)) / (PERMUTATION_N + 1.0)
+    rng = np.random.default_rng(BOOTSTRAP_SEED)
+    lo, hi, _ = _bootstrap_ci(lambda idx: diffs[idx].mean(), n, rng, alpha)
+    return {"mean_difference": obs, "p_value": float(p),
+            "p_method": "sign_flip_permutation",
+            "n_permutations": PERMUTATION_N,
+            "ci_low": lo, "ci_high": hi, "confidence": 1.0 - alpha, "n": n}
+
+
+def tost(diffs, delta, alpha=0.05):
+    """Two one-sided tests for equivalence. This is the real TOST.
+
+    H01: mu <= -delta  tested against mu > -delta
+    H02: mu >= +delta  tested against mu < +delta
+
+    Equivalence within +/- delta is concluded only when BOTH nulls are
+    rejected, so p_tost = max(p_lower, p_upper) and the decision rule is
+    p_tost < alpha. Each one-sided test is a paired t-test on the shifted
+    differences; with n in the sixties to nineties and a bounded outcome the
+    t approximation is adequate, and the equivalent (1 - 2*alpha) CI is
+    returned alongside so the reader can check the decision by eye.
+
+    Note the relationship to equivalence_verdict below: the two agree by
+    construction on the equivalence call when the same interval is used, but
+    only this function produces p-values, and only this function is TOST.
+    """
+    diffs = np.asarray(diffs, dtype=float)
+    n = len(diffs)
+    if n < 2:
+        raise ValueError("need at least two requirements")
+    mean = float(diffs.mean())
+    se = float(diffs.std(ddof=1) / math.sqrt(n))
+    df = n - 1
+
+    if se <= 0.0:
+        # Every requirement moved identically, so the mean is known exactly.
+        p_lower = 0.0 if mean > -delta else 1.0
+        p_upper = 0.0 if mean < delta else 1.0
+        lo = hi = mean
+        t_lower = t_upper = float("inf")
+    else:
+        t_lower = (mean + delta) / se     # against H01: mu <= -delta
+        t_upper = (mean - delta) / se     # against H02: mu >= +delta
+        p_lower = float(stats.t.sf(t_lower, df))
+        p_upper = float(stats.t.cdf(t_upper, df))
+        crit = stats.t.ppf(1.0 - alpha, df)
+        lo, hi = mean - crit * se, mean + crit * se
+
+    p_tost = max(p_lower, p_upper)
+    return {"mean_difference": mean, "se": se, "df": df, "delta": delta,
+            "t_lower": float(t_lower), "p_lower": float(p_lower),
+            "t_upper": float(t_upper), "p_upper": float(p_upper),
+            "p_tost": float(p_tost), "alpha": alpha,
+            "equivalent": bool(p_tost < alpha),
+            "ci_low": float(lo), "ci_high": float(hi),
+            "ci_confidence": 1.0 - 2.0 * alpha, "n": n}
+
+
+def equivalence_verdict(diffs, delta, conf=0.90):
+    """EXHAUSTIVE descriptive verdicts read off a bootstrap CI.
+
+    This is a CI-inclusion check, NOT an equivalence test. It was called
+    tost() in an earlier version, which was wrong: it computes no one-sided
+    test and produces no p-value. Report it as a descriptive interval reading
+    and cite tost() above for the equivalence decision.
 
     Verdicts, which cover the whole real line:
       practically_equivalent : CI entirely inside (-delta, +delta)
@@ -175,7 +293,8 @@ def tost(diffs, delta, conf=0.90):
     else:
         verdict = "inconclusive"
     return {"mean_difference": mean, "ci_low": lo, "ci_high": hi,
-            "delta": delta, "confidence": conf, "n": n, "verdict": verdict}
+            "delta": delta, "confidence": conf, "n": n, "verdict": verdict,
+            "method": "bootstrap_ci_inclusion_not_tost"}
 
 
 def risk_coverage(correct, score):

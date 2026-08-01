@@ -98,11 +98,34 @@ plus evaluation queries (`include_regs_in_fit=True`) and never said so.
 
 ## Pending work, in priority order
 
-1. **Statistics**: replace the bootstrap-crossing-zero p-value with a paired
-   sign-flip permutation test; implement real TOST or rename `tost()`, which
-   is currently a CI-inclusion check; regenerate every reported number from a
-   recorded invocation. The "+0.0043, p=0.82" moderation figure currently
-   exists only in a scratchpad and must not enter the manuscript as-is.
+1. ~~**Statistics**~~ **DONE.** `moderation_test` now derives its p-value
+   from a Freedman-Lane sign-flip permutation test (100,000 sign vectors,
+   seed 20260801) instead of the bootstrap-crossing-zero rule; the bootstrap
+   is kept only for the CI. `sign_flip_test` added for the superiority
+   contrast. `tost()` is now real two one-sided tests returning `p_lower`,
+   `p_upper`, `p_tost`; the old CI-inclusion check is renamed
+   `equivalence_verdict` and marked descriptive. `run_confirmatory.py`
+   regenerates every number into a JSON record under
+   `results_v3/confirmatory/` carrying argv, UTC timestamp, git commit and
+   dirty flag, library versions, module and input-CSV SHA-256 hashes, and
+   seeds.
+
+   **The "+0.0043, p=0.82" figure does not reproduce and is retired.** On the
+   three real corpora the pooled moderation coefficient is **+0.0137, 95% CI
+   [-0.0139, +0.0434], sign-flip p=0.376** (n=268). Adding the engineered
+   diagnostic corpus moves it to **+0.0236, p=0.089** (n=326), which is
+   itself evidence for the headline finding: the apparent moderation is
+   carried by the engineered corpus. Neither matches the scratchpad value
+   under any corpus set tried, so the old number has no recoverable
+   provenance. Do not cite it, and do not treat the new values as a
+   correction of it.
+
+   Two caveats to carry into the writeup. Both TOST and the moderation model
+   run on per-requirement means over an uneven number of seeds (protocol rule
+   1), so the per-requirement variances are not equal and the t
+   approximation is approximate; and PF and CSF both return
+   `equivalent=True` at δ=0.05 while HIPAA does not (p_tost=0.114), so the
+   superiority prediction is neither supported nor excluded there.
 2. **Full RAA on the shared protocol**, so the pipeline can be labelled
    honestly.
 3. **Hybrid**, frozen BEFORE running: equal-weight semantic RRF and a
@@ -139,6 +162,7 @@ be measured in a locked environment. Audit usefulness needs a human study.
 ```
 USE_TF=0 python score_all.py                 # shared-population ranking table
 USE_TF=0 python run_local_all.py             # open-weight LLM, all corpora
+python run_confirmatory.py                   # RQ2 moderation + TOST, recorded
 python precision_analysis.py                 # outcome-blind power analysis
 python gap_metrics.py                        # gap distributions + spec hash
 python scan_secrets.py                       # before every push
