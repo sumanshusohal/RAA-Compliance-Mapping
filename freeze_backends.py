@@ -91,8 +91,35 @@ def git_state():
             "dirty": bool(run("git", "status", "--porcelain"))}
 
 
+def build_pinned_semantic_scorer(ctrl_texts):
+    """Dual-encoder scorer that ENFORCES the pinned revision.
+
+    raa_agent.build_semantic_scorer calls SentenceTransformer(model_name) with
+    no revision, so it resolves through refs/main and would silently use
+    whatever checkpoint a machine happens to have. Recording a revision while
+    calling that function would make the pin documentation rather than
+    enforcement, which is the same defect as prose describing a model the code
+    does not implement.
+
+    Scoring is otherwise identical to raa_agent's: normalized embeddings,
+    cosine similarity by dot product. The regenerated matrices are verified
+    hash-for-hash against the unpinned ones, so this change is proven not to
+    alter the numbers, only to make them reproducible.
+    """
+    from sentence_transformers import SentenceTransformer
+    model = SentenceTransformer(DUAL_ENCODER, revision=DUAL_ENCODER_REVISION)
+    ctrl_emb = model.encode(list(ctrl_texts), convert_to_numpy=True,
+                            normalize_embeddings=True, show_progress_bar=False)
+
+    def score_fn(q):
+        q_emb = model.encode([q], convert_to_numpy=True,
+                             normalize_embeddings=True)
+        return (q_emb @ ctrl_emb.T).reshape(-1)
+    return score_fn
+
+
 def build_scorers(ctrl_texts, reg_texts):
-    from raa_agent import (LSIIndex, build_bm25_scorer, build_semantic_scorer,
+    from raa_agent import (LSIIndex, build_bm25_scorer,
                            build_tfidf_scorer)
     return {
         "tfidf": build_tfidf_scorer(ctrl_texts),
@@ -106,7 +133,7 @@ def build_scorers(ctrl_texts, reg_texts):
         # reproducible as a declared sensitivity arm.
         "lsi": LSIIndex(ctrl_texts, reg_texts, n_components=100,
                         include_regs_in_fit=True).score,
-        "semantic": build_semantic_scorer(ctrl_texts),
+        "semantic": build_pinned_semantic_scorer(ctrl_texts),
     }
 
 

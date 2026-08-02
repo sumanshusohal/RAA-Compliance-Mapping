@@ -156,7 +156,7 @@ def complementarity(a_top1, b_top1, gated_top1):
     }
 
 
-def analyse(corpora_data, lexical, alpha, delta):
+def analyse(corpora_data, lexical, alpha, delta, sensitivity=False):
     per_corpus, diffs, labels = {}, [], []
     for key, corpus in corpora_data.items():
         arms = {}
@@ -188,10 +188,49 @@ def analyse(corpora_data, lexical, alpha, delta):
     diffs = np.concatenate(diffs)
     labels = np.concatenate(labels)
 
-    ni = cs.tost(diffs, delta, alpha=alpha)
-    sup_raw = cs.sign_flip_test(diffs, alpha=alpha)
-    sup = H.assert_gatekeeping(ni, sup_raw)
     lo, hi, _ = H.stratified_bootstrap_ci(diffs, labels, alpha=alpha)
+    interval = {"low": lo, "high": hi,
+                "coverage": f"{100*(1-2*alpha):.0f}% two-sided "
+                            f"({100*(1-alpha):.0f}% one-sided)"}
+
+    # A SENSITIVITY arm makes no primary claim. The specification declares the
+    # transductive-LSI variant as a sensitivity analysis, so running it must
+    # not emit a section labelled primary carrying non-inferiority and
+    # superiority verdicts. It reports the effect size and interval
+    # descriptively and stops there.
+    if sensitivity:
+        return {
+            "sensitivity": {
+                "arm": "hybrid_gated_legacy_lsi",
+                "comparator": "semantic",
+                "n": int(len(diffs)),
+                "mean_difference": float(diffs.mean()),
+                "stratified_bootstrap": interval,
+                "inference": "NONE. Descriptive only. This arm carries no "
+                             "non-inferiority or superiority claim; see the "
+                             "primary run for those.",
+            },
+            "per_corpus": per_corpus,
+        }
+
+    ni = cs.tost(diffs, delta, alpha=alpha)
+
+    # LITERAL gatekeeping. The superiority test is not computed at all unless
+    # non-inferiority rejects.
+    #
+    # An earlier version computed it unconditionally and stored it under
+    # "superiority_raw_not_reportable". That is not suppression: it leaves the
+    # attractive number in the record for later reinterpretation, and
+    # gatekeeping controls the family-wise error rate only if the second test
+    # is genuinely not performed. Nothing is lost by omitting it, because the
+    # effect size is mean_difference, which is reported either way.
+    if ni["p_lower"] < alpha:
+        sup = cs.sign_flip_test(diffs, alpha=alpha)
+        gate_note = "non-inferiority established; superiority test performed"
+    else:
+        sup = None
+        gate_note = ("non-inferiority NOT established; superiority test not "
+                     "performed and no superiority p-value exists")
 
     return {
         "primary": {
@@ -200,15 +239,10 @@ def analyse(corpora_data, lexical, alpha, delta):
             "n": int(len(diffs)),
             "estimand": H.PRIMARY_ESTIMAND,
             "mean_difference": float(diffs.mean()),
-            "stratified_bootstrap": {
-                "low": lo, "high": hi,
-                "coverage": f"{100*(1-2*alpha):.0f}% two-sided "
-                            f"({100*(1-alpha):.0f}% one-sided)",
-            },
+            "stratified_bootstrap": interval,
             "test_1_non_inferiority": ni,
             "test_2_superiority": sup,
-            "superiority_suppressed": sup is None,
-            "superiority_raw_not_reportable": sup_raw if sup is None else None,
+            "gatekeeping": gate_note,
         },
         "per_corpus": per_corpus,
     }
@@ -338,23 +372,34 @@ def main():
     print("same corpora. hybrid_equal was OBSERVED before registration.")
     print("=" * 70 + "\n")
 
-    res = analyse(data, lexical, args.alpha, args.delta)
+    res = analyse(data, lexical, args.alpha, args.delta,
+                  sensitivity=args.legacy_lsi)
 
-    p = res["primary"]
-    print(f"primary  hybrid_gated - semantic, n={p['n']}")
-    print(f"  mean difference {p['mean_difference']:+.4f}")
-    b = p["stratified_bootstrap"]
-    print(f"  stratified bootstrap [{b['low']:+.4f}, {b['high']:+.4f}]  "
-          f"{b['coverage']}")
-    ni = p["test_1_non_inferiority"]
-    print(f"  NI delta={args.delta}: p_lower={ni['p_lower']:.4f} -> "
-          f"{'non-inferior' if ni['p_lower'] < args.alpha else 'NOT established'}")
-    if p["test_2_superiority"] is None:
-        print("  superiority: SUPPRESSED (non-inferiority not established)")
+    if args.legacy_lsi:
+        s = res["sensitivity"]
+        print(f"SENSITIVITY ARM (transductive LSI), n={s['n']}")
+        print(f"  mean difference {s['mean_difference']:+.4f}")
+        b = s["stratified_bootstrap"]
+        print(f"  stratified bootstrap [{b['low']:+.4f}, {b['high']:+.4f}]  "
+              f"{b['coverage']}")
+        print(f"  {s['inference']}")
     else:
-        s = p["test_2_superiority"]
-        print(f"  superiority: mean {s['mean_difference']:+.4f}, "
-              f"p={s['p_value']:.4f}")
+        p = res["primary"]
+        print(f"primary  hybrid_gated - semantic, n={p['n']}")
+        print(f"  mean difference {p['mean_difference']:+.4f}")
+        b = p["stratified_bootstrap"]
+        print(f"  stratified bootstrap [{b['low']:+.4f}, {b['high']:+.4f}]  "
+              f"{b['coverage']}")
+        ni = p["test_1_non_inferiority"]
+        print(f"  NI delta={args.delta}: p_lower={ni['p_lower']:.4f} -> "
+              f"{'non-inferior' if ni['p_lower'] < args.alpha else 'NOT established'}")
+        if p["test_2_superiority"] is None:
+            print("  superiority: NOT PERFORMED (non-inferiority not "
+                  "established; no p-value exists)")
+        else:
+            s = p["test_2_superiority"]
+            print(f"  superiority: mean {s['mean_difference']:+.4f}, "
+                  f"p={s['p_value']:.4f}")
     print()
     for k, v in res["per_corpus"].items():
         mark = "" if k in H.PRIMARY_CORPORA else "  [engineered, excluded]"
@@ -364,6 +409,7 @@ def main():
 
     record = {
         "status": "exploratory",
+        "result_class": "sensitivity" if args.legacy_lsi else "primary",
         "status_reason": "design frozen before outcome, but the gate was "
                          "motivated by complementarity already observed in "
                          "these corpora; hybrid_equal was observed before "

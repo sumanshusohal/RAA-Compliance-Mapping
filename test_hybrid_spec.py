@@ -196,6 +196,66 @@ def test_arms():
 
 # --------------------------------------------------------- gatekeeping
 def test_gatekeeping():
+    print("\nrun_hybrid: superiority is NOT COMPUTED when NI fails")
+    import run_hybrid as R
+    rng = np.random.default_rng(4)
+    n_ctl = 30
+
+    def fx(n_req):
+        """Semantic is RIGHT but barely confident, so the gate always fires
+        and replaces a correct answer with a fusion over random lexical
+        backends. The gated arm can then only lose, which is what forces
+        non-inferiority to fail.
+
+        An earlier version of this fixture set the gold semantic score to 10.0.
+        That gives a huge top-2 margin, so the gate NEVER fires, the gated arm
+        equals semantic exactly, the difference is zero and non-inferiority
+        passes. The margin is between the top two scores, not a measure of
+        how right the answer is.
+        """
+        gold = np.zeros((n_req, n_ctl), dtype=bool)
+        sc = {b: rng.normal(size=(n_req, n_ctl))
+              for b in ("tfidf", "bm25", "lsi_inductive", "lsi")}
+        sem = np.zeros((n_req, n_ctl))
+        for i in range(n_req):
+            g = int(rng.integers(n_ctl))
+            gold[i, g] = True
+            sem[i] = rng.uniform(0.0, 0.5, n_ctl)
+            sem[i, g] = 1.00
+            runner = (g + 1) % n_ctl
+            sem[i, runner] = 0.99          # rel margin 0.01 -> gate fires
+        sc["semantic"] = sem
+        return {"control_ids": np.arange(n_ctl, dtype=np.int64),
+                "gold_mask": gold,
+                "requirement_ids": np.arange(n_req, dtype=np.int64),
+                "scores": sc}
+
+    harsh = {"nist": fx(106), "hipaa": fx(68), "pf": fx(94)}
+    res = R.analyse(harsh, H.LEXICAL_BACKENDS, H.ALPHA, H.DELTA_NI)
+    p = res["primary"]
+    ni_failed = not (p["test_1_non_inferiority"]["p_lower"] < H.ALPHA)
+    check("harsh fixture fails non-inferiority (precondition)", ni_failed,
+          f"p_lower={p['test_1_non_inferiority']['p_lower']:.4f}")
+    if ni_failed:
+        check("no superiority result is stored",
+              p["test_2_superiority"] is None)
+        check("no suppressed p-value is retained anywhere",
+              not any("superior" in k and v is not None
+                      for k, v in p.items() if k != "test_2_superiority"
+                      and isinstance(v, (dict, float))),
+              f"keys: {sorted(p)}")
+        check("gatekeeping is stated in the record",
+              "not performed" in p["gatekeeping"])
+
+    print("\nrun_hybrid: sensitivity arm emits no primary claim")
+    res_s = R.analyse(harsh, H.LEGACY_LEXICAL_BACKENDS, H.ALPHA, H.DELTA_NI,
+                      sensitivity=True)
+    check("sensitivity run has no primary section", "primary" not in res_s)
+    check("sensitivity run carries no NI or superiority test",
+          not any(k.startswith("test_") for k in res_s["sensitivity"]))
+    check("sensitivity run still reports the effect size",
+          "mean_difference" in res_s["sensitivity"])
+
     print("\nassert_gatekeeping: superiority is suppressed, not annotated")
     sup = {"mean_difference": 0.04, "p_value": 0.001}
     check("suppressed when NI fails",
