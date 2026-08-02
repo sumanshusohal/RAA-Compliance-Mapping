@@ -1,9 +1,15 @@
 # OSF Open-Ended Registration: text to submit
 
 Paste the block below into the Summary field of an OSF Open-Ended
-Registration. Attach the five files listed under "What this registers" to the
-OSF project first, so the registration freezes their content itself and does
-not depend on the GitHub repository remaining available or unaltered.
+Registration.
+
+**Attach everything listed under "What this registers", including the 32 .npy
+arrays in `frozen_backends/` (3.6 MB) and `confirmatory_stats.py`.** A
+manifest freezes hashes, not availability: without the arrays and the imported
+statistics module, the claim that the registration does not depend on GitHub
+is false, because nobody could re-run the analysis from the registration
+alone. A deterministic ZIP of `frozen_backends/` is an acceptable substitute
+if its own SHA-256 is registered.
 
 Fill the two bracketed values before submitting.
 
@@ -14,34 +20,48 @@ already, so the registration is not revealing anything the repo does not.
 
 ## Title
 
-Preregistered analysis specification: gated hybrid lexical-semantic retrieval
-for regulatory traceability
+Prospectively registered exploratory analysis: gated hybrid lexical-semantic
+retrieval for regulatory traceability
 
 ## Summary
 
-**What this registers.** A frozen analysis specification and its runner, for a
-comparison whose primary arm has not been computed. Registered content:
+**What this registers.** A frozen analysis specification, its runner, its
+tests, its input generator, and the inputs themselves, for a comparison whose
+primary arm has not been computed.
 
-    hybrid_spec.py        a1b4c78966321f37bf17fc019333363f1e819a552c5ea60dfbd39e5be190597a
-    run_hybrid.py         the executable analysis path
-    test_hybrid_spec.py   the specification's test suite
-    freeze_backends.py    produces the frozen inputs
-    frozen_backends/manifest.json   hashes of every input array
+    hybrid_spec.py                 a1b4c78966321f37bf17fc019333363f1e819a552c5ea60dfbd39e5be190597a
+    run_hybrid.py                  b33459d9b132277a2c73c2c7f4e2be91b17648448d1b08e46b468e492866fc8f
+    test_hybrid_spec.py            d0336d6c4c185d21ec782c956e6c1b57f0ba51395acc909e2c1cf72c9e07b827
+    freeze_backends.py             b20d326ed3576b1c4f118cc347d4e9e35144fa2371517f1906b5433c37741482
+    confirmatory_stats.py          79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040
+    frozen_backends/manifest.json  93259026e5cc90998a2ab182a21b95660c36b67f20907a3c38cece128913fa0c
+
+    frozen_backends/  32 .npy arrays, 3.6 MB, individually hashed in the
+                      manifest above: one score matrix per backend per
+                      corpus, plus control ids, requirement ids and a gold
+                      membership mask
 
     commit  [FILL: full 40-character commit SHA]
     repo    [FILL: public repository URL]
 
 Text hashes are computed with line endings normalized to LF, so they reproduce
 on any platform. `python hybrid_spec.py` prints the specification hash.
+Array hashes cover the raw bytes with dtype and shape and are never
+normalized.
 
 **The analysis does not load a model.** `freeze_backends.py` runs every
 retrieval backend once, writes the raw score matrices, and hashes them
 alongside the model revision and library versions. `run_hybrid.py` consumes
 only those matrices, verifies every array hash against the manifest, and
 aborts on any mismatch. The registered path is arithmetic over hashed inputs.
+
 The dual-encoder is pinned to sentence-transformers/all-MiniLM-L6-v2 at
-revision 1110a243fdf4706b3f48f1d95db1a4f5529b4d41, with the weights and
-tokenizer file hashes recorded.
+revision 1110a243fdf4706b3f48f1d95db1a4f5529b4d41, and the generator passes
+that revision explicitly rather than resolving the bare model name. The
+matrices were regenerated from a clean commit under the enforced pin and all
+32 array hashes were byte-identical to those produced before it, which
+confirms the unpinned path had been resolving to the same checkpoint. The
+weights and tokenizer file hashes are recorded in the specification.
 
 **Status.** Exploratory. This registration does not reserve confirmatory
 status for itself. The gate was motivated by complementarity we had already
@@ -54,15 +74,27 @@ identifying a new corpus and its construction, carrying the gate, fusion,
 endpoint, margin and test order below over unchanged.
 
 **Disclosure, recorded before registering.** One declared secondary arm,
-`hybrid_equal`, was computed before this registration. It was produced as a
-byproduct of a tie-breaking sensitivity check that did not require it, and the
-values were seen: Top-1 0.4623 (CSF), 0.3676 (HIPAA), 0.3936 (PF), 0.5517
-(diagnostic). That arm is therefore an observed result, not a preregistered
-one, and will be reported as such. The primary arm has not been computed, and
-no contrast, test, or gate firing rate has been produced. Because the primary
-arm returns the dual-encoder ranking on ungated queries and this fusion on
-gated ones, knowing it constrains the primary result without determining it.
-The primary claim is weakened by this disclosure rather than unaffected by it.
+`hybrid_equal`, was computed during method development, before this
+registration. It was produced as a byproduct of a tie-breaking sensitivity
+check that did not require it, and the values were seen: Top-1 0.4623 (CSF),
+0.3676 (HIPAA), 0.3936 (PF), 0.5517 (diagnostic).
+
+That arm is therefore an observed result, not a preregistered one. It is
+retained, reported descriptively, and excluded from preregistered inferential
+claims. It is not removed: it is part of the primary arm's own mechanism,
+since the gated arm applies exactly this fusion to gated queries, and deleting
+an observed result would conceal that.
+
+The primary arm has not been computed, and no contrast, test, or gate firing
+rate has been produced. Because the primary arm returns the dual-encoder
+ranking on ungated queries and this fusion on gated ones, knowing
+`hybrid_equal` constrains the primary result without determining it: the
+gate's firing pattern, and therefore the mixture and the contrast, remain
+unknown. The primary claim is weakened by this disclosure rather than
+unaffected by it.
+
+The repository history is unsquashed and shows that the gated arm and its
+0.10 threshold were committed before the secondary outcome was observed.
 
 **Question.** Does routing a query to lexical retrieval only when the
 dual-encoder is uncertain recover the requirements lexical fusion uniquely

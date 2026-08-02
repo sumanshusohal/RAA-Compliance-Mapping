@@ -217,8 +217,8 @@
     "torch": "2.6.0+cu124"
   },
   "git": {
-    "commit": "e711fde6d2c9ef7f6d742cedf9c6c5191acdcb31",
-    "dirty": true
+    "commit": "043888c84644ecbae0f968491e81b1cf67c9284b",
+    "dirty": false
   },
   "lsi": {
     "lsi": "fitted on controls plus evaluation queries (transductive; sensitivity arm only)",
@@ -226,5 +226,5 @@
     "n_components": 100
   },
   "purpose": "frozen backend score matrices for the hybrid analysis",
-  "timestamp_utc": "2026-08-02T00:04:13.483824+00:00"
+  "timestamp_utc": "2026-08-02T00:25:40.972809+00:00"
 }
