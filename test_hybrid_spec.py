@@ -233,6 +233,31 @@ def test_metadata():
     check("the two pairings have different unions",
           H.MOTIVATING_COMPLEMENTARITY["primary_pairing"]["union"] !=
           H.MOTIVATING_COMPLEMENTARITY["conditional_pairing"]["union"])
+
+    print("\nspec metadata: the registered primary is not the known-bad setup")
+    check("primary lexical backends use INDUCTIVE lsi",
+          "lsi_inductive" in H.LEXICAL_BACKENDS)
+    check("primary lexical backends exclude transductive lsi",
+          "lsi" not in H.LEXICAL_BACKENDS)
+    check("transductive variant survives only as a sensitivity arm",
+          "lsi" in H.LEGACY_LEXICAL_BACKENDS
+          and any(v is H.LEGACY_LEXICAL_BACKENDS
+                  for v in H.SENSITIVITY_ARMS.values()))
+    check("dual-encoder revision is pinned",
+          len(H.MODEL_PIN["revision"]) == 40)
+    check("dual-encoder weights are hashed",
+          len(H.MODEL_PIN["weights_sha256"]) == 64)
+    check("frozen inputs name a manifest",
+          H.FROZEN_INPUTS["manifest"].endswith("manifest.json"))
+    check("hybrid_equal is marked observed, not preregistered",
+          H.ARMS["hybrid_equal"][1] == "observed")
+    check("the pre-registration disclosure is in the docstring",
+          "OBSERVED before registration" in H.__doc__
+          or "WAS COMPUTED before" in H.__doc__)
+    check("no reserved confirmatory corpus is claimed",
+          not hasattr(H, "RESERVED_CONFIRMATORY_CORPUS"))
+    check("confirmatory replication requires its own registration",
+          "separate prospective registration" in H.CONFIRMATORY_REPLICATION)
     check("spec hash is a sha256 hex digest",
           len(H.spec_hash()) == 64 and all(c in "0123456789abcdef"
                                            for c in H.spec_hash()))
@@ -259,11 +284,34 @@ def test_bootstrap():
         check("misaligned labels raise", True)
 
     print("\nstratified_bootstrap_ci: composition is held fixed")
-    counts = set()
-    for _ in range(50):
-        idx_lo, _, _ = H.stratified_bootstrap_ci(diffs, labels, n_boot=1)
-        counts.add(len(diffs))
-    check("every replicate has n=268", counts == {268})
+    # An earlier version of this test only asserted len(diffs) == 268, which
+    # is a property of the input and would pass even if the function ignored
+    # the strata entirely. Constant values per corpus make the check real: if
+    # composition is held at 106/68/94 then EVERY replicate mean equals the
+    # observed weighted mean exactly, and any cross-stratum resampling moves
+    # it.
+    const = np.concatenate([np.full(106, 1.0), np.full(68, 2.0),
+                            np.full(94, 3.0)])
+    expected = (106 * 1.0 + 68 * 2.0 + 94 * 3.0) / 268
+    lo, hi, draws = H.stratified_bootstrap_ci(const, labels, n_boot=500)
+    check("every stratified replicate reproduces the weighted mean",
+          np.allclose(draws, expected),
+          f"expected {expected:.6f}, draws span "
+          f"[{draws.min():.6f}, {draws.max():.6f}]")
+    check("degenerate interval collapses to the point",
+          approx(lo, expected, 1e-9) and approx(hi, expected, 1e-9))
+
+    # Control: an UNSTRATIFIED bootstrap on the same input must vary, which
+    # shows the check above has power to detect the failure it targets.
+    rng2 = np.random.default_rng(1)
+    naive = np.array([const[rng2.integers(0, 268, 268)].mean()
+                      for _ in range(200)])
+    check("unstratified resampling would vary (test has power)",
+          naive.std() > 1e-6)
+
+    print("\nstratified_bootstrap_ci: interval coverage is labelled")
+    check("docstring states the 90% two-sided reading",
+          "90 percent TWO-SIDED" in H.stratified_bootstrap_ci.__doc__)
 
 
 def test_against_score_all():

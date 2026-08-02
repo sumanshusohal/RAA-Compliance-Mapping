@@ -7,12 +7,35 @@ fusion, not the gate, not the endpoint, not the margin, not the decision
 rule. Changes go in a new file with a new hash and a new timestamp, and the
 change is reported.
 
-Revision note: an earlier draft of this file was committed and reviewed
-BEFORE any public timestamp, and four defects were corrected as a result
-(gate normalization, an estimand that the named test did not implement, a
-backend conflation in the motivation, and unspecified tie-breaking). That
-history is deliberately left visible in the repository rather than amended
-away. Nothing in this file has been run against any arm.
+Revision note: earlier drafts of this file were committed and reviewed BEFORE
+any public timestamp. Two rounds of review corrected gate normalization, an
+estimand the named test did not implement, a backend conflation in the
+motivation, unspecified tie-breaking, a transductive LSI backend, an unpinned
+dual-encoder, and the absence of a runner. That history is deliberately left
+visible in the repository rather than amended away.
+
+DISCLOSURE, RECORDED BEFORE REGISTRATION
+----------------------------------------
+The secondary arm `hybrid_equal` WAS COMPUTED before this file was
+registered. It was produced as a byproduct of a tie-breaking sensitivity
+check that did not need it, and the values were seen:
+
+    hybrid_equal Top-1   nist 0.4623   hipaa 0.3676   pf 0.3936
+                         diagnostic 0.5517
+
+Consequences, stated rather than managed:
+
+  * `hybrid_equal` is no longer preregistered. It is an observed result and
+    must be reported as one.
+  * The PRIMARY arm `hybrid_gated` has NOT been computed. Neither has any
+    contrast, any test, or any gate firing rate.
+  * `hybrid_gated` returns the dual-encoder ranking on ungated queries and
+    the `hybrid_equal` fusion on gated ones, so knowing `hybrid_equal`
+    constrains it without determining it. The primary result is therefore
+    weakened by this disclosure, not unaffected by it.
+
+The point of a specification is that this kind of thing is written down when
+it happens instead of being quietly absorbed.
 
 WHY THIS FILE EXISTS AND WHY IT IS FIRST
 ----------------------------------------
@@ -40,12 +63,22 @@ result on these four corpora is PREREGISTERED BUT STILL EXPLORATORY: the
 design was frozen before the outcome, but the hypothesis was generated from
 the same corpora that will test it.
 
-    status on the four existing corpora : preregistered, exploratory
-    status available on a future corpus : confirmatory
+    status of the analysis registered here : EXPLORATORY
 
-Confirmatory status is regained only by applying this file, unchanged and at
-this hash, to a corpus that does not exist yet. RESERVED_CONFIRMATORY_CORPUS
-below is the placeholder for it. Do not quietly promote the exploratory run.
+This registration does not reserve confirmatory status for itself, and an
+earlier draft was incoherent in claiming that it did. It said at once that no
+corpus may be added after the timestamp, that the reserved confirmatory corpus
+was None, and that confirmatory status could be regained by applying the file
+unchanged to a future corpus. A future corpus cannot be added to a frozen
+corpus list unchanged, and nothing here specifies how such a corpus would be
+selected, built, or given ground truth.
+
+The correct statement is narrower. The analysis registered here is exploratory
+on the existing corpora. A future confirmatory replication would need a
+SEPARATE prospective registration identifying the new corpus and its
+construction, carrying the gate, fusion, endpoint, margin and test order below
+over unchanged. This file is what would be carried over. It is not itself a
+confirmatory registration, and no run of it produces one.
 
 WHAT IS BEING ASKED
 -------------------
@@ -173,17 +206,33 @@ def stable_order(scores, control_ids):
     and NOT tolerable for a registered one, which a third party has to be able
     to reproduce exactly.
 
-    Ties are common: on PF, TF-IDF assigns exactly zero to a mean of 211 of
-    300 controls per query, and RRF ranks all 300, so tail placement feeds
-    back into every fused score.
+    Ties are common and they act on the RANKS FED INTO fusion, not merely on
+    the tail of an already-fused vector. On one diagnostic requirement, TF-IDF
+    assigns exactly zero to 102 of 110 controls; those 102 receive ranks 9
+    through 110 in whatever order the sort produced, and each order gives a
+    different 1/(K+rank) contribution. The fused scores themselves therefore
+    depend on the tie-break.
 
-    Adopting this rule was measured before it was adopted, not assumed safe.
-    Re-running lexical RRF under four random control re-orderings, which is
-    what an alternative tie-break amounts to, changed the fused top-1 on ZERO
-    queries across all three real corpora (PF 35/94, CSF 43/106, HIPAA 19/68,
-    identical every time). So the deterministic rule costs nothing in
-    comparability with existing numbers, and the reason the earlier draft gave
-    for keeping the unstable sort does not survive contact with the data.
+    MEASURED SCOPE, corrected. An earlier draft claimed this rule "costs
+    nothing", on the strength of a permutation check run only on the three
+    real corpora. Comparing the two rules directly across all four:
+
+        corpus      fusion                    legacy  stable  top-1 changed
+        nist        lexical (transductive)    0.4057  0.4057        0/106
+        nist        lexical (inductive)       0.3774  0.3774        0/106
+        nist        four-way                  0.4623  0.4623        1/106
+        hipaa       all three fusions          equal   equal         0/68
+        pf          all three fusions          equal   equal         0/94
+        diagnostic  lexical (transductive)    0.4828  0.4828         3/58
+        diagnostic  lexical (inductive)       0.4655  0.4828         1/58
+        diagnostic  four-way                  0.5517  0.5517         0/58
+
+    So the rule changes which control is ranked first on a handful of queries,
+    and changes an accuracy figure once: diagnostic inductive lexical fusion
+    moves from 0.4655 to 0.4828. Everywhere else the reordering is
+    accuracy-neutral. The rule is adopted anyway, because an unspecified sort
+    cannot be reproduced by a third party across NumPy versions, but it is
+    adopted with a known cost rather than a claimed absence of one.
     """
     scores = np.asarray(scores, dtype=float)
     ids = np.asarray(control_ids)
@@ -249,21 +298,78 @@ def verify_fusion_matches_score_all(n_trials=25, n_items=300, seed=20260801):
 # scorers, over the SAME control ordering, and return a fused score vector.
 # Neither sees a label.
 
-LEXICAL_BACKENDS = ("tfidf", "bm25", "lsi")
-SEMANTIC_BACKEND = "semantic"   # the DUAL-ENCODER, all-MiniLM-L6-v2
+# INDUCTIVE LSI, fitted on control documents only.
+#
+# An earlier draft used "lsi", which raa_agent fits on controls PLUS every
+# evaluation query (include_regs_in_fit=True). That is label-free but
+# transductive: the latent space has seen the whole query collection before
+# any query is scored. HANDOFF.md records that the published protocol did this
+# silently and that it HURT, costing 0.015 to 0.019 on three corpora and
+# dropping HIPAA lexical fusion from 0.309 to 0.279.
+#
+# Registering the transductive variant as primary would have frozen a known
+# defect into the confirmatory arm. The primary hybrid uses lsi_inductive, so
+# every requirement is genuinely unseen at fit time.
+LEXICAL_BACKENDS = ("tfidf", "bm25", "lsi_inductive")
+
+# Kept only so the published protocol stays reproducible. Declared as a
+# sensitivity arm, never primary. See SENSITIVITY_ARMS.
+LEGACY_LEXICAL_BACKENDS = ("tfidf", "bm25", "lsi")
+
+SEMANTIC_BACKEND = "semantic"   # the DUAL-ENCODER, pinned below
+
+# =====================================================================
+# Pinned inputs
+# =====================================================================
+# The analysis does not load a model. freeze_backends.py runs every backend
+# once, writes the raw score matrices, and hashes them; run_hybrid.py consumes
+# only those matrices. The registered path is arithmetic over hashed inputs,
+# so the result does not depend on which checkpoint a later environment
+# happens to resolve.
+#
+# The pin is recorded anyway, because the matrices have to be reproducible
+# from the corpora by a third party. The bare name "all-MiniLM-L6-v2" is not a
+# stable reference: two revisions of it are cached on the machine that
+# produced these matrices. Their weights and tokenizer are byte-identical, so
+# the ambiguity happened to be benign, which is not a property to rely on.
+MODEL_PIN = {
+    "dual_encoder": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "weights_sha256":
+        "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db",
+    "tokenizer_sha256":
+        "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+    "normalize_embeddings": True,
+    "note": "the cross-encoder is not pinned here because it is not an arm "
+            "of this comparison; it is candidate-constrained and belongs to "
+            "the conditional protocol section",
+}
+
+FROZEN_INPUTS = {
+    "directory": "frozen_backends/",
+    "manifest": "frozen_backends/manifest.json",
+    "produced_by": "freeze_backends.py",
+    "consumed_by": "run_hybrid.py",
+    "contents": "per-corpus score matrix for each backend, control ids, "
+                "requirement ids, and a gold membership mask",
+    "rule": "run_hybrid.py verifies every array hash against the manifest "
+            "before computing anything and aborts on any mismatch",
+}
 
 
-def hybrid_equal(scores_by_backend, control_ids):
-    """Equal-weight arm: one RRF over the three lexical backends and semantic.
+def hybrid_equal(scores_by_backend, control_ids, lexical=LEXICAL_BACKENDS):
+    """Equal-weight arm: one RRF over the lexical backends and semantic.
 
     The straw man the gated arm has to beat. If complementarity were uniform
     across queries this would capture it, and no gate would be needed.
+
+    OBSERVED before registration; see the disclosure in the module docstring.
     """
-    keys = list(LEXICAL_BACKENDS) + [SEMANTIC_BACKEND]
+    keys = list(lexical) + [SEMANTIC_BACKEND]
     return rrf_fuse([scores_by_backend[k] for k in keys], control_ids)
 
 
-def hybrid_gated(scores_by_backend, control_ids):
+def hybrid_gated(scores_by_backend, control_ids, lexical=LEXICAL_BACKENDS):
     """Semantic-primary gated arm. THE PRIMARY ARM.
 
     The dual-encoder ranks the corpus. Only when its own top-2 relative margin
@@ -278,10 +384,11 @@ def hybrid_gated(scores_by_backend, control_ids):
     sem = np.asarray(scores_by_backend[SEMANTIC_BACKEND], dtype=float)
     if not is_ambiguous(sem):
         return sem, False
-    return hybrid_equal(scores_by_backend, control_ids), True
+    return hybrid_equal(scores_by_backend, control_ids, lexical), True
 
 
-def hybrid_gated_fallback(scores_by_backend, control_ids):
+def hybrid_gated_fallback(scores_by_backend, control_ids,
+                          lexical=LEXICAL_BACKENDS):
     """Pre-declared SECONDARY variant: hard fallback instead of fusion.
 
     Identical gate, different action. When the gate fires this hands the query
@@ -294,7 +401,7 @@ def hybrid_gated_fallback(scores_by_backend, control_ids):
     sem = np.asarray(scores_by_backend[SEMANTIC_BACKEND], dtype=float)
     if not is_ambiguous(sem):
         return sem, False
-    return rrf_fuse([scores_by_backend[k] for k in LEXICAL_BACKENDS],
+    return rrf_fuse([scores_by_backend[k] for k in lexical],
                     control_ids), True
 
 
@@ -311,12 +418,23 @@ ARMS = {
     # name                     section        status      source
     "semantic":               ("end_to_end", "reference", "score_all.py"),
     "rrf_lexical":            ("end_to_end", "reference", "score_all.py"),
-    "hybrid_equal":           ("end_to_end", "new",       "hybrid_spec.py"),
     "hybrid_gated":           ("end_to_end", "PRIMARY",   "hybrid_spec.py"),
     "hybrid_gated_fallback":  ("end_to_end", "secondary", "hybrid_spec.py"),
-    "raa_full":               ("end_to_end", "reference", "pending item 3"),
-    "raa_no_reform":          ("end_to_end", "reference", "pending item 3"),
+    # OBSERVED before registration; see the disclosure in the module
+    # docstring. Reported as an observed result, not a preregistered one.
+    "hybrid_equal":           ("end_to_end", "observed",  "hybrid_spec.py"),
+    "raa_full":               ("end_to_end", "reference", "pending item"),
+    "raa_no_reform":          ("end_to_end", "reference", "pending item"),
     "reranker":               ("conditional", "context",  "score_all.py"),
+}
+
+# Sensitivity arms. Reported alongside the primary result, never in place of
+# it, and never promoted if they look better.
+SENSITIVITY_ARMS = {
+    # Same gate and fusion, transductive LSI instead of inductive. Isolates
+    # how much of any hybrid result depends on the fit that HANDOFF.md records
+    # as harmful, and keeps the published protocol reproducible.
+    "hybrid_gated_legacy_lsi": LEGACY_LEXICAL_BACKENDS,
 }
 
 # raa_full and raa_no_reform are the reformulation-off control pair. Because
@@ -340,7 +458,14 @@ ENGINEERED_CORPORA = ("diagnostic",)          # author-built, reported apart
 # it would let an engineered corpus drive a conclusion about real text a
 # second time. It is reported as a labelled contrast.
 
-RESERVED_CONFIRMATORY_CORPUS = None   # set only when such a corpus exists
+# Deliberately absent: there is no reserved confirmatory corpus. A future
+# replication needs its own prospective registration, not a slot in this one.
+# See the status section of the module docstring.
+CONFIRMATORY_REPLICATION = (
+    "requires a separate prospective registration naming the new corpus and "
+    "its construction, carrying this file's gate, fusion, endpoint, margin "
+    "and test order over unchanged"
+)
 
 
 # =====================================================================
@@ -392,6 +517,14 @@ def stratified_bootstrap_ci(diffs, corpus_labels, alpha=0.05,
     fixed at the observed 106/68/94, so the interval reflects sampling of
     requirements and not sampling of how much of each corpus happened to land
     in a replicate. The point estimate is unaffected; only the interval is.
+
+    INTERVAL COVERAGE, stated explicitly because the default is easy to
+    misread. The returned bounds are the alpha and 1-alpha percentiles of the
+    bootstrap distribution. At the default alpha=0.05 those are the 5th and
+    95th, which is a 90 percent TWO-SIDED interval, equivalently a 95 percent
+    one-sided bound in each direction. That is the interval matching the
+    one-sided non-inferiority test, which is why it is the default here. It is
+    NOT a 95 percent two-sided interval and must not be reported as one.
     """
     diffs = np.asarray(diffs, dtype=float)
     labels = np.asarray(corpus_labels)
@@ -428,14 +561,21 @@ ALPHA = 0.05
 #
 # Operational justification: the endpoint is Top-1 over a 300-control
 # catalogue, and the deliverable is a ranked shortlist an analyst reviews, not
-# an autonomous decision. Five absolute Top-1 points on a corpus of this size
-# is three to five requirements whose top suggestion changes position while
-# the gold control remains available further down the same shortlist; the
-# secondary endpoints rr@5 and recall@5 are reported precisely so that a
-# hybrid which trades Top-1 for shortlist quality is visible rather than
-# scored as a loss. A margin materially tighter than 0.05 is not decidable at
-# these sample sizes, as the precision statement below shows, so declaring one
-# would be declaring a test that cannot return an answer.
+# an autonomous decision. Over the pooled population of 268 requirements, five
+# absolute Top-1 points is about 13 additional requirements whose top
+# suggestion is wrong.
+#
+# An earlier draft said "three to five requirements", which is the arithmetic
+# for a single 68-to-106-requirement corpus, not for the pooled estimand the
+# margin actually applies to. It also asserted that the gold control would
+# remain further down the shortlist. A Top-1 loss establishes nothing of the
+# sort. Whether relevant controls survive in the shortlist is exactly what the
+# secondary endpoints rr@5 and recall@5 are reported to show, and they are
+# reported whichever way the primary test lands.
+#
+# A margin materially tighter than 0.05 is not decidable at these sample
+# sizes, as the precision statement below shows, so declaring one would be
+# declaring a test that cannot return an answer.
 DELTA_NI = 0.05
 
 # PRECISION, computed before running and outcome-blind.
@@ -598,5 +738,10 @@ if __name__ == "__main__":
           f"slack {PRECISION_NOTE['slack']})")
     print(f"gate threshold   : {REL_MARGIN_GATE} (inherited)")
     print(f"primary corpora  : {', '.join(PRIMARY_CORPORA)}")
-    print(f"\nstatus on existing corpora: preregistered, EXPLORATORY")
-    print(f"reserved confirmatory corpus: {RESERVED_CONFIRMATORY_CORPUS}")
+    print(f"lexical backends : {', '.join(LEXICAL_BACKENDS)}")
+    print(f"dual-encoder     : {MODEL_PIN['dual_encoder']}")
+    print(f"                   revision {MODEL_PIN['revision']}")
+    print(f"inputs           : {FROZEN_INPUTS['manifest']}")
+    print(f"\nstatus of this analysis: EXPLORATORY")
+    print("hybrid_equal was OBSERVED before registration; see the disclosure "
+          "at the top.")

@@ -6,6 +6,9 @@ checkpoints/
 dist/
 build/
 
+# Local tool settings. Machine-specific, not part of the replication package.
+.claude/
+
 # Credentials. This repository is public and ships as the replication
 # package; no API key may ever reach it.
 .env

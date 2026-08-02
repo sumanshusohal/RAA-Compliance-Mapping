@@ -302,8 +302,10 @@ The diagnostic benchmark tells us \emph{why} a component helps; the real-world b
 The diagnostic benchmark contains 58 requirements drawn from seven frameworks: GDPR (8), NIST CSF and SP~800-53 (12), HIPAA (10), PCI~DSS (10), ISO~27001 (8), SOX ITGC (4), and SOC~2 (6).
 Requirements are sourced from official regulatory text and simplified to single-clause statements.
 The 110-control corpus is stratified by design.
-Fifty-nine controls are \emph{vocabulary-matched positives}: near-paraphrases of the corresponding requirement that represent the easy retrieval case.
-Twenty-seven controls are \emph{vocabulary-mismatched positives}: correct mappings expressed in entirely different terminology.
+Fifty-nine controls are labelled \texttt{perfect}: near-paraphrases of the corresponding requirement that represent the easy retrieval case.
+Twenty-seven are labelled \texttt{good}: correct mappings expressed in different terminology.
+These are construction labels recorded when the corpus was written, not measurements of lexical overlap, and the two do not coincide.
+The \texttt{good} stratum averages 0.043 IDF-weighted content-word overlap with its requirement against 0.250 for \texttt{perfect}, so the labels do track vocabulary distance, but 14 of the 59 \texttt{perfect} links also share no content words with their requirement.
 For example, the GDPR Art.~32 encryption requirement is matched by ``Cryptographic safeguards applied to individually identifiable records stored in relational databases,'' a control sharing no content words with the requirement.
 The remaining 24 controls are negatives: 20 \emph{hard negatives} spanning scope confounders (in-transit encryption as a distractor for at-rest encryption requirements), cross-family distractors, and near-miss negatives (development-only logging), plus four unrelated controls.
 These counts are the \texttt{match\_type} labels in the released \texttt{diag\_controls.csv}, where the two positive strata appear as \texttt{perfect} and \texttt{good}.
@@ -385,9 +387,9 @@ All ranking metrics are computed from the full candidate ranking, independent of
 
 Three observations warrant discussion.
 First, lexical baselines plateau near 0.51--0.57~Top-1, with TF-IDF leading.
-This is consistent with the benchmark's vocabulary-mismatched controls: 41\% of positive links (35/86) share no content words with the corresponding requirement, creating a retrieval ceiling for term-matching methods.
-The share exceeds the 27 links in the mismatched stratum because 14 matched positives also share no content words with their requirement.
-Lexical mismatch in this corpus is therefore wider than the design labels indicate.
+This is consistent with the lexical structure of the corpus: 41\% of positive links (35/86) share no content words with the corresponding requirement, creating a retrieval ceiling for term-matching methods.
+That share exceeds the 27 links labelled \texttt{good}, because 14 \texttt{perfect} links are also lexically disjoint.
+Measured mismatch is therefore wider than the construction labels alone would suggest, and 35/86 rather than 27/86 is the figure that bears on term-matching methods.
 Second, LSI achieves competitive Recall@5 (0.676) at the highest coverage (0.922) but the lowest selective accuracy (0.542): its latent space aids recall but yields poorly calibrated confidence scores, a liability for a system that must decide when to escalate.
 Third, the neural encoders are the strongest rankers on this benchmark: the dual-encoder reaches 0.672~Top-1 and 0.762~MRR@5, and even the general-purpose cross-encoder (0.647~Top-1) exceeds every lexical baseline. Pre-trained sentence embeddings clearly capture the cross-vocabulary similarity that term matching misses.
 

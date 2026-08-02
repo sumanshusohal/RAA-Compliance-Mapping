@@ -1,0 +1,230 @@
+{
+  "computes_no_arm": true,
+  "corpora": {
+    "diagnostic": {
+      "backends": {
+        "bm25": {
+          "array_sha256": "a9d7eb714b8680d431b9e627098ba9fe735bef57216ce49be2ff638d8a558422",
+          "file_sha256": "10eef4978857ca0d3fe96d07bb66306f917ce847d3a26d7f48bb700f855014d7",
+          "shape": [
+            58,
+            110
+          ]
+        },
+        "lsi": {
+          "array_sha256": "e827986b86ce854652416ae73bc47b75b3f8f45ae06891fa3ca3ca41974225dc",
+          "file_sha256": "1689b3282dfbfade107e4be08b7abdd0d8900badbf4daeafd9838b480bf06f88",
+          "shape": [
+            58,
+            110
+          ]
+        },
+        "lsi_inductive": {
+          "array_sha256": "47ad5f7bddfc75f85caec7b060c0fbead18fff9f793427389ae1e4363e8b80a3",
+          "file_sha256": "d398ab0f599ef7b784e004c1a0bc7b2eb62a3f8ad3e3868f790526a792cfbbe6",
+          "shape": [
+            58,
+            110
+          ]
+        },
+        "semantic": {
+          "array_sha256": "5b7cba28472947fae51db2d14add45ede73ea726f8c5b8f80099d2f243aaef23",
+          "file_sha256": "70d26b4627984709461bfc9403516edb69ca8dae521aff044da1c1e19eb94d54",
+          "shape": [
+            58,
+            110
+          ]
+        },
+        "tfidf": {
+          "array_sha256": "e6948507055d08a3d077940e2fc6c301bf844de76887a22cbb581f3a25f7de20",
+          "file_sha256": "d5e6ad1173afcf783ea09592a3372a4f2723ff08b90c2b0b00d62870012dbeb6",
+          "shape": [
+            58,
+            110
+          ]
+        }
+      },
+      "control_ids_sha256": "8419e4c78717107326cdc0dab877ce6a012fda2916afe3307c3b406098455889",
+      "gold_mask_sha256": "16feddcf64c41d9c2d967616c1d1fa536ca2970e480e0cb50389dbabce06b13c",
+      "n_controls": 110,
+      "n_gold_links": 86,
+      "n_requirements": 58,
+      "requirement_ids_sha256": "303f37fc1dc05e4a54ef3f1c8786e1aec27aead913736e162f4e41f490006aee"
+    },
+    "hipaa": {
+      "backends": {
+        "bm25": {
+          "array_sha256": "a68bda9a08c9e2c5a7807fcfb2999d253cdbf61c7279621e7fcbb397615c7f8e",
+          "file_sha256": "e541799a976b2dfd758de9d07eab015b8defe3b1385c73418b58d47a1cb6687c",
+          "shape": [
+            68,
+            300
+          ]
+        },
+        "lsi": {
+          "array_sha256": "406bd27c9de874bafd19df99fcfd799cd03a905d8b5f7ff91d2c89005eca206d",
+          "file_sha256": "7c3600cd7f2f4589cbd9115306bc764e675ea2b9141c57c1eee6c762fa996b23",
+          "shape": [
+            68,
+            300
+          ]
+        },
+        "lsi_inductive": {
+          "array_sha256": "40980824fd7cdd20d540f9998753f04ebacd6fbd9f5e18f085d5b084b39a48d2",
+          "file_sha256": "f839e3e68cb692a594ca18eb8ea5106f952fb11bfd4622cef4cc14b5c328b394",
+          "shape": [
+            68,
+            300
+          ]
+        },
+        "semantic": {
+          "array_sha256": "27cb6454bfb9ede7bcd031421d9669a9c9e4a333429c38882af99cbc21bb7242",
+          "file_sha256": "b863750a8a64b57315e779e528972a2b00399238f3476c6c9e42d280539d4586",
+          "shape": [
+            68,
+            300
+          ]
+        },
+        "tfidf": {
+          "array_sha256": "15b9df5429710126ca42ee0178dd2d4b6d0a0fefd002f475d0d8311d79135743",
+          "file_sha256": "3c38f12711e1d301c3c8890a27ea7544e9470c377cba4a9afd7e4338762ca60a",
+          "shape": [
+            68,
+            300
+          ]
+        }
+      },
+      "control_ids_sha256": "321d78a47189d25962fa8a430dbb0264f61f0bf2d4b25ac85e756c4b5d6cc740",
+      "gold_mask_sha256": "194eca3b57b9f8b1f25c8dfa5e9fe94f464d1878d42caf8d856384ae77015c4a",
+      "n_controls": 300,
+      "n_gold_links": 274,
+      "n_requirements": 68,
+      "requirement_ids_sha256": "f9e80f5d2064df9dafabc0badba074dcde12b0bcb9c1caa8884cd71b05f63270"
+    },
+    "nist": {
+      "backends": {
+        "bm25": {
+          "array_sha256": "e6173e4a2899b44cf5856a0be5339e8dd305e00a815126708ec9dfd6ddc500d9",
+          "file_sha256": "c439dc24e468857a03c6cc3e661a6e1c5be61a7078de6ba56f9c8f07356c21b9",
+          "shape": [
+            106,
+            300
+          ]
+        },
+        "lsi": {
+          "array_sha256": "a5767b57def88a6087189da017d767d3ffe3500a3523aa5d81a90ad7d5725bb2",
+          "file_sha256": "4202561c23e9ea171be197b4e4cefcc9318c23f45f973ba7c1e0a86ee0d53855",
+          "shape": [
+            106,
+            300
+          ]
+        },
+        "lsi_inductive": {
+          "array_sha256": "8d190d80c154b7cdf8e27e97f3c02feb85f028e4890bca1e1a77f1af06cab118",
+          "file_sha256": "eb9d002ee483f18d7a04a0d1ee6ff993b6513415f56c09bf3aa11ea324968689",
+          "shape": [
+            106,
+            300
+          ]
+        },
+        "semantic": {
+          "array_sha256": "299eb9a7bff46444ed2978277767afafa96426e2af4fa299a50d6ae3354e815a",
+          "file_sha256": "a310ddc2c4a1a6314e8e82e2abfa9665ff535769482976ba0917757403060ecc",
+          "shape": [
+            106,
+            300
+          ]
+        },
+        "tfidf": {
+          "array_sha256": "38ed7d515140a589210df8ae3a5c616d172d2d1d5074ccd9901c9ec3e4ff02ab",
+          "file_sha256": "8d6263d00a025db4545fbfc0a8edd643957d0411e21384bcb4fad6786596089d",
+          "shape": [
+            106,
+            300
+          ]
+        }
+      },
+      "control_ids_sha256": "321d78a47189d25962fa8a430dbb0264f61f0bf2d4b25ac85e756c4b5d6cc740",
+      "gold_mask_sha256": "d0ecb2ba95a1e2a3d1b6ee4808e7f6ff801b29a860b877c041ff0afe93dec433",
+      "n_controls": 300,
+      "n_gold_links": 495,
+      "n_requirements": 106,
+      "requirement_ids_sha256": "6ce8f6919ce00319d3038aaa71f9f0d098553964d91250087a8984bbd3dcb41f"
+    },
+    "pf": {
+      "backends": {
+        "bm25": {
+          "array_sha256": "a4336d0585bf1428c32005d69dbf8ba2ab453c3e554a312d42350511addcd5ee",
+          "file_sha256": "7d74ffb83d76d53e93c35f7bf5b7bced8d26ca75834c3d1c1decd4af6f47027c",
+          "shape": [
+            94,
+            300
+          ]
+        },
+        "lsi": {
+          "array_sha256": "1278d08c783bab547f4ffcdcd8674c7bc84b26e7d410d73036d1ee1fa3ce90c3",
+          "file_sha256": "289bb16540d442371f19a625759690c98027b54e0be10d2ab87029a048e63be4",
+          "shape": [
+            94,
+            300
+          ]
+        },
+        "lsi_inductive": {
+          "array_sha256": "b88ee6f798c028096a2844cf4f2012ed11bef814f6ffa62b482b600dd5761416",
+          "file_sha256": "fe270f98e95fa0fc320bda82ab42f6252a3b232e4e6f379574afb7eb31e0d2b6",
+          "shape": [
+            94,
+            300
+          ]
+        },
+        "semantic": {
+          "array_sha256": "7c357000ce10079e8ff404051658faade318d8e36b845f6498789e60ea61ef53",
+          "file_sha256": "c520129a20331e12e4b6f7d337c6e6d0a3ae196c8853190362d02d7474834670",
+          "shape": [
+            94,
+            300
+          ]
+        },
+        "tfidf": {
+          "array_sha256": "d6763ba726619ec7c112b20fc986f31483d207a5bbe7e38a757b7d2781997a4a",
+          "file_sha256": "9fb54c8c9eb8f2d8b638701df2e2ba75ff7a30343fdf182e93c4717adb3f5e6d",
+          "shape": [
+            94,
+            300
+          ]
+        }
+      },
+      "control_ids_sha256": "321d78a47189d25962fa8a430dbb0264f61f0bf2d4b25ac85e756c4b5d6cc740",
+      "gold_mask_sha256": "ac3a5161718058de0ae6208d5654a64a9d14bc9d170f03b3104cc15ec6818a6f",
+      "n_controls": 300,
+      "n_gold_links": 456,
+      "n_requirements": 94,
+      "requirement_ids_sha256": "e490b00e1e71307c62c8a02928c1f78706ffa20e7f980b6b97b020da8b968179"
+    }
+  },
+  "dual_encoder": {
+    "model": "sentence-transformers/all-MiniLM-L6-v2",
+    "normalize_embeddings": true,
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+  },
+  "environment": {
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.2",
+    "scikit_learn": "1.7.2",
+    "sentence_transformers": "5.2.0",
+    "torch": "2.6.0+cu124"
+  },
+  "git": {
+    "commit": "e711fde6d2c9ef7f6d742cedf9c6c5191acdcb31",
+    "dirty": true
+  },
+  "lsi": {
+    "lsi": "fitted on controls plus evaluation queries (transductive; sensitivity arm only)",
+    "lsi_inductive": "fitted on control documents only",
+    "n_components": 100
+  },
+  "purpose": "frozen backend score matrices for the hybrid analysis",
+  "timestamp_utc": "2026-08-02T00:04:13.483824+00:00"
+}

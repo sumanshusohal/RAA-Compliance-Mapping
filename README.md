@@ -43,11 +43,24 @@ LSI (0.922) is highest.
 | Full Agent (RAA) | 0.406 | 0.508 | 0.721 |
 
 On same-institution text, **no deterministic component significantly improves ranking**
-(reformulation +0.01 Top-1 p = 0.65; fusion +0.03 p = 0.51). The cross-encoder reranker
-significantly beats the agent (+0.154, p = 0.002). The agent has no coverage or
-selective-accuracy edge. Its value is qualitative — deterministic, reproducible execution and
-auditable traces — not accuracy. An open-world stress test shows abstention detects only ~24% of
-genuine no-match gaps (avg 4.4 gaps/seed) — an open limitation.
+(reformulation +0.01 Top-1 p = 0.65; fusion +0.03 p = 0.51). The agent has no coverage or
+selective-accuracy edge. A two-stage cross-encoder pipeline scores higher (+0.154, p = 0.002),
+but it reranks a 20-candidate shortlist rather than the full corpus, so it is reported in a
+separate protocol section and not as a like-for-like ranking win.
+
+We do not offer a qualitative advantage in place of the missing metric one. The agent records
+each step and its inputs, which establishes where a mapping came from. Whether that record is
+useful under audit is a question about practitioners that this work does not test, and
+execution determinism was never measured under pinned dependencies.
+
+An open-world stress test shows abstention detects only ~24% of genuine no-match gaps
+(avg 4.4 gaps/seed), an open limitation.
+
+**Since the DKE submission, the evaluation has grown to four corpora and the headline finding
+has changed.** The reformulation effect does not replicate on real text: +0.140 on the
+engineered diagnostic corpus against +0.009 (CSF), +0.008 (HIPAA) and +0.003 (PF). What
+separates the data is engineered versus real, not measured vocabulary gap. All four corpora
+are exploratory; no preregistration predates them. See `HANDOFF.md`.
 
 ## Architecture
 
@@ -67,9 +80,29 @@ Decision tools (never reorder the ranking):
 
 ## Benchmarks
 
-Two corpora are included:
-- **Diagnostic** (`diagnostic_benchmark/`): 58 regulations / 110 controls (59 vocabulary-matched + 27 vocabulary-mismatched + 20 hard negatives + 4 unrelated) / 86 links, built to isolate vocabulary mismatch. Counts are the `match_type` column of `diag_controls.csv`; see SOURCES.md.
-- **Real-world NIST** (`csf_benchmark/`): 106 CSF 1.1 subcategories / 300 SP 800-53r5 base controls / 495 links, regenerated from NIST's published OSCAL catalog and official crosswalk by `build_csf_benchmark.py`. Ground truth is authored by NIST, independent of this system. Note: NIST describes these as concept-relationship mappings (NIST IR 8477), so this is a reference-link recovery task, not implemented-compliance verification.
+Four corpora are included. Three are real text with NIST-authored ground truth; one is
+author-built and used only as a diagnostic instrument. All three real corpora map to the same
+300-control SP 800-53 5.2.0 corpus.
+
+- **Diagnostic** (`diagnostic_benchmark/`): 58 regulations / 110 controls / 86 links,
+  author-built to isolate vocabulary mismatch. Control labels in `diag_controls.csv` are
+  59 `perfect`, 27 `good`, 20 `hard_neg` and 4 `neg`. These are construction labels, not
+  measured lexical regimes: 35 of the 86 positive links share no content words with their
+  requirement, including 14 labelled `perfect`. Never used as a confirmatory corpus.
+- **Real-world NIST CSF** (`csf_benchmark/`): 106 CSF 1.1 subcategories / 300 SP 800-53
+  controls / 495 links, from NIST's published OSCAL catalog and official crosswalk. Stays at
+  CSF 1.1 deliberately: CPRT documents a near 1:1 derivation of CSF 2.0 subcategories from
+  1.1, so 2.0 would not be an independent corpus.
+- **HIPAA** (`hipaa_benchmark/`): 68 requirements / 274 links, regulation-to-control against
+  statutory source text, built from the NIST OLIR crosswalk. The builder snapshots and hashes
+  all six raw CPRT responses under `cprt_snapshots/`.
+- **Privacy Framework** (`pf_benchmark/`): 94 requirements / 456 links, NIST-authored, a
+  narrower vocabulary gap than HIPAA.
+
+NIST describes these crosswalks as concept-relationship mappings (NIST IR 8477) and marks the
+HIPAA OLIR "Comprehensive: No", so they are a silver standard. The task is reference-link
+recovery, not implemented-compliance verification, and an unlisted plausible prediction is not
+automatically a false positive.
 
 ## Project Structure
 

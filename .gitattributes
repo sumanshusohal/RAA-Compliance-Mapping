@@ -16,6 +16,14 @@
 * text=auto eol=lf
 
 # Binary and vendored files that must not be touched.
+#
+# *.npy is the critical one. frozen_backends/ holds the registered analysis
+# inputs, hashed in manifest.json and verified by run_hybrid.py before it
+# computes anything. Any line-ending conversion would alter the bytes, break
+# every hash, and abort the run. Git's text=auto above should detect them as
+# binary on its own; this makes it explicit rather than inferred.
+*.npy binary
+*.npz binary
 *.png binary
 *.jpg binary
 *.pdf binary
