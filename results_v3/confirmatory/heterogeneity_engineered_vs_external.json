@@ -1,0 +1,60 @@
+{
+  "argv": [
+    "heterogeneity_test.py"
+  ],
+  "bootstrap": {
+    "ci_high": 0.24913595762974935,
+    "ci_low": 0.025033803172152373,
+    "coverage": "95% two-sided",
+    "method": "within-group",
+    "n_boot": 10000,
+    "seed": 20260801
+  },
+  "difference": 0.1340749556813633,
+  "engineered": {
+    "corpora": [
+      "diagnostic"
+    ],
+    "mean": 0.1404967159277504,
+    "n": 58
+  },
+  "environment": {
+    "numpy": "1.26.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.2"
+  },
+  "external": {
+    "corpora": [
+      "nist",
+      "hipaa",
+      "pf"
+    ],
+    "mean": 0.006421760246387113,
+    "n": 268
+  },
+  "git": {
+    "commit": "b2b88cc38769f34c11db070c3db968b84b2f0478",
+    "dirty": true
+  },
+  "per_corpus_means": {
+    "diagnostic": 0.1404967159277504,
+    "hipaa": 0.007843137254901964,
+    "nist": 0.008790056903264449,
+    "pf": 0.0027228976697061826
+  },
+  "permutation": {
+    "method": "label permutation",
+    "n_permutations": 100000,
+    "p_value": 0.0008199918000819992,
+    "seed": 20260801
+  },
+  "question": "does the reformulation effect differ between the engineered corpus and the pooled external corpora",
+  "scope_limit": "one engineered corpus against three correlated NIST replications; establishes that these corpora differ, not that engineered benchmarks inflate effects in general, and cannot separate authorship from other properties of the NIST ecosystem",
+  "spec_hashes": {
+    "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
+    "heterogeneity_test.py": "dfb06808dcd43db76941413e801602d21fb14e6ec3c3e77f1fd60d12f08393e4"
+  },
+  "status": "exploratory",
+  "status_reason": "written in response to review, after the per-corpus effects were known; not preregistered",
+  "timestamp_utc": "2026-08-02T02:14:47.095305+00:00"
+}

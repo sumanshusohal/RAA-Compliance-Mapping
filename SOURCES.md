@@ -22,8 +22,14 @@ verification.
 ## HIPAA benchmark (`hipaa_benchmark/`)
 
 Regulation-to-control, built from statutory source text rather than from
-framework prose, which makes it the widest measured vocabulary gap of the
-three real corpora. 68 requirements, 274 links.
+framework prose. It is the only corpus here whose two sides come from
+different institutions. 68 requirements, 274 links.
+
+Do NOT describe this corpus as having the widest measured vocabulary gap.
+`gap_metrics.py` fits IDF within each corpus, so gap values are comparable
+between requirements of one corpus and not between corpora; there is no common
+scale on which to rank them. The cross-institutional character is a
+qualitative property and is the defensible way to say why this corpus matters.
 
 | artifact | source | version | SHA-256 |
 |---|---|---|---|
@@ -55,7 +61,13 @@ requirements, 456 links.
 From `provenance.json`: 100 subcategories seen, 6 dropped for having no link,
 5 blanket references skipped, 0 unresolved control references, enhancements
 collapsed to their base control. PF subcategory identifiers and text have zero
-overlap with the CSF corpus, so the two are independent corpora.
+overlap with the CSF corpus, so neither shares requirement text with the other.
+
+That is *not* the same as the two being independent. Both are NIST products
+mapping into the same SP 800-53 catalogue, so they are correlated replications
+from one institution's document ecosystem, and a result holding across both is
+weaker evidence than two unrelated corpora would give. The manuscript states
+this as its most important external-validity limitation.
 
 ## Diagnostic benchmark (`diagnostic_benchmark/`)
 

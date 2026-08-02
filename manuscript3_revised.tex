@@ -110,8 +110,8 @@ The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving rea
 The study is organized around three questions, stated here so the reader can check the results against them.
 
 \begin{description}
-\item[RQ1] Does the benefit of domain-aware query reformulation, established on an engineered corpus, transfer to corpora whose requirements, controls and links were authored independently of this work?
-\item[RQ2] If it does not, is the difference explained by a measurable property of the corpora, specifically the vocabulary distance between a requirement and its gold controls?
+\item[RQ1] Does the benefit of domain-aware query reformulation, established on an engineered corpus, transfer to corpora whose requirements, controls and links were authored independently of this work, and does the effect differ measurably between the two kinds of corpus?
+\item[RQ2] \emph{Within} a corpus, does requirement-level vocabulary distance identify which requirements benefit from reformulation?
 \item[RQ3] Does a gated combination of lexical and semantic retrieval, whose design is frozen and publicly timestamped before it is run, recover what either family uniquely solves without giving up the other's successes?
 \end{description}
 
@@ -415,7 +415,7 @@ The extraction scripts and the generated CSV files are included in the supplemen
 
 The third corpus maps requirements of the HIPAA Security Rule to SP~800-53 controls through NIST's OLIR crosswalk published with SP~800-66 Revision~2. It contains 68 requirements and 274 links.
 
-It is included because it differs from the CSF corpus in the one respect that matters for our question. Its requirement side is statutory text rather than framework prose, written by a different institution for a different purpose, so the vocabulary distance between a requirement and its controls is the widest of the three external corpora. If the reformulation benefit observed on the engineered corpus is a function of vocabulary distance, this is the corpus where it should reappear.
+It is included because its requirement side is statutory text rather than framework prose, written by a different institution for a different purpose than the control catalogue it maps into. It is the only corpus here in which the two sides of the mapping come from different institutions, which is the qualitative condition under which a regulation-to-implementation thesaurus should be most useful. We say ``qualitative'' deliberately: our gap measure is corpus-relative and gives no common scale on which to rank corpora by vocabulary distance, so we make no quantitative claim that this corpus has a wider gap than the others.
 
 The builder fetches and hashes each of the six raw responses from NIST's Cybersecurity and Privacy Reference Tool and stores them alongside the generated files, so the corpus can be rebuilt without querying a live service. Every control reference resolves.
 
@@ -513,8 +513,8 @@ Full Agent    & .644 $\pm$ .035 & .000   & .737 $\pm$ .026 & .738 $\pm$ .033 & .
 
 Statistical claims here use the query-level paired tests of Section~\ref{sec:protocol}, which avoid the seed-level pseudoreplication inherent to overlapping splits.
 The ablation yields four findings.
-First, query reformulation is the only component that significantly improves ranking: aggregated to one value per unique query, +Reform improves Top-1 over +Multi by $+0.140$ (95\% bootstrap CI $[+0.037, +0.254]$; sign-flip randomization $p = 0.009$) and MRR@5 by $+0.121$ ($p = 0.006$).
-On this benchmark, where a fifth of the positive links share no content words with their requirement, vocabulary mismatch is the primary bottleneck and domain-aware reformulation is an effective mitigation.
+First, query reformulation is the only component that significantly improves ranking: aggregated to one value per unique query, +Reform improves Top-1 over +Multi by $+0.140$ (95\% bootstrap CI $[+0.037, +0.254]$; sign-flip randomization $p = 0.009$). This figure comes from the repeated-holdout protocol and differs slightly in its interval from the one-pass figure in Table~\ref{tab:multi} ($[+0.037, +0.246]$), which is computed over the full requirement population; the two are different estimands and we report the one-pass figure wherever corpora are compared. The same analysis improves and MRR@5 by $+0.121$ ($p = 0.006$).
+On this benchmark, where 41\% of the positive links (35/86) share no content words with their requirement, vocabulary mismatch is the primary bottleneck and domain-aware reformulation is an effective mitigation.
 Second, multi-backend fusion does \emph{not} yield a significant ranking gain at the query level (Top-1 $+0.010$, $p = 0.88$; the seed-averaged means still nudge up from 0.533 to 0.550, but the effect does not survive a query-level test).
 Third, the components beyond reformulation do not improve ranking at all: query decomposition leaves the ranking unchanged (few diagnostic requirements are genuinely compound), and cross-framework corroboration and bidirectional verification are decision-only tools that by construction never reorder candidates---hence the identical Top-1, MRR@5, and R@5 across the +Reform through Full Agent rows. Their effect is confined to the decision profile: relative to +Reform (coverage 0.889), corroboration and verification trade coverage (down to 0.833) for calibration, the full agent abstaining more often on mappings that lack corroboration or fail the bidirectional check.
 Fourth, the deterministic agent does not out-rank the neural baselines: the dual-encoder reaches 0.672 Top-1 and the cross-encoder 0.647, both nominally above the agent's 0.644, and at the query level the agent is statistically indistinguishable from each (agent vs.\ dual-encoder $p \approx 1.0$; agent vs.\ cross-encoder $p = 0.68$). Nor does the agent hold a decision-quality advantage: its coverage (0.833) is below LSI's (0.922) and its selective accuracy (0.648) below the dual-encoder's (0.783). The agent therefore shows no measured edge on this benchmark. We return to what does and does not follow from that in Section~\ref{sec:discussion}.
@@ -618,24 +618,42 @@ Privacy Fw. & 94 & $+.0027$ & $[-.043, +.051]$ & $.95$ \\
 \end{tabular}
 \end{table}
 
-The effect is an order of magnitude larger on the engineered corpus than on any of the three external ones, and it is distinguishable from zero only there. The three external effects are not merely smaller; their intervals comfortably include zero and their $p$-values range from $0.65$ to $0.95$.
+The effect is an order of magnitude larger on the engineered corpus than on any of the three external ones, and it is distinguishable from zero only there.
 
-The answer to RQ1 is therefore no. The benefit does not replicate.
+That observation alone is not a finding. A significant result in one group and a non-significant result in another does not establish that the two differ, and the engineered corpus also has the smallest $n$, so part of the difference in $p$-values is a difference in power. We therefore test the contrast directly, at the requirement level: the mean difference on the engineered corpus is $+0.1405$ ($n = 58$) against $+0.0064$ on the pooled external corpora ($n = 268$), a difference of $+0.1341$, label-permutation $p = 0.0008$, bootstrap 95\% CI $[+0.025, +0.249]$.
 
-Note what does not separate the four rows. HIPAA has the widest measured vocabulary gap of the three external corpora and the statutory source text that ought to make reformulation most useful, yet its effect ($+.008$) is indistinguishable from the Privacy Framework's ($+.003$), and both are far below the engineered corpus. The split in Table~\ref{tab:multi} falls exactly along the line between the corpus we wrote and the corpora we did not.
+The answer to RQ1 is therefore that the benefit does not replicate, and the difference between corpus types is itself statistically distinguishable rather than merely a difference in significance.
 
-\subsection{Does measured vocabulary gap explain it? (RQ2)}
+Equivalence testing sharpens the external results beyond ``not significant''. At a margin of $\pm 0.05$ Top-1, CSF ($p_{\text{TOST}} = 0.010$) and the Privacy Framework ($p_{\text{TOST}} = 0.023$) are practically equivalent to no effect, so those two are positive evidence of absence rather than absence of evidence. HIPAA is inconclusive at the same margin ($p_{\text{TOST}} = 0.114$), meaning its data are consistent both with no effect and with an effect up to the margin, and we do not claim a null there.
+
+What the split does \emph{not} establish is why it falls where it does. The engineered corpus differs from the external three in authorship, but also in size, construction procedure, subject breadth and provenance, and with one corpus on one side of the comparison these cannot be separated. We return to this in Section~\ref{sec:threats}.
+
+\subsection{Does vocabulary gap identify beneficiaries within a corpus? (RQ2)}
 \label{sec:results-gap}
 
-RQ1's answer leaves an alternative explanation open: perhaps the engineered corpus simply has a wider gap, and gap is what matters. We test this directly with a requirement-level measure of vocabulary distance, defined in Section~\ref{sec:protocol} and computed from a frozen tokenizer and corpus-relative IDF, regressing the paired Top-1 difference on standardized gap with corpus fixed effects.
+A natural explanation for RQ1's result is that reformulation helps requirements whose vocabulary is distant from their controls, and that the engineered corpus simply contains more of them. The first half of that claim is testable here; the second is not, and we are explicit about which is which.
 
-Pooled over the three external corpora, the interaction between gap and reformulation benefit is $+0.0137$, 95\% CI $[-0.0139, +0.0434]$, sign-flip permutation $p = 0.376$, $n = 268$. Gap does not predict who benefits from reformulation.
+Our gap measure is defined in Section~\ref{sec:protocol} and computed with a frozen tokenizer from IDF fitted \emph{within each corpus}. That makes gap values comparable between requirements of the same corpus and \textbf{not} comparable between corpora: a gap of $0.8$ in HIPAA and a gap of $0.8$ in CSF are not the same quantity, because the IDF weighting behind them was fitted on different vocabularies. We accordingly standardize gap within corpus before pooling, and include corpus fixed effects, which removes between-corpus differences by construction.
 
-Adding the engineered corpus moves the same coefficient to $+0.0236$, $p = 0.089$, $n = 326$. That movement is itself the finding: the apparent moderation is carried by the engineered corpus rather than by any property that varies smoothly across corpora.
+The estimand is therefore \emph{within-corpus}: among requirements of the same corpus, do those with relatively larger gaps gain more from reformulation? Pooled over the three external corpora, the interaction between standardized gap and reformulation benefit is $+0.0137$, 95\% CI $[-0.0139, +0.0434]$, sign-flip permutation $p = 0.376$, $n = 268$.
 
-Two further observations bound what the gap measure does and does not do. It predicts \emph{lexical failure} reliably: Spearman correlations between gap and TF-IDF correctness are $-.754$, $-.359$, $-.272$ and $-.475$ across the four corpora, all $p < .05$. But it does not predict \emph{semantic advantage}: the same correlation against the dual-encoder's margin over TF-IDF gives $+.335$, $-.082$, $-.143$ and $+.302$, inconsistent in sign and two indistinguishable from zero. A wide gap tells you term matching will struggle. It does not tell you that a thesaurus will help.
+The answer to RQ2 is no: requirement-level lexical gap does not consistently identify reformulation beneficiaries within the external corpora.
 
-The answer to RQ2 is therefore also no, and the two answers together are the paper's central result: what separates the data is whether a corpus was engineered, not how wide its measured vocabulary gap is.
+Adding the engineered corpus to the same model moves the coefficient to $+0.0236$, $p = 0.089$, $n = 326$. We report this because it is informative, and we do not test the difference between the two coefficients, so we say only that a within-corpus moderation signal is visible when the engineered corpus is included and not when it is excluded. We do not claim this demonstrates that moderation is carried by that corpus.
+
+Two further observations bound what the gap measure does. It predicts \emph{lexical failure} reliably: Spearman correlations between gap and TF-IDF correctness are $-.754$, $-.359$, $-.272$ and $-.475$ across the four corpora, all $p < .05$. It does not consistently predict \emph{semantic advantage}: the same correlation against the dual-encoder's margin over TF-IDF gives $+.335$, $-.082$, $-.143$ and $+.302$, significant on two corpora, indistinguishable from zero on two, and inconsistent in sign. A wide gap tells you term matching will struggle. It does not reliably tell you that a thesaurus will help.
+
+\subsection{What the two answers do and do not license}
+
+Taken together, RQ1 and RQ2 support a narrower claim than it is tempting to make.
+
+They support this: the reformulation benefit demonstrated on our engineered corpus does not appear on three externally authored corpora, the difference between corpus types is statistically distinguishable, and within the external corpora a requirement-level lexical gap does not identify who benefits.
+
+They do not support a claim that vocabulary-gap severity explains the between-corpus difference. Our design cannot address that question at all. Because IDF is corpus-relative, we have no common scale on which to say one corpus has a wider gap than another, and the corpus fixed effects remove exactly the between-corpus variation such a claim would need. Any statement of the form ``corpus A has a wider gap than corpus B'' is outside what this measure can support, and we make none.
+
+Nor do they identify authorship as the operative property. The observed split aligns with author-constructed versus NIST-derived corpora, but the design cannot distinguish benchmark authorship from other properties shared across the NIST ecosystem, and one corpus on the engineered side cannot separate authorship from size, subject breadth or construction procedure.
+
+What remains is uncomfortable and, we think, worth reporting. We wrote the thesaurus and we wrote the corpus on which the thesaurus succeeds. Whatever the operative property turns out to be, a benchmark constructed by the authors of the intervention it evaluates did not predict how that intervention behaves elsewhere.
 
 \subsection{What this does and does not license}
 
@@ -742,7 +760,9 @@ The primary estimand is the mean paired Top-1 difference over the 268 concatenat
 
 \subsection{Result}
 
-Non-inferiority is established ($p = 0.003$) and superiority is not ($p = 0.48$). The mean difference is $+0.022$, 90\% interval $[-0.022, +0.067]$. Gating costs nothing and there is no evidence that it helps.
+Non-inferiority is established ($p = 0.003$) and superiority is not ($p = 0.48$). The mean difference is $+0.022$, 90\% interval $[-0.022, +0.067]$.
+
+Stated precisely: the analysis rules out mean losses of five Top-1 points or more under the registered model, and provides no evidence of superiority. It does not establish that gating is free. A cost of two or three points is entirely consistent with these data, as the interval shows, and the precision statement registered in advance says as much: at $n = 268$ this design can exclude a five-point loss but cannot resolve anything finer.
 
 The pooled null is the registered answer, and it conceals the more interesting pattern. Table~\ref{tab:hybrid} gives the per-corpus figures, which are descriptive by prior declaration and carry no test.
 
@@ -784,20 +804,22 @@ A sensitivity arm replacing inductive LSI with the transductive fit used in the 
 
 With two corpora we had a clean story: reformulation helps where the vocabulary gap is wide and is inert where it is narrow. The mechanism was plausible. Regulatory text is written at a policy abstraction level (``implement appropriate technical measures'') while controls describe specific implementations (``AES-256 with FIPS 140-2''), and a curated thesaurus should bridge that because the mapping between regulatory concepts and implementation terms is relatively stable within a domain.
 
-Two corpora cannot distinguish that explanation from a simpler one. The engineered corpus differed from the NIST corpus in gap severity, but it also differed in who wrote it, and with a single point on each side the two are perfectly confounded. Adding HIPAA and the Privacy Framework separates them, and the separation does not favour the gap explanation. HIPAA has the widest measured gap of the three external corpora and statutory source text from a different institution, which is where a gap-driven benefit should be largest, and its effect is $+0.008$ against the Privacy Framework's $+0.003$. Both sit with CSF, far from the engineered corpus.
+Two corpora cannot distinguish that explanation from several others. The engineered corpus differed from the NIST corpus in apparent gap severity, but it also differed in who wrote it, how large it was, and how it was constructed, and with a single corpus on each side these are perfectly confounded. Adding HIPAA and the Privacy Framework does not resolve the confound, but it does remove the gap explanation's most testable form. HIPAA is the one corpus here whose two sides come from different institutions, with statutory text on the requirement side, which is qualitatively where a regulation-to-implementation thesaurus should help most. Its effect is $+0.008$, sitting with the Privacy Framework's $+0.003$ and CSF's $+0.009$ rather than with the engineered corpus.
 
-The lesson we take is not about thesauri. It is that the property distinguishing our positive result from our null results was authorship, and that this was invisible while we had one corpus of each kind. Any conditional recommendation we might have written from two corpora, of the form ``invest in domain glossaries when the vocabulary gap is wide,'' would have been an artifact of that confound.
+We are careful about what follows. We cannot say that HIPAA has a wider measured gap than the others, because our gap measure is fitted per corpus and provides no common scale. We can say that the corpus with the strongest qualitative reason to benefit did not benefit.
+
+The lesson we take is not about thesauri, and it is not a demonstration that authorship is the operative variable. It is that a conditional recommendation of the form ``invest in domain glossaries when the vocabulary gap is wide'' was available from two corpora, looked well supported, and does not survive two more. Whatever distinguishes our corpus from NIST's, it was invisible while we had one corpus of each kind.
 
 The thesaurus approach does expose the terms driving each expansion, which a neural reranker~\citep{Nogueira2019} does not.
 Whether that inspectability changes an auditor's work is untested here, so we record it as a property of the method rather than as a measured advantage.
 
 \subsection{What a registered null is worth}
 
-The gated hybrid in Section~\ref{sec:hybrid} returned a null: non-inferior, not superior. Reported without a registration, that result would be nearly worthless, because a reader has no way to know whether it was the analysis we intended or the least embarrassing of several we tried. The registration is what converts it into evidence, and the mechanism is worth spelling out because it is cheap and rarely used in this literature.
+The gated hybrid in Section~\ref{sec:hybrid} returned a non-inferiority result without evidence of superiority. Reported without a registration, that result would be hard to weigh, because a reader has no way to know whether it was the analysis we intended or the least embarrassing of several we tried. Registration does not make such a result publishable by itself; what it does is constrain outcome-dependent analysis, so that the reported test is demonstrably the one specified in advance. The mechanism is worth spelling out because it is cheap and rarely used in this literature.
 
 Three provisions did the work. The endpoint, margin and test order were fixed in code before the data were touched, so the superiority test could only run if non-inferiority passed, and no second test could be substituted if the first disappointed. The secondary variants, including the hard fallback that turned out to be worse everywhere, were declared in advance, so the better-performing gate cannot be presented as a principled choice made ahead of time. And the analysis inputs were hashed, so a reader can check that the numbers came from the matrices we said they came from.
 
-The cost was a few hours. The benefit is that a null result is publishable, which matters in a subfield where the space of plausible retrieval combinations is large and the incentive to report only the combination that worked is correspondingly strong.
+The cost was a few hours. The benefit is that a result of this shape, which offers no headline improvement, can be reported as evidence rather than discarded, which matters in a subfield where the space of plausible retrieval combinations is large and the incentive to report only the combination that worked is correspondingly strong.
 
 We also disclose what registration did not fix. The hypothesis was generated from the same corpora that tested it, so the result is preregistered but exploratory, and one secondary arm was computed before registration and is reported as observed rather than preregistered.
 
@@ -822,7 +844,7 @@ First, general-purpose learned representations are strong retrievers for complia
 Second, the agent holds neither the best ranking nor the best coverage nor the best selective accuracy on any corpus, and we do not offer its other properties as a substitute.
 It does record each step and its inputs, and the neural rerankers do not. That establishes where a mapping came from. It does not establish that the record is useful under audit, which is a claim about practitioners and would need to be tested on them.
 
-The natural next step, combining lexical and semantic retrieval, is the one we registered and tested, and Section~\ref{sec:hybrid} reports what happened: gating costs nothing and buys nothing on average, while producing a large gain on one corpus and a nearly equal loss on another. That per-corpus divergence is the same pattern as the reformulation result, arrived at by a different route, and it suggests the useful question is not which combination wins but which corpus properties decide the answer. We do not know what those properties are. The vocabulary-gap measure was the obvious candidate and Section~\ref{sec:results-gap} rules it out.
+The natural next step, combining lexical and semantic retrieval, is the one we registered and tested, and Section~\ref{sec:hybrid} reports what happened: the registered analysis rules out a mean loss of five Top-1 points or more and finds no evidence of superiority, while producing a large gain on one corpus and a nearly equal loss on another. That per-corpus divergence is the same pattern as the reformulation result, arrived at by a different route, and it suggests the useful question is not which combination wins but which corpus properties decide the answer. We do not know what those properties are. A requirement-level lexical gap was the obvious candidate, and Section~\ref{sec:results-gap} finds it does not identify beneficiaries within a corpus.
 
 
 %% ================================================================
@@ -835,7 +857,7 @@ The diagnostic benchmark is synthetic, and its vocabulary-mismatched controls, t
 The real-world corpus mitigates this threat for the texts and ground truth themselves, but it captures one particular mapping regime: both sides are written by NIST, the vocabulary gap is narrow, and, as noted in Section~\ref{sec:dataset-real}, the crosswalk encodes NIST's concept-level judgment of correspondence~\citep{NISTIR8477} rather than evidence that an organization has implemented a control satisfying a requirement.
 Our claims on that corpus are therefore about reference-link recovery, not implemented-compliance verification.
 Neither corpus reflects ambiguous multi-clause requirements, implicit dependencies between controls, or organizational context.
-Finally, the open-world evaluation manufactures no-match queries by holding out controls; genuine compliance gaps may differ systematically from queries whose gold controls happen to be removed, so the gap-detection figures should be read as a controlled lower-bound probe rather than a field estimate.
+Finally, the open-world evaluation manufactures no-match queries by holding out controls; genuine compliance gaps may differ systematically from queries whose gold controls happen to be removed, so the gap-detection figures should be read as a controlled stress test rather than a field estimate or a bound in either direction.
 
 \paragraph{Internal validity.}
 The domain thesaurus and concept patterns are hand-crafted by the authors, who are practicing cybersecurity specialists, creating a risk of overfitting the thesaurus to the diagnostic benchmark.
@@ -856,7 +878,7 @@ The comparison here is one engineered corpus against three correlated external o
 \paragraph{External validity: coverage and power.}
 The diagnostic benchmark covers 7 frameworks and the external corpora three framework pairs; real organizations may need to map across dozens of standards (e.g., FedRAMP, CMMC, DORA, NIS2), and the thesaurus would require extension for new domains.
 Corpus sizes (58, 106, 68 and 94 requirements) limit statistical power, and we do not claim that repeated seeds overcome this: the 30 stratified splits overlap heavily and are not independent replicates, so we base all inference on query-level paired tests over unique requirements (Section~\ref{sec:protocol}) rather than on across-seed variance, and we report the small open-world denominator (4.4 no-match queries per seed) explicitly.
-The registered hybrid test states its own power limit explicitly: at $n = 268$ the one-sided half-width is $0.048$ against a margin of $0.05$, so it can establish that gating costs nothing but cannot establish that any cost is smaller than five points, and a failure to establish non-inferiority would have been consistent with a power limit rather than with harm.
+The registered hybrid test states its own power limit explicitly: at $n = 268$ the one-sided half-width is $0.048$ against a margin of $0.05$, so it can exclude a mean loss of five points or more but cannot resolve anything finer, and a failure to establish non-inferiority would have been consistent with a power limit rather than with harm.
 
 \paragraph{Statistical conclusion validity.}
 Two limitations of our own analysis should be read alongside the results.
