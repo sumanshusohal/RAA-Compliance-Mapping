@@ -11,7 +11,8 @@ is false, because nobody could re-run the analysis from the registration
 alone. A deterministic ZIP of `frozen_backends/` is an acceptable substitute
 if its own SHA-256 is registered.
 
-Fill the two bracketed values before submitting.
+The commit, tag and repository are already filled in. Nothing to edit before
+submitting: copy the block between the two `---` lines as-is.
 
 An embargo adds little here: the repository and the specification are public
 already, so the registration is not revealing anything the repo does not.
@@ -34,6 +35,7 @@ primary arm has not been computed.
     test_hybrid_spec.py            d0336d6c4c185d21ec782c956e6c1b57f0ba51395acc909e2c1cf72c9e07b827
     freeze_backends.py             b20d326ed3576b1c4f118cc347d4e9e35144fa2371517f1906b5433c37741482
     confirmatory_stats.py          79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040
+    make_frozen_zip.py             cd5956006e9a6d0ed79a052f46c33a50143d8a3ede7284d1fa44943c2d986be2
     frozen_backends/manifest.json  93259026e5cc90998a2ab182a21b95660c36b67f20907a3c38cece128913fa0c
 
     frozen_backends/  32 .npy arrays, 3.6 MB, individually hashed in the
