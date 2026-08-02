@@ -11,21 +11,39 @@ WHAT IT REPORTS
   * per corpus: multi and reform Top-1, the paired difference, wins, losses
     and ties, a requirement-level bootstrap interval, and a paired sign-flip
     permutation p-value;
-  * TOST equivalence at the pre-specified margin, plus an EXACT paired sign
-    test as a sensitivity check, because the t-based TOST decision can sit on
-    the alpha boundary when only a handful of requirements are discordant;
+  * TOST equivalence at the pre-specified margin, flagged when its decision
+    sits near alpha, which happens when only a handful of requirements are
+    discordant. NO exact equivalence test is provided; the exact sign test
+    below validates the superiority result only, so boundary-sensitive
+    equivalence results are reported as approximate and never headlined;
   * the engineered-versus-external contrast, with a bootstrap interval that is
     explicitly conditional on these four corpora and no test, for the
     cluster-level reasons documented in heterogeneity_test.py;
   * the same quantities under both LSI fitting regimes, so the effect of the
     representation can be separated from the effect of the protocol.
 
-WHY THE LSI COMPARISON IS HERE
-The published figures come from repeated holdouts with LSI fitted on controls
-plus the train and calibration requirements. The one-pass figures fit LSI on
-controls only. Those differ in two ways at once. Running both fits under a
-single protocol isolates the representation, and the result decides whether
-"the estimate moved because of the evaluation protocol" is defensible.
+WHY THE LSI COMPARISON IS HERE, AND WHAT IT DOES NOT YET ISOLATE
+The previously reported figures come from repeated holdouts with LSI fitted on
+controls plus the train and calibration requirements, which EXCLUDES the test
+requirements being scored. The one-pass arms here fit either controls only, or
+controls plus EVERY requirement including the ones being scored.
+
+So the transductive arm here is not the holdout fitting regime. Its fitting
+population is larger and includes the evaluation queries. Comparing it against
+the holdout figures varies the fitting population as well as the protocol, and
+an earlier version of this file claimed that comparison held the fit fixed. It
+did not.
+
+The clean factorial needs three cells:
+
+    A  repeated holdout + controls-only LSI
+    B  repeated holdout + train/calibration-assisted LSI   (previous figures)
+    C  one-pass        + controls-only LSI                 (primary here)
+
+A versus B isolates the LSI fitting regime. A versus C isolates the evaluation
+protocol. Cell A is produced by holdout_lsi_factorial.py. The one-pass
+transductive arm is retained only as a distribution-aware sensitivity and must
+not be described as equivalent to cell B.
 
 STATUS: exploratory, unplanned. Written in response to review, after the
 per-corpus effects were known. Not covered by the hybrid preregistration.
@@ -84,8 +102,15 @@ def git_state():
 def exact_sign_test(diffs):
     """Exact paired sign test on discordant pairs.
 
-    Distribution-free and exact, so it does not inherit the t approximation
-    that makes a boundary TOST decision fragile when discordance is low.
+    TESTS SUPERIORITY, NOT EQUIVALENCE. It asks whether wins and losses are
+    balanced, which validates the sign-flip permutation result. It says
+    nothing about whether an effect lies inside an equivalence margin.
+
+    An earlier version of this script placed it beside the TOST boundary flag
+    in a way that implied it provided an exact sensitivity check for the
+    equivalence decision. It does not, and no exact equivalence test is
+    reported here. Boundary-sensitive TOST results are therefore reported as
+    approximate secondary results and are not headlined.
     """
     wins = int((diffs > 0).sum())
     losses = int((diffs < 0).sum())
