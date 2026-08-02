@@ -192,7 +192,18 @@ def score_corpus(key, directory, prefix, variants, lsi_fit):
         print(f"    {name:16s} n={n:3d}  Top-1={mean:.4f}"
               f"  gate {counts['gate_fired']:3d}/{n}"
               f"  expanded {counts['expanded']:3d}/{n}", flush=True)
-    return pd.DataFrame(rows)
+
+    # How many requirements did reformulation actually move? Gate invocation
+    # and expansion both overcount this: an expansion can leave the ranking,
+    # or at least the top-1, unchanged.
+    if "multi" in stats and "reform" in stats:
+        shared = set(stats["multi"]) & set(stats["reform"])
+        changed = sum(1 for r in shared
+                      if stats["multi"][r]["top1"] != stats["reform"][r]["top1"])
+        counters["top1_changed_reform_vs_multi"] = {"changed": changed,
+                                                    "n": len(shared)}
+        print(f"    {'top-1 moved':16s} {changed:3d}/{len(shared)}", flush=True)
+    return pd.DataFrame(rows), counters
 
 
 def main():
