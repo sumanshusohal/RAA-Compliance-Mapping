@@ -27,3 +27,7 @@ llm_cache/
 *.xlsx
 sp800-53-catalog.json
 sp800-53r5-catalog.json
+
+# Derived archive for the OSF registration. Rebuildable and hash-stable
+# via make_frozen_zip.py; the inputs it wraps are tracked in frozen_backends/.
+frozen_backends.zip

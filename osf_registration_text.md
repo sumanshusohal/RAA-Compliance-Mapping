@@ -41,6 +41,14 @@ primary arm has not been computed.
                       corpus, plus control ids, requirement ids and a gold
                       membership mask
 
+    frozen_backends.zip
+        31165b91b899513630a490c30a1634c9d9b3f0455f9ea4f119eb3483154fe722
+        The 32 arrays and the manifest as one archive, 33 entries, 2.31 MB.
+        Byte-reproducible: make_frozen_zip.py pins entry order, timestamps,
+        permissions and compression level, so rebuilding from the same
+        inputs yields this exact hash. Verify with
+        `python make_frozen_zip.py --check`.
+
     commit  25ce391d5e00bbb8218cf46878c256c88b2655f0
     tag     hybrid-analysis-spec-v1
     repo    https://github.com/sumanshusohal/RAA-Compliance-Mapping
