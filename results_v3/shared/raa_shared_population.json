@@ -1,6 +1,10 @@
 {
   "argv": [
-    "score_raa.py"
+    "score_raa.py",
+    "--lsi-fit",
+    "transductive",
+    "--out",
+    "shared_raa_scores_transductive.csv"
   ],
   "environment": {
     "numpy": "1.26.4",
@@ -9,42 +13,141 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "ab78fa894584415ee7e643c854bf120bf5e27bfc",
+    "commit": "578a3acbc2be1067f141b366431c69ef333be26f",
     "dirty": true
   },
-  "lsi_fit": "control documents only; run_variant fits on controls plus train and calibration requirements, which do not exist in a one-pass protocol",
+  "lsi_fit": "transductive",
+  "lsi_fit_note": "inductive = controls only. run_variant fits on controls plus train and calibration requirements, so comparing these numbers with the published holdout figures varies protocol AND representation fitting together; run both --lsi-fit settings to separate them",
   "no_decision_metrics_reason": "coverage, selective accuracy and gap detection require calibration splits",
   "primary_backend": "bm25",
   "purpose": "full RAA scored once per requirement on the shared population, so it can be compared with score_all.py rows",
   "ranking_only": true,
+  "reformulation_counters": {
+    "diagnostic": {
+      "multi": {
+        "expanded": 0,
+        "gate_fired": 0,
+        "n": 58,
+        "top1_changed": 0
+      },
+      "raa_full": {
+        "expanded": 52,
+        "gate_fired": 58,
+        "n": 58,
+        "top1_changed": 0
+      },
+      "reform": {
+        "expanded": 52,
+        "gate_fired": 58,
+        "n": 58,
+        "top1_changed": 0
+      },
+      "top1_changed_reform_vs_multi": {
+        "changed": 14,
+        "n": 58
+      }
+    },
+    "hipaa": {
+      "multi": {
+        "expanded": 0,
+        "gate_fired": 0,
+        "n": 68,
+        "top1_changed": 0
+      },
+      "raa_full": {
+        "expanded": 48,
+        "gate_fired": 68,
+        "n": 68,
+        "top1_changed": 0
+      },
+      "reform": {
+        "expanded": 48,
+        "gate_fired": 68,
+        "n": 68,
+        "top1_changed": 0
+      },
+      "top1_changed_reform_vs_multi": {
+        "changed": 9,
+        "n": 68
+      }
+    },
+    "nist": {
+      "multi": {
+        "expanded": 0,
+        "gate_fired": 0,
+        "n": 106,
+        "top1_changed": 0
+      },
+      "raa_full": {
+        "expanded": 63,
+        "gate_fired": 106,
+        "n": 106,
+        "top1_changed": 0
+      },
+      "reform": {
+        "expanded": 63,
+        "gate_fired": 106,
+        "n": 106,
+        "top1_changed": 0
+      },
+      "top1_changed_reform_vs_multi": {
+        "changed": 10,
+        "n": 106
+      }
+    },
+    "pf": {
+      "multi": {
+        "expanded": 0,
+        "gate_fired": 0,
+        "n": 94,
+        "top1_changed": 0
+      },
+      "raa_full": {
+        "expanded": 79,
+        "gate_fired": 94,
+        "n": 94,
+        "top1_changed": 0
+      },
+      "reform": {
+        "expanded": 79,
+        "gate_fired": 94,
+        "n": 94,
+        "top1_changed": 0
+      },
+      "top1_changed_reform_vs_multi": {
+        "changed": 13,
+        "n": 94
+      }
+    }
+  },
   "rel_gap_retry_threshold": 0.1,
   "spec_hashes": {
     "raa_agent.py": "80c41afbd6b101e749bc12cf0c22ee9a67662d825bcdc08dc98ff0fd0aef19f2",
-    "score_raa.py": "f2612e5be9d36720354865782bd4367db2bc461d3cc53c1e70e10f4d54679969"
+    "score_raa.py": "d9441c521818ea5f08955022893974d2c52e65bf6b837bc954e86d8d563b19b2"
   },
   "status": "exploratory",
   "thresholds": "conf_thr=gap_thr=0.0; ranking is independent of them",
-  "timestamp_utc": "2026-08-02T02:36:19.017936+00:00",
+  "timestamp_utc": "2026-08-02T02:48:42.751860+00:00",
   "top1": {
     "csf": {
-      "multi": 0.37735849056603776,
+      "multi": 0.4056603773584906,
       "raa_full": 0.4056603773584906,
       "reform": 0.4056603773584906
     },
     "diagnostic": {
-      "multi": 0.46551724137931033,
-      "raa_full": 0.5862068965517241,
-      "reform": 0.5862068965517241
+      "multi": 0.4827586206896552,
+      "raa_full": 0.603448275862069,
+      "reform": 0.603448275862069
     },
     "hipaa": {
-      "multi": 0.3088235294117647,
-      "raa_full": 0.3088235294117647,
-      "reform": 0.3088235294117647
+      "multi": 0.27941176470588236,
+      "raa_full": 0.2647058823529412,
+      "reform": 0.2647058823529412
     },
     "pf": {
-      "multi": 0.3404255319148936,
-      "raa_full": 0.3723404255319149,
-      "reform": 0.3723404255319149
+      "multi": 0.3723404255319149,
+      "raa_full": 0.3829787234042553,
+      "reform": 0.3829787234042553
     }
   }
 }

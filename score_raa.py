@@ -291,8 +291,8 @@ def main():
     }
     rd = os.path.join(HERE, "results_v3", "shared")
     os.makedirs(rd, exist_ok=True)
-    with open(os.path.join(rd, "raa_shared_population.json"), "w",
-              newline="\n") as f:
+    stem = f"raa_shared_population_{args.lsi_fit}.json"
+    with open(os.path.join(rd, stem), "w", newline="\n") as f:
         json.dump(record, f, indent=2, sort_keys=True)
         f.write("\n")
     print(f"record written: results_v3/shared/{stem}")
