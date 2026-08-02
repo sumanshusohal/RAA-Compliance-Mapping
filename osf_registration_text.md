@@ -41,8 +41,15 @@ primary arm has not been computed.
                       corpus, plus control ids, requirement ids and a gold
                       membership mask
 
-    commit  [FILL: full 40-character commit SHA]
-    repo    [FILL: public repository URL]
+    commit  25ce391d5e00bbb8218cf46878c256c88b2655f0
+    tag     hybrid-analysis-spec-v1
+    repo    https://github.com/sumanshusohal/RAA-Compliance-Mapping
+
+Cite the tag rather than the commit where possible. The tag is annotated
+and carries these hashes in its own message, and it stays fixed at the
+frozen state even as later commits land on master. The specification's
+SHA-256 is content-addressed and is the strongest anchor of the three:
+it does not depend on git at all.
 
 Text hashes are computed with line endings normalized to LF, so they reproduce
 on any platform. `python hybrid_spec.py` prints the specification hash.
