@@ -138,8 +138,16 @@ plus evaluation queries (`include_regs_in_fit=True`) and never said so.
    annotated and carries the hashes in its own message.
 
    ```
-   OSF DOI      : [RECORD IT HERE ONCE REGISTERED]
-   registered on: [DATE]
+   OSF project     : https://osf.io/vubf6
+   registration    : Open-Ended Registration, "Prospectively registered
+                     exploratory analysis: gated hybrid lexical-semantic
+                     retrieval for regulatory traceability"
+   date registered : 2026-08-01
+   contributors    : Sumanshu Sohal alone. Darshankumar Prajapati is a
+                     co-author on the manuscript but was not involved in the
+                     post-rejection work this registration covers.
+   registration URL: [RECORD ONCE ARCHIVING COMPLETES]
+   DOI             : [RECORD ONCE ISSUED]
    ```
 
    Registered content, text hashes taken with LF normalization:
