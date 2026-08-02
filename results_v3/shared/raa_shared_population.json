@@ -1,0 +1,50 @@
+{
+  "argv": [
+    "score_raa.py"
+  ],
+  "environment": {
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.2"
+  },
+  "git": {
+    "commit": "ab78fa894584415ee7e643c854bf120bf5e27bfc",
+    "dirty": true
+  },
+  "lsi_fit": "control documents only; run_variant fits on controls plus train and calibration requirements, which do not exist in a one-pass protocol",
+  "no_decision_metrics_reason": "coverage, selective accuracy and gap detection require calibration splits",
+  "primary_backend": "bm25",
+  "purpose": "full RAA scored once per requirement on the shared population, so it can be compared with score_all.py rows",
+  "ranking_only": true,
+  "rel_gap_retry_threshold": 0.1,
+  "spec_hashes": {
+    "raa_agent.py": "80c41afbd6b101e749bc12cf0c22ee9a67662d825bcdc08dc98ff0fd0aef19f2",
+    "score_raa.py": "f2612e5be9d36720354865782bd4367db2bc461d3cc53c1e70e10f4d54679969"
+  },
+  "status": "exploratory",
+  "thresholds": "conf_thr=gap_thr=0.0; ranking is independent of them",
+  "timestamp_utc": "2026-08-02T02:36:19.017936+00:00",
+  "top1": {
+    "csf": {
+      "multi": 0.37735849056603776,
+      "raa_full": 0.4056603773584906,
+      "reform": 0.4056603773584906
+    },
+    "diagnostic": {
+      "multi": 0.46551724137931033,
+      "raa_full": 0.5862068965517241,
+      "reform": 0.5862068965517241
+    },
+    "hipaa": {
+      "multi": 0.3088235294117647,
+      "raa_full": 0.3088235294117647,
+      "reform": 0.3088235294117647
+    },
+    "pf": {
+      "multi": 0.3404255319148936,
+      "raa_full": 0.3723404255319149,
+      "reform": 0.3723404255319149
+    }
+  }
+}
