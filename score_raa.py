@@ -28,17 +28,43 @@ corpus with the thresholds set to accept everything, and records only ranking
 metrics. It produces NO decision metrics. Coverage, selective accuracy and
 gap detection still require calibration splits and are not reported here.
 
-LSI FIT
--------
+LSI FIT, AND WHY IT IS A SEPARATE KNOB
+--------------------------------------
 run_variant fits LSI on controls plus the train and calibration requirement
-texts. With no splits there is no train set, so this script fits LSI on
-control documents only, matching the inductive variant used elsewhere in the
-shared protocol. This is a deliberate deviation from the published agent
-configuration and is recorded in the output.
+texts, so the latent space depends on which requirements landed in the split.
+A one-pass protocol has no train set, so the natural choice is controls only.
+
+That means moving from the published holdout numbers to these ones changes
+TWO things at once: the evaluation protocol and the LSI fitting regime.
+Attributing the difference to protocol alone would be confounded. --lsi-fit
+exposes the second knob so it can be varied while the protocol is held fixed:
+
+    inductive     controls only (default; matches the shared protocol)
+    transductive  controls plus every requirement text (matches score_all's
+                  "lsi", and is the closest available analogue of the
+                  published split-dependent fit)
+
+Running both under one protocol isolates how much of the movement is
+representation fitting rather than evaluation design.
+
+INSTRUMENTATION
+---------------
+Four distinct things are counted, because they are not the same and an
+earlier version of this script conflated the first with the rest:
+
+    gate_fired        the ambiguity gate invoked the reformulation tool
+    expanded          the tool actually produced a query different from the
+                      original, so an expansion existed to retrieve with
+    ranking_changed   the post-reformulation ranking differs from the
+                      pre-reformulation one at any position
+    top1_changed      the predicted top-1 control differs
+
+Reporting only the first supports "the gate activated on nearly every
+query". It does not support "reformulation was always on".
 
 Usage:
     USE_TF=0 python score_raa.py
-    USE_TF=0 python score_raa.py --corpus pf
+    USE_TF=0 python score_raa.py --lsi-fit transductive --out shared_raa_scores_transductive.csv
 """
 import argparse
 import datetime as dt
@@ -98,7 +124,7 @@ def metrics(order_ids, gold_set, k=TOPK):
                 None)}
 
 
-def score_corpus(key, directory, prefix, variants):
+def score_corpus(key, directory, prefix, variants, lsi_fit):
     from raa_agent import (AgentTools, ComplianceAgent, Control, LSIIndex,
                            Regulation, build_bm25_scorer, build_tfidf_scorer)
 
@@ -128,20 +154,22 @@ def score_corpus(key, directory, prefix, variants):
     scorers = {
         "tfidf": build_tfidf_scorer(ctrl_texts),
         "bm25": build_bm25_scorer(ctrl_texts),
-        # controls only: no train split exists in a one-pass protocol
-        "lsi": LSIIndex(ctrl_texts, [], n_components=100,
-                        include_regs_in_fit=False).score,
+        "lsi": (LSIIndex(ctrl_texts, [], n_components=100,
+                         include_regs_in_fit=False).score
+                if lsi_fit == "inductive" else
+                LSIIndex(ctrl_texts, list(regs_df["text"]), n_components=100,
+                         include_regs_in_fit=True).score),
     }
 
     reg_list = [regs[r] for r in sorted(regs)]
     gt_lists = {r: sorted(gold.get(r, [])) for r in regs}
     tools = AgentTools(scorers, controls, reg_list, gt_lists)
 
-    rows = []
+    rows, counters, stats = [], {}, {k: {} for k in variants}
     for name, cfg in variants.items():
         agent = ComplianceAgent(tools=tools, conf_thr=0.0, gap_thr=0.0,
                                 rel_gap_retry_threshold=0.10, **cfg)
-        fired = 0
+        counts = {"gate_fired": 0, "expanded": 0, "top1_changed": 0}
         for rid in sorted(regs):
             if rid not in gold:
                 continue
@@ -152,10 +180,18 @@ def score_corpus(key, directory, prefix, variants):
                       "n_gold": len(gold[rid])})
             rows.append(m)
             if "reformulate" in trace.tools_used:
-                fired += 1
+                counts["gate_fired"] += 1
+                # Did the tool actually change the query text?
+                expanded = tools.reformulate(regs[rid].text)
+                if expanded != regs[rid].text:
+                    counts["expanded"] += 1
+            stats[name].setdefault(rid, {})["top1"] = m["predicted_top1"]
         n = sum(1 for r in regs if r in gold)
-        print(f"    {name:16s} n={n:3d}  Top-1={np.mean([r['top1'] for r in rows if r['method']==name]):.4f}"
-              f"  reform fired {fired}/{n}", flush=True)
+        counters[name] = dict(counts, n=n)
+        mean = np.mean([r["top1"] for r in rows if r["method"] == name])
+        print(f"    {name:16s} n={n:3d}  Top-1={mean:.4f}"
+              f"  gate {counts['gate_fired']:3d}/{n}"
+              f"  expanded {counts['expanded']:3d}/{n}", flush=True)
     return pd.DataFrame(rows)
 
 
@@ -163,6 +199,10 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--corpus", choices=sorted(CORPORA))
     ap.add_argument("--out", default="shared_raa_scores.csv")
+    ap.add_argument("--lsi-fit", choices=("inductive", "transductive"),
+                    default="inductive",
+                    help="inductive = controls only (shared protocol); "
+                         "transductive = controls plus all requirement texts")
     args = ap.parse_args()
 
     # Two things are needed and they are not the same contrast.
@@ -189,13 +229,15 @@ def main():
     print("decision metrics need calibration splits and are not produced.\n")
 
     keys = [args.corpus] if args.corpus else list(CORPORA)
-    frames = []
+    frames, all_counters = [], {}
     for key in keys:
         directory, prefix = CORPORA[key]
         if not os.path.isdir(os.path.join(HERE, directory)):
             print(f"  {key}: {directory} missing, skipped")
             continue
-        frames.append(score_corpus(key, directory, prefix, variants))
+        f, c = score_corpus(key, directory, prefix, variants, args.lsi_fit)
+        frames.append(f)
+        all_counters[key] = c
 
     if not frames:
         return 1
@@ -216,9 +258,13 @@ def main():
         "ranking_only": True,
         "no_decision_metrics_reason": "coverage, selective accuracy and gap "
                                       "detection require calibration splits",
-        "lsi_fit": "control documents only; run_variant fits on controls plus "
-                   "train and calibration requirements, which do not exist in "
-                   "a one-pass protocol",
+        "lsi_fit": args.lsi_fit,
+        "lsi_fit_note": "inductive = controls only. run_variant fits on "
+                        "controls plus train and calibration requirements, so "
+                        "comparing these numbers with the published holdout "
+                        "figures varies protocol AND representation fitting "
+                        "together; run both --lsi-fit settings to separate them",
+        "reformulation_counters": all_counters,
         "primary_backend": "bm25",
         "rel_gap_retry_threshold": 0.10,
         "thresholds": "conf_thr=gap_thr=0.0; ranking is independent of them",
@@ -238,7 +284,7 @@ def main():
               newline="\n") as f:
         json.dump(record, f, indent=2, sort_keys=True)
         f.write("\n")
-    print(f"record written: results_v3/shared/raa_shared_population.json")
+    print(f"record written: results_v3/shared/{stem}")
     return 0
 
 
