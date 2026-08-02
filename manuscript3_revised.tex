@@ -18,7 +18,7 @@
 
 \shortauthors{S.~Sohal and D.~Prajapati}
 
-\title[mode = title]{Regulatory Alignment Agent: Multi-Step Retrieval with Domain-Aware Query Reformulation for Automated Compliance Mapping}
+\title[mode = title]{Benchmark Sensitivity in Regulatory Traceability: A Multi-Corpus Study of Query Reformulation and Neural Retrieval}
 
 \author[1,2]{Sumanshu Sohal}
 \cormark[1]
@@ -42,21 +42,27 @@
 \cortext[1]{Corresponding author}
 
 \begin{abstract}
-Regulatory compliance mapping, the task of linking natural-language regulatory requirements to the organizational controls that implement them, remains a predominantly manual activity in software-intensive organizations.
-We frame compliance mapping as a selective traceability recovery problem and introduce the \emph{Regulatory Alignment Agent} (RAA), a deterministic, ReAct-inspired multi-stage retrieval workflow that interleaves retrieval, domain-aware query reformulation, cross-framework corroboration, and a calibrated accept-or-abstain decision.
-Every decision is accompanied by a structured trace of the steps that produced it.
+Regulatory compliance mapping, the task of linking natural-language regulatory requirements to the organizational controls that address them, remains a predominantly manual activity in software-intensive organizations.
+Few public collections exist for it, so methods are usually measured on benchmarks their own authors construct.
+This paper asks what such benchmarks license us to conclude.
 
-We evaluate the RAA on two complementary benchmarks, measuring ranking quality and decision quality separately so that neither is mistaken for the other.
-The first is a controlled diagnostic benchmark (58~requirements from 7~frameworks, 110~controls, 86~links) constructed to isolate the effect of \emph{vocabulary mismatch} between regulatory language and implementation-level control descriptions.
-The second is a real-world benchmark derived entirely from artifacts published by NIST: 106~subcategories of the NIST Cybersecurity Framework mapped to 300~controls of SP~800-53 Revision~5 through NIST's official crosswalk (495~links), giving ground truth authored independently of our system.
-Using query-level paired tests that avoid seed-level pseudoreplication, domain-aware query reformulation is the one component that significantly improves ranking on the diagnostic benchmark ($\Delta\text{Top-1} = +0.14$, $p = 0.009$) but is inert on the real-world benchmark ($\Delta\text{Top-1} = +0.01$, $p = 0.65$); no deterministic component significantly improves ranking on real NIST text.
-Reformulation earns its cost precisely where the regulation-to-implementation vocabulary gap is widest.
-When ranking is measured independently of the accept/abstain decision, the deterministic agent does not out-rank neural retrieval on either benchmark: it is statistically tied with a dual-encoder on both, and it holds no coverage or selective-accuracy advantage.
-A two-stage cross-encoder pipeline scores higher still on the real benchmark, but it reranks a 20-candidate shortlist rather than the full corpus, so we report it separately rather than as a like-for-like comparison.
-We do not put a qualitative claim in place of the missing metric advantage.
-The traces record what the pipeline did, which establishes provenance rather than demonstrated usefulness to an auditor, and we do not measure execution determinism under controlled conditions.
-We further stress-test its abstention with an open-world evaluation in which some requirements have no valid control, and find that abstention calibrated for coverage detects only a minority of true gaps, an explicit limitation we quantify.
-Both benchmarks, the evaluation harness, and the agent implementation are released as supplementary materials.
+We evaluate one frozen set of retrieval methods on four corpora under a single protocol: lexical baselines, reciprocal rank fusion, domain-aware query reformulation, a dual-encoder, a cross-encoder, and an open-weight language model reranker.
+One corpus is an engineered diagnostic instrument we built to isolate vocabulary mismatch (58~requirements, 110~controls, 86~links).
+The other three carry NIST-authored ground truth: the Cybersecurity Framework 1.1 (106~requirements, 495~links), HIPAA (68, 274), and the Privacy Framework (94, 456), all mapping to one 300-control corpus of SP~800-53.
+Every method is scored once per requirement over the full control corpus, so all comparisons share a single estimand, and methods that rerank a candidate shortlist are reported separately from those that rank the whole corpus, since the two are bounded differently.
+
+The central result is that the effect most clearly demonstrated on the engineered corpus does not replicate on real text.
+Domain-aware reformulation improves Top-1 accuracy by $+0.140$ on the engineered corpus and by $+0.009$, $+0.008$ and $+0.003$ on the three NIST corpora, none distinguishable from zero.
+A requirement-level measure of vocabulary distance does not explain the difference: pooled over the real corpora, the interaction between measured gap and reformulation benefit is $+0.014$ (95\% CI $[-0.014, +0.043]$, sign-flip $p = 0.38$, $n = 268$).
+What separates the data is whether a corpus was engineered, not how wide its measured vocabulary gap is.
+
+A preregistered test reproduces the same pattern inside one frozen design.
+Routing a query to lexical fusion only when the dual-encoder is unconfident is non-inferior to the dual-encoder alone ($p = 0.003$ at a five-point margin) and not superior ($p = 0.48$), and that pooled null averages $+0.085$ on one corpus against $-0.088$ on another.
+A study using either corpus alone would have reached the opposite conclusion.
+
+We report a negative result about our own system rather than a compensating qualitative claim: no deterministic component significantly improves ranking on any real corpus, and the agent holds no coverage or selective-accuracy advantage.
+The three real corpora are externally authored but not independent of one another, sharing a NIST lineage and a common target catalogue, which we treat as a limitation throughout.
+All four corpora, the frozen analysis specification, the evaluation harness and the implementation are public, and the preregistration is at \texttt{doi:10.17605/OSF.IO/NZXRV}.
 \end{abstract}
 
 \begin{highlights}
@@ -100,16 +106,30 @@ Second, in high-stakes domains, the system should be able to \emph{abstain} rath
 In this paper, we introduce the \emph{Regulatory Alignment Agent} (RAA), a multi-step retrieval system that addresses these limitations through a deterministic, tool-augmented multi-stage workflow.
 The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving reasoning-like observations with tool actions, but---unlike an open-ended language-model ReAct loop---RAA executes a fixed conditional sequence of deterministic tools and emits structured (templated) trace steps: it retrieves candidate controls, evaluates confidence, reformulates queries using domain knowledge when the top-2 margin is ambiguous, corroborates candidates across related regulatory frameworks, and makes an auditable accept-or-abstain decision. We use the term ``agent'' in this restricted, deterministic sense throughout.
 
+\paragraph{Research questions.}
+The study is organized around three questions, stated here so the reader can check the results against them.
+
+\begin{description}
+\item[RQ1] Does the benefit of domain-aware query reformulation, established on an engineered corpus, transfer to corpora whose requirements, controls and links were authored independently of this work?
+\item[RQ2] If it does not, is the difference explained by a measurable property of the corpora, specifically the vocabulary distance between a requirement and its gold controls?
+\item[RQ3] Does a gated combination of lexical and semantic retrieval, whose design is frozen and publicly timestamped before it is run, recover what either family uniquely solves without giving up the other's successes?
+\end{description}
+
 \paragraph{Contributions.}
 This paper makes four contributions.
-First, we formalize compliance mapping as a \emph{selective} traceability recovery problem (Section~\ref{sec:formulation}), distinguishing ranking quality (how well candidate controls are ordered) from decision quality (when the system should commit to a mapping rather than escalate to a human).
-Second, we introduce a multi-step agent architecture (Section~\ref{sec:architecture}) whose tools---multi-backend rank fusion, domain-aware query reformulation, cross-framework corroboration, bidirectional verification, and calibrated abstention---are rule-based and produce structured reasoning traces.
-Third, we evaluate the agent on two complementary benchmarks (Section~\ref{sec:dataset}): a controlled diagnostic benchmark designed to isolate vocabulary mismatch, and a real-world benchmark whose ground truth is NIST's official crosswalk between the Cybersecurity Framework and SP~800-53 Revision~5, authored independently of this work.
-Fourth, through ablations on both benchmarks (Section~\ref{sec:results}), computing ranking and decision metrics separately and using query-level paired tests, we characterize \emph{when} curated domain knowledge pays off: query reformulation significantly improves ranking under severe vocabulary mismatch ($\Delta\text{Top-1}=+0.14$, $p=0.009$) but is inert when requirements and controls share an institutional vocabulary, where no deterministic component yields a significant gain.
-We also report results that temper the case for a purely deterministic agent: once ranking is decoupled from the accept/abstain decision and compared at the query level, the agent neither out-ranks neural retrieval (it ties a dual-encoder and is beaten by a cross-encoder) nor holds any coverage or selective-accuracy advantage, and an open-world evaluation shows its abstention detects only a minority of genuine no-match gaps.
+
+First, a multi-corpus evaluation of regulatory traceability (Section~\ref{sec:dataset}) that puts one engineered corpus alongside three with NIST-authored ground truth, all sharing a single 300-control target catalogue, and scores every method once per requirement over the full corpus so that all comparisons share one estimand.
+
+Second, the finding that answers RQ1 and RQ2 (Section~\ref{sec:results}): the reformulation benefit is $+0.140$ on the engineered corpus and $+0.009$, $+0.008$ and $+0.003$ on the real ones, and a requirement-level measure of vocabulary distance does not account for the difference. Engineered versus real separates the data; measured gap does not. Since the mechanism of reformulation is a thesaurus written by the same authors who wrote the engineered corpus, this is a concrete instance of a benchmark rewarding the intervention it was built to exercise.
+
+Third, a preregistered answer to RQ3 (Section~\ref{sec:hybrid}). The gated hybrid is non-inferior to semantic retrieval alone and not superior, and the pooled null averages a large gain on one corpus against a nearly equal loss on another. The design, its endpoint, its margin, its test order and its prohibitions were frozen, hashed and publicly registered before the analysis ran, so the null is reportable rather than discarded.
+
+Fourth, a formalization of compliance mapping as a \emph{selective} traceability recovery problem (Section~\ref{sec:formulation}) that separates ranking quality from decision quality, together with the multi-step architecture used as the vehicle for the study (Section~\ref{sec:architecture}).
+
+The system is the instrument here, not the claim. Once ranking is decoupled from the accept/abstain decision and compared at the query level, no deterministic component significantly improves ranking on any real corpus, the agent holds no coverage or selective-accuracy advantage, and an open-world evaluation shows its abstention detects only a minority of genuine no-match gaps.
 We draw no compensating qualitative claim from this.
 The traces record the steps behind each decision, which is a provenance property; whether they help an auditor is an empirical question this paper does not test.
-All datasets, baselines, and the agent implementation are released as supplementary material.
+All four corpora, the frozen analysis specification, the baselines and the implementation are public, and the preregistration is at \texttt{doi:10.17605/OSF.IO/NZXRV}.
 
 
 %% ================================================================
@@ -609,6 +629,62 @@ Varying $\tau_{\text{rel}}$ over $\{0.05, 0.10, 0.15, 0.20\}$ leaves the diagnos
 This is worth stating plainly: reformulation is effectively always-on here, not a selectively invoked repair.
 The decision constants affect only the accept/abstain boundary, and because thresholds are recalibrated to the coverage target, their main measurable effect is on open-world gap detection; sweeping the verification-tightening factor over $\{0.05, 0.10, 0.20\}$ moves gap detection only within $0.25$--$0.31$ at essentially fixed coverage ($\approx 0.79$), so no setting lifts gap detection out of the weak regime reported in Section~\ref{sec:results-openworld}.
 
+
+%% ================================================================
+\section{A preregistered test of a gated hybrid}
+\label{sec:hybrid}
+%% ================================================================
+
+Everything reported so far is exploratory. The corpora existed before any analysis plan was written, and the plan was not timestamped, so nothing above can claim to have been specified in advance. This section is different, and we describe how it differs before giving the result.
+
+\subsection{Why a gate, and why register it}
+
+Section~\ref{sec:results} showed that lexical and semantic retrieval fail on different requirements. On the Privacy Framework corpus five methods score exactly $35/94$ while lexical fusion and the dual-encoder each uniquely solve 15 requirements the other misses, and the oracle union of the two reaches $50/94$. Aggregate ties of this kind conceal complementary errors, and they suggest a combination that is selective rather than uniform: use the dual-encoder when it is confident, and consult the lexical side only when it is not.
+
+That suggestion came from looking at these corpora, which is exactly why the test of it had to be constrained in advance. We therefore froze the design in an executable specification, hashed it, and registered it publicly before computing the contrast.\footnote{\texttt{doi:10.17605/OSF.IO/NZXRV}. The registration records the analysis code, its tests, the input generator, and SHA-256 hashes of every input score matrix.} The registration fixes the primary arm, the comparator, the endpoint, the estimand, the non-inferiority margin, the order of the two tests, the exclusion of the engineered corpus from the primary estimate, and a list of prohibited actions.
+
+We state the limits of that registration plainly. Because the hypothesis was generated from the same corpora that test it, the result is preregistered but still exploratory, and a genuinely confirmatory replication would need a corpus that did not exist when the specification was written. One declared secondary arm, the equal-weight fusion, was computed during method development before registration and is therefore reported as an observed result rather than a preregistered one.
+
+\subsection{Design}
+
+The gated arm ranks the full control corpus with the dual-encoder. Only when the dual-encoder's own top-2 relative margin falls below $0.10$ is the lexical side consulted, and the query is then re-ranked by reciprocal rank fusion over TF-IDF, BM25, inductive LSI and the dual-encoder. The gate reads only the dual-encoder scores, so routing is decided before any label is touched. Neither constant is new: $0.10$ is the margin the agent already uses to trigger reformulation (Section~\ref{sec:architecture}), and the five-point margin below was fixed for an earlier, unrelated contrast.
+
+The primary estimand is the mean paired Top-1 difference over the 268 concatenated requirements of the three NIST corpora, requirement-weighted, with intervals from a bootstrap resampled within corpus. Non-inferiority is tested first at a margin of $0.05$; superiority is tested only if non-inferiority is established, which fixes the multiplicity without a correction.
+
+\subsection{Result}
+
+Non-inferiority is established ($p = 0.003$) and superiority is not ($p = 0.48$). The mean difference is $+0.022$, 90\% interval $[-0.022, +0.067]$. Gating costs nothing and there is no evidence that it helps.
+
+The pooled null is the registered answer, and it conceals the more interesting pattern. Table~\ref{tab:hybrid} gives the per-corpus figures, which are descriptive by prior declaration and carry no test.
+
+\begin{table}[t]
+\caption{Gated hybrid against the dual-encoder alone, Top-1. The pooled contrast is the registered primary result; per-corpus rows are descriptive by prior declaration.}
+\label{tab:hybrid}
+\centering
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Corpus & $n$ & Dual-enc. & Gated & $\Delta$ & Gate fires \\
+\midrule
+CSF~1.1 & 106 & .406 & .491 & $+.085$ & .66 \\
+HIPAA & 68 & .456 & .368 & $-.088$ & .85 \\
+Privacy Fw. & 94 & .372 & .404 & $+.032$ & .74 \\
+\midrule
+Pooled & 268 & --- & --- & $+.022$ & --- \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Engineered corpus, excluded from the pooled estimate}} \\
+Diagnostic & 58 & .621 & .569 & $-.052$ & .48 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A gain of $+0.085$ on CSF sits against a loss of $-0.088$ on HIPAA. A study evaluating this gate on either corpus alone would have reported a clear success or a clear harm, and the pooled figure is the average of the two. This is the paper's central claim reproduced inside a single frozen design rather than argued across separately published results.
+
+The complementarity counts show the mechanism. On CSF the gate recovers 7 of the 11 requirements that lexical fusion uniquely solves while losing 3 of the 14 the dual-encoder uniquely solves. On HIPAA the trade reverses: 2 recovered against 8 lost. The gate is not behaving differently on the two corpora; the corpora differ in whether the lexical side has anything to contribute when the dual-encoder hesitates.
+
+Two features of the data qualify the design itself. The gate fires on 66\% to 85\% of queries, so a $0.10$ relative margin is not selective on this task and the gated arm sits close to the equal-weight fusion, most visibly on HIPAA where it fires on 85\% of queries and the two arms coincide. And the pre-declared hard-fallback variant, which hands gated queries to lexical fusion outright rather than fusing all four backends, is worse than the primary gate on every corpus. Declaring it secondary in advance is what prevents that from being presented as a design choice made on principle.
+
+A sensitivity arm replacing inductive LSI with the transductive fit used in the published protocol gives $+0.026$ against the primary's $+0.022$, so the conclusion does not depend on that fit.
 
 %% ================================================================
 \section{Discussion}
