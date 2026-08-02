@@ -117,8 +117,9 @@ All datasets, baselines, and the agent implementation are released as supplement
 \label{sec:related}
 %% ================================================================
 
-Our work sits at the intersection of four research threads: legal and regulatory requirements engineering, automated traceability recovery, query reformulation in information retrieval, and selective prediction.
+Our work sits at the intersection of several research threads: legal and regulatory requirements engineering, automated traceability recovery, query reformulation and rank fusion in information retrieval, selective prediction, and the methodological literature on what retrieval benchmarks license us to conclude.
 We discuss each in turn and position our contribution against them.
+The last thread matters most for this paper, because our central finding is about how a result behaves across corpora rather than about a system.
 
 \subsection{Legal and regulatory requirements engineering}
 \label{sec:related-legal}
@@ -173,11 +174,35 @@ In settings where incorrect predictions carry high costs, selective prediction~\
 Coverage (the fraction of inputs on which the system makes a prediction) and selective accuracy (accuracy among accepted predictions) characterize the precision-coverage trade-off.
 Selective prediction has been applied to classification~\citep{Geifman2019} and question answering~\citep{Kamath2020} but, to our knowledge, not to traceability recovery or compliance mapping.
 
-\subsection{Agentic reasoning systems}
+\subsection{Agentic reasoning and large language models for retrieval}
 
 The ReAct framework~\citep{Yao2023} demonstrated that interleaving reasoning traces with tool invocations enables language model agents to solve complex tasks through multi-step planning.
 Subsequent work has applied agentic patterns to code generation~\citep{Yang2024}, scientific discovery~\citep{Bran2024}, and information retrieval~\citep{Shao2024}.
 We adapt the ReAct pattern to compliance mapping, where the ``tools'' are retrieval backends, a domain thesaurus, and cross-framework knowledge---all rule-based, so each step and its inputs can be recorded.
+
+Language models have also been used as retrieval components directly rather than as planners.
+Retrieval-augmented generation~\citep{Lewis2020} conditions generation on retrieved passages, and a line of work uses the model itself as a reranker: \citet{Sun2023} show that an instruction-following model can reorder a candidate list competitively with supervised cross-encoders, without task-specific training.
+This matters for our setting because it changes what a reranking baseline is.
+A model that reranks a candidate list inherits that list's ceiling exactly as a cross-encoder does, so the protocol distinction we draw in Section~\ref{sec:protocol} between end-to-end and candidate-constrained methods applies to LLM rerankers unchanged, and comparing a one-pass LLM against methods evaluated over repeated holdouts compares different estimands rather than different methods.
+
+\subsection{Benchmark validity and the transfer of retrieval results}
+\label{sec:related-benchmarks}
+
+A recurring finding in information retrieval is that measured improvements need not survive a change of collection or of baseline.
+\citet{Armstrong2009} examined a decade of ad-hoc retrieval results and found that reported gains largely failed to accumulate, because systems were repeatedly compared against weak baselines rather than against the strongest available.
+\citet{Yang2019} reached a similar conclusion for early neural ranking models, showing that several reported gains shrank or disappeared against a properly tuned lexical baseline.
+\citet{Voorhees2000} had earlier established a related point about the measurement instrument itself: relevance judgments vary between assessors, so absolute effectiveness figures are properties of a collection and its annotators rather than of a system alone.
+
+The response in modern retrieval has been to evaluate across heterogeneous collections rather than to optimize one.
+BEIR~\citep{Thakur2021} assembles retrieval tasks from different domains specifically to test zero-shot transfer, and reports that no single architecture dominates: models that lead on one collection are beaten on others, and lexical baselines remain strong on domains far from the training distribution.
+The same concern has been raised in adjacent fields, where benchmark results have been shown not to transfer to freshly collected data drawn from the same nominal distribution~\citep{Recht2019}, and where the construct validity of benchmarks themselves has been questioned~\citep{BowmanDahl2021}.
+Within software engineering, \citet{Sim2003} argued that benchmarks advance a field only when the community treats their construction as a research contribution subject to scrutiny, rather than as infrastructure.
+
+This literature bears directly on our design.
+Traceability research has often evaluated on a single collection, and the compliance-mapping variant has few public collections of any kind, which creates pressure to construct one.
+A constructed collection is a legitimate diagnostic instrument, but its authors also choose its vocabulary, and any method whose mechanism targets that vocabulary will be measured on a corpus built to reward it.
+We therefore evaluate the same frozen methods on one engineered corpus and three independently authored ones, and report the contrast between them as the result rather than reporting the best number.
+To our knowledge no prior work in regulatory traceability has done this, and Section~\ref{sec:results} shows the contrast is large enough to reverse a conclusion drawn from the engineered corpus alone.
 
 
 %% ================================================================
@@ -744,6 +769,12 @@ Aronson, A.R., Lang, F.-M., 2010. An overview of MetaMap: historical perspective
 \bibitem[Borg et~al.(2014)]{Borg2014}
 Borg, M., Runeson, P., Ard\"o, A., 2014. Recovering from a decade: a systematic mapping of information retrieval approaches to software traceability. Empir.\ Softw.\ Eng.\ 19~(6), 1565--1616.
 
+\bibitem[Armstrong et~al.(2009)]{Armstrong2009}
+Armstrong, T.G., Moffat, A., Webber, W., Zobel, J., 2009. Improvements that don't add up: ad-hoc retrieval results since 1998. In: Proc.\ 18th ACM Conf.\ on Information and Knowledge Management (CIKM). pp.\ 601--610.
+
+\bibitem[Bowman and Dahl(2021)]{BowmanDahl2021}
+Bowman, S.R., Dahl, G.E., 2021. What will it take to fix benchmarking in natural language understanding? In: Proc.\ NAACL-HLT. pp.\ 4843--4855.
+
 \bibitem[Bran et~al.(2024)]{Bran2024}
 Bran, A.M., Cox, S., Schilter, O., Baldassari, C., White, A.D., Schwaller, P., 2024. Augmenting large language models with chemistry tools. Nat.\ Mach.\ Intell.\ 6, 525--535.
 
@@ -810,6 +841,9 @@ Kamath, A., Jia, R., Liang, P., 2020. Selective question answering under domain 
 \bibitem[Lample et~al.(2018)]{Lample2018}
 Lample, G., Conneau, A., Denoyer, L., Ranzato, M., 2018. Unsupervised machine translation using monolingual corpora only. In: Proc.\ ICLR. arXiv:1711.00043.
 
+\bibitem[Lewis et~al.(2020)]{Lewis2020}
+Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., K\"uttler, H., Lewis, M., Yih, W., Rockt\"aschel, T., Riedel, S., Kiela, D., 2020. Retrieval-augmented generation for knowledge-intensive NLP tasks. In: Proc.\ NeurIPS. pp.\ 9459--9474.
+
 \bibitem[Marcus and Maletic(2003)]{MarcusMaletic2003}
 Marcus, A., Maletic, J.I., 2003. Recovering documentation-to-source-code traceability links using latent semantic indexing. In: Proc.\ 25th ICSE. pp.\ 349--357.
 
@@ -834,6 +868,9 @@ Oliveto, R., Gethers, M., Poshyvanyk, D., De~Lucia, A., 2010. On the equivalence
 \bibitem[Otto and Ant\'on(2007)]{OttoAnton2007}
 Otto, P.N., Ant\'on, A.I., 2007. Addressing legal requirements in requirements engineering. In: Proc.\ 15th IEEE Int.\ Requirements Engineering Conf.\ (RE). pp.\ 5--14.
 
+\bibitem[Recht et~al.(2019)]{Recht2019}
+Recht, B., Roelofs, R., Schmidt, L., Shankar, V., 2019. Do ImageNet classifiers generalize to ImageNet? In: Proc.\ 36th Int.\ Conf.\ on Machine Learning (ICML). pp.\ 5389--5400.
+
 \bibitem[Reimers and Gurevych(2019)]{Reimers2019}
 Reimers, N., Gurevych, I., 2019. Sentence-BERT: Sentence embeddings using Siamese BERT-networks. In: Proc.\ EMNLP. pp.\ 3982--3992.
 
@@ -846,11 +883,26 @@ Rocchio, J.J., 1971. Relevance feedback in information retrieval. In: Salton, G.
 \bibitem[Shao et~al.(2024)]{Shao2024}
 Shao, Z., Gong, Y., Shen, Y., Huang, M., Duan, N., Chen, W., 2024. Assisting in writing Wikipedia-like articles from scratch with large language models. In: Proc.\ NAACL. pp.\ 6252--6278.
 
+\bibitem[Sim et~al.(2003)]{Sim2003}
+Sim, S.E., Easterbrook, S., Holt, R.C., 2003. Using benchmarking to advance research: a challenge to software engineering. In: Proc.\ 25th Int.\ Conf.\ on Software Engineering (ICSE). pp.\ 74--83.
+
 \bibitem[Sleimi et~al.(2018)]{Sleimi2018}
 Sleimi, A., Sannier, N., Sabetzadeh, M., Briand, L., Dann, J., 2018. Automated extraction of semantic legal metadata using natural language processing. In: Proc.\ 26th IEEE Int.\ Requirements Engineering Conf.\ (RE). pp.\ 124--135.
 
+\bibitem[Sun et~al.(2023)]{Sun2023}
+Sun, W., Yan, L., Ma, X., Wang, S., Ren, P., Chen, Z., Yin, D., Ren, Z., 2023. Is ChatGPT good at search? Investigating large language models as re-ranking agents. In: Proc.\ EMNLP. pp.\ 14918--14937.
+
+\bibitem[Thakur et~al.(2021)]{Thakur2021}
+Thakur, N., Reimers, N., R\"uckl\'e, A., Srivastava, A., Gurevych, I., 2021. BEIR: A heterogeneous benchmark for zero-shot evaluation of information retrieval models. In: Proc.\ NeurIPS Datasets and Benchmarks Track.
+
 \bibitem[Voorhees(1994)]{Voorhees1994}
 Voorhees, E.M., 1994. Query expansion using lexical-semantic relations. In: Proc.\ 17th ACM SIGIR. pp.\ 61--69.
+
+\bibitem[Voorhees(2000)]{Voorhees2000}
+Voorhees, E.M., 2000. Variations in relevance judgments and the measurement of retrieval effectiveness. Inf.\ Process.\ Manage.\ 36~(5), 697--716.
+
+\bibitem[Yang et~al.(2019)]{Yang2019}
+Yang, W., Lu, K., Yang, P., Lin, J., 2019. Critically examining the ``neural hype'': weak baselines and the additivity of effectiveness gains from neural ranking models. In: Proc.\ 42nd ACM SIGIR. pp.\ 1129--1132.
 
 \bibitem[Yang et~al.(2024)]{Yang2024}
 Yang, J., Jimenez, C.E., Wettig, A., Liber, K., Narasimhan, K., Press, O., 2024. SWE-agent: Agent-computer interfaces enable automated software engineering. arXiv:2405.15793.
