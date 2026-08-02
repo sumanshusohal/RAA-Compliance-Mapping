@@ -780,16 +780,26 @@ A sensitivity arm replacing inductive LSI with the transductive fit used in the 
 \label{sec:discussion}
 %% ================================================================
 
-\subsection{When does reformulation help?}
+\subsection{What the four corpora buy that two could not}
 
-The two benchmarks together answer a sharper question than either could alone: not whether domain-aware reformulation helps, but \emph{when}.
-Regulatory text is written at a policy abstraction level (``implement appropriate technical measures'') while controls describe specific implementations (``AES-256 with FIPS 140-2'').
-This is not random lexical variation but a systematic gap between abstraction levels, and a curated thesaurus bridges it because the mapping between regulatory concepts and implementation terms is relatively stable within a domain (encryption to AES, access control to RBAC).
-On the diagnostic benchmark, where a fifth of gold links cross this gap with no shared content words, reformulation is worth a query-level $+0.140$ Top-1 ($p=0.009$).
-On the NIST corpus, where requirements and controls are written by the same institution in a shared vocabulary, the gap is narrow and reformulation's ranking effect vanishes---no ranking metric improves significantly, and Top-1 moves by only $+0.009$ ($p=0.65$).
-The practical implication for organizations building compliance automation is conditional: invest in domain glossaries when mapping \emph{across} vocabularies (regulation to implementation, one framework's language to another's), and expect no ranking benefit when both sides of the mapping share an institutional house style.
+With two corpora we had a clean story: reformulation helps where the vocabulary gap is wide and is inert where it is narrow. The mechanism was plausible. Regulatory text is written at a policy abstraction level (``implement appropriate technical measures'') while controls describe specific implementations (``AES-256 with FIPS 140-2''), and a curated thesaurus should bridge that because the mapping between regulatory concepts and implementation terms is relatively stable within a domain.
+
+Two corpora cannot distinguish that explanation from a simpler one. The engineered corpus differed from the NIST corpus in gap severity, but it also differed in who wrote it, and with a single point on each side the two are perfectly confounded. Adding HIPAA and the Privacy Framework separates them, and the separation does not favour the gap explanation. HIPAA has the widest measured gap of the three external corpora and statutory source text from a different institution, which is where a gap-driven benefit should be largest, and its effect is $+0.008$ against the Privacy Framework's $+0.003$. Both sit with CSF, far from the engineered corpus.
+
+The lesson we take is not about thesauri. It is that the property distinguishing our positive result from our null results was authorship, and that this was invisible while we had one corpus of each kind. Any conditional recommendation we might have written from two corpora, of the form ``invest in domain glossaries when the vocabulary gap is wide,'' would have been an artifact of that confound.
+
 The thesaurus approach does expose the terms driving each expansion, which a neural reranker~\citep{Nogueira2019} does not.
 Whether that inspectability changes an auditor's work is untested here, so we record it as a property of the method rather than as a measured advantage.
+
+\subsection{What a registered null is worth}
+
+The gated hybrid in Section~\ref{sec:hybrid} returned a null: non-inferior, not superior. Reported without a registration, that result would be nearly worthless, because a reader has no way to know whether it was the analysis we intended or the least embarrassing of several we tried. The registration is what converts it into evidence, and the mechanism is worth spelling out because it is cheap and rarely used in this literature.
+
+Three provisions did the work. The endpoint, margin and test order were fixed in code before the data were touched, so the superiority test could only run if non-inferiority passed, and no second test could be substituted if the first disappointed. The secondary variants, including the hard fallback that turned out to be worse everywhere, were declared in advance, so the better-performing gate cannot be presented as a principled choice made ahead of time. And the analysis inputs were hashed, so a reader can check that the numbers came from the matrices we said they came from.
+
+The cost was a few hours. The benefit is that a null result is publishable, which matters in a subfield where the space of plausible retrieval combinations is large and the incentive to report only the combination that worked is correspondingly strong.
+
+We also disclose what registration did not fix. The hypothesis was generated from the same corpora that tested it, so the result is preregistered but exploratory, and one secondary arm was computed before registration and is reported as observed rather than preregistered.
 
 \subsection{Decision quality vs.\ ranking quality}
 
@@ -803,14 +813,16 @@ The decision tools illustrate the point in both directions: corroboration and ve
 
 \subsection{Neural vs.\ symbolic: complementary, not competing}
 
-Once ranking is measured independently of the decision and compared with a query-level test, the picture is clear and consistent: the deterministic agent does not out-rank neural retrieval on either benchmark.
-On the diagnostic corpus it is statistically indistinguishable from both the dual-encoder (0.672 vs.\ 0.644 Top-1, $p\approx1.0$) and the cross-encoder; on the NIST corpus the cross-encoder reranker leads decisively (0.562 vs.\ 0.406, $p=0.002$).
+Once ranking is measured independently of the decision and compared with a query-level test, the picture is consistent: the deterministic agent does not out-rank neural retrieval on any corpus.
+On the diagnostic corpus it is statistically indistinguishable from the dual-encoder (0.672 vs.\ 0.644 Top-1, $p\approx1.0$); on the external corpora no deterministic component improves ranking significantly.
+A two-stage cross-encoder pipeline scores higher on CSF (0.562 vs.\ 0.406), but it reranks a 20-candidate shortlist and is bounded by its Recall@20 of 0.906, so we report it in a separate protocol section rather than as a like-for-like win.
+
 We draw two conclusions.
 First, general-purpose learned representations are strong retrievers for compliance text, and a deterministic pipeline built from lexical backends and a curated thesaurus does not beat them on ranking, even where the thesaurus helps most.
-Second, the agent holds neither the best ranking nor the best coverage nor the best selective accuracy on either benchmark, and we do not offer its other properties as a substitute.
+Second, the agent holds neither the best ranking nor the best coverage nor the best selective accuracy on any corpus, and we do not offer its other properties as a substitute.
 It does record each step and its inputs, and the neural rerankers do not. That establishes where a mapping came from. It does not establish that the record is useful under audit, which is a claim about practitioners and would need to be tested on them.
-The most promising architecture is therefore a hybrid: admitting the cross-encoder as an additional backend within the agent's fusion step would let the workflow inherit its relevance signal while keeping the step record and abstention machinery around it, at the cost of making individual retrieval scores less interpretable.
-Quantifying that trade-off is a priority for future work.
+
+The natural next step, combining lexical and semantic retrieval, is the one we registered and tested, and Section~\ref{sec:hybrid} reports what happened: gating costs nothing and buys nothing on average, while producing a large gain on one corpus and a nearly equal loss on another. That per-corpus divergence is the same pattern as the reformulation result, arrived at by a different route, and it suggests the useful question is not which combination wins but which corpus properties decide the answer. We do not know what those properties are. The vocabulary-gap measure was the obvious candidate and Section~\ref{sec:results-gap} rules it out.
 
 
 %% ================================================================
@@ -831,10 +843,25 @@ We mitigated this by separating thesaurus design (general domain knowledge) from
 The real-world evaluation provides the stronger safeguard: the thesaurus was frozen before that corpus was assembled, and neither its texts nor its links were authored by us.
 The shrinkage of reformulation's effect on that corpus should accordingly be read as an honest bound on transfer, not as a benchmark artifact.
 
-\paragraph{External validity and statistical power.}
-The diagnostic benchmark covers 7 frameworks and the real-world corpus a single framework pair; real organizations may need to map across dozens of standards (e.g., FedRAMP, CMMC, DORA, NIS2), and the thesaurus would require extension for new domains.
-Corpus sizes (58 and 106 requirements) fundamentally limit statistical power, and we do not claim that repeated seeds overcome this: the 30 stratified splits overlap heavily and are not independent replicates, so we base all inference on query-level paired tests over unique requirements (Section~\ref{sec:protocol}) rather than on across-seed variance, and we report the small open-world denominator (4.4 no-match queries per seed) explicitly.
-The most important next step is evaluation against larger organizational control catalogs, where both statistical power and the implementation-side vocabulary gap should exceed the NIST-to-NIST setting.
+\paragraph{External validity: the three external corpora are not independent of one another.}
+This is the most important limitation of the study and it bears directly on the central claim.
+CSF~1.1, HIPAA and the Privacy Framework are all NIST products, all mapped into the same 300-control corpus drawn from SP~800-53, and two of the three crosswalks were authored by the same programme.
+They are correlated replications, not independent samples of regulatory text.
+A null that holds across all three is therefore weaker evidence than a null across three unrelated corpora would be, and we cannot exclude that some shared property of the NIST ecosystem, rather than external authorship as such, is what distinguishes them from the corpus we built.
+Testing that requires externally authored corpora from different institutions, ideally with a different target catalogue, and it is the single most valuable extension of this work.
+
+For the same reason we make no quantitative claim about how much engineered benchmarks inflate effects.
+The comparison here is one engineered corpus against three correlated external ones, which supports a claim about replication failure and not a ratio.
+
+\paragraph{External validity: coverage and power.}
+The diagnostic benchmark covers 7 frameworks and the external corpora three framework pairs; real organizations may need to map across dozens of standards (e.g., FedRAMP, CMMC, DORA, NIS2), and the thesaurus would require extension for new domains.
+Corpus sizes (58, 106, 68 and 94 requirements) limit statistical power, and we do not claim that repeated seeds overcome this: the 30 stratified splits overlap heavily and are not independent replicates, so we base all inference on query-level paired tests over unique requirements (Section~\ref{sec:protocol}) rather than on across-seed variance, and we report the small open-world denominator (4.4 no-match queries per seed) explicitly.
+The registered hybrid test states its own power limit explicitly: at $n = 268$ the one-sided half-width is $0.048$ against a margin of $0.05$, so it can establish that gating costs nothing but cannot establish that any cost is smaller than five points, and a failure to establish non-inferiority would have been consistent with a power limit rather than with harm.
+
+\paragraph{Statistical conclusion validity.}
+Two limitations of our own analysis should be read alongside the results.
+The reformulation contrasts in Section~\ref{sec:results-multi} are computed on per-requirement means over an uneven number of seeds, so per-requirement variances are unequal and the $t$ approximation underlying the equivalence tests is approximate.
+And a measure of vocabulary gap is fitted with corpus-relative IDF, so gap values are comparable within a corpus but not across corpora; all pooled analyses standardize within corpus before pooling for this reason, and we make no claim that any corpus has a larger absolute gap than another on a common scale.
 
 
 %% ================================================================
@@ -842,13 +869,22 @@ The most important next step is evaluation against larger organizational control
 \label{sec:conclusion}
 %% ================================================================
 
-We have presented the Regulatory Alignment Agent, a multi-step retrieval system for automated compliance mapping, and evaluated it on a controlled diagnostic benchmark and on a real-world corpus whose ground truth is NIST's official CSF to SP~800-53r5 crosswalk, measuring ranking quality and decision quality separately throughout.
-The paired evaluation supports three principal findings.
-First, domain-aware query reformulation significantly improves ranking under severe vocabulary mismatch (query-level $\Delta\text{Top-1} = +0.14$, $p = 0.009$) but is inert on same-institution text ($\Delta\text{Top-1} = +0.01$, $p = 0.65$), where no deterministic component yields a significant gain; the value of a curated compliance thesaurus is thus real but conditional on the width of the regulation-to-implementation vocabulary gap.
-Second, once ranking is decoupled from the accept/abstain decision and tested at the query level, the deterministic agent does not out-rank neural retrieval on either benchmark: it ties a dual-encoder on the diagnostic corpus and is significantly beaten by a cross-encoder reranker on the real one, and it holds no coverage or selective-accuracy advantage.
-Third, we are left without a metric case for a deterministic agent in this setting, and we do not replace it with an untested one about auditability. An open-world stress test also shows that its calibrated abstention detects only a minority of genuine no-match gaps, so it is not ready for gap discovery.
+We evaluated one frozen set of retrieval methods on four corpora of regulatory traceability: an engineered diagnostic instrument we built, and three whose texts and links were authored by NIST.
+The study began as an attempt to characterize when a curated compliance thesaurus pays off. It ended as a study of what a benchmark can establish.
 
-These findings suggest concrete directions for future work: admitting neural models (the cross-encoder, and domain-adapted encoders such as Legal-BERT~\citep{Chalkidis2020} or SecureBERT~\citep{Aghaei2022}) as backends inside the agent's fusion step while preserving the audit trail; designing a dedicated no-match signal to make open-world gap detection reliable; evaluating against organizational control catalogs, where the implementation-side vocabulary gap should be wider than in the NIST-to-NIST setting; and investigating temporal drift, where regulations and controls evolve and previously valid mappings become stale~\citep{Gama2014}.
+Three findings follow.
+
+First, the reformulation benefit does not replicate. It is $+0.140$ on the corpus we constructed ($p = 0.009$) and $+0.009$, $+0.008$ and $+0.003$ on the three external corpora, none distinguishable from zero. An earlier version of this work, with only the engineered corpus and one external corpus, concluded that the benefit was real but conditional on vocabulary-gap width. Two further corpora do not support that reading.
+
+Second, measured vocabulary gap does not explain the difference. Pooled over the external corpora the interaction between gap and reformulation benefit is $+0.014$ (95\% CI $[-0.014, +0.043]$, $p = 0.38$), and adding the engineered corpus moves it to $+0.024$ ($p = 0.089$), which shows the apparent moderation is carried by that corpus rather than by anything varying smoothly across corpora. Gap predicts lexical failure reliably and semantic advantage not at all. What separates the data is whether a corpus was engineered, not how wide its gap is. Since we wrote both the thesaurus and the corpus on which the thesaurus succeeds, this is a concrete case of a benchmark rewarding the intervention it was built to exercise.
+
+Third, a preregistered test of a gated lexical-semantic hybrid returns a null, and the null is informative. Gating is non-inferior to semantic retrieval alone ($p = 0.003$) and not superior ($p = 0.48$), while producing $+0.085$ on one corpus against $-0.088$ on another. The design was frozen, hashed and publicly registered before it ran, which is what makes a null publishable rather than discardable.
+
+The negative results about our own system stand: no deterministic component significantly improves ranking on any external corpus, the agent holds no coverage or selective-accuracy advantage, and its calibrated abstention detects only a minority of genuine no-match gaps, so it is not ready for gap discovery. We do not substitute an untested claim about auditability for the missing metric case.
+
+The most valuable extension is the one this study cannot perform on itself. Our three external corpora share a NIST lineage and a common target catalogue, so they are correlated replications, and distinguishing external authorship from the properties of one institution's document ecosystem requires corpora from different institutions with a different control catalogue. Beyond that: designing a dedicated no-match signal to make open-world gap detection reliable; admitting domain-adapted encoders such as Legal-BERT~\citep{Chalkidis2020} or SecureBERT~\citep{Aghaei2022} as backends; and investigating temporal drift, where regulations and controls evolve and previously valid mappings become stale~\citep{Gama2014}.
+
+A closing methodological point. The reversal reported here was possible only because the same frozen methods were run on more than one externally authored corpus. Had we stopped at two corpora, we would have published a plausible conditional recommendation that our own later data contradicts. In a subfield where public collections are scarce and authors routinely build their own, we suggest that a single benchmark, however carefully constructed, is not sufficient evidence that a method transfers.
 
 
 %% ================================================================
