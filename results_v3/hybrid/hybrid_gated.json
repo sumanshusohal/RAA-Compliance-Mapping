@@ -1,0 +1,184 @@
+{
+  "alpha": 0.05,
+  "argv": [
+    "run_hybrid.py"
+  ],
+  "delta": 0.05,
+  "environment": {
+    "numpy": "1.26.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.2"
+  },
+  "git": {
+    "commit": "5e8947a928daba1faa55121ac2bade3b617a4a3a",
+    "dirty": false
+  },
+  "input_manifest_sha256": "93259026e5cc90998a2ab182a21b95660c36b67f20907a3c38cece128913fa0c",
+  "is_sensitivity_arm": false,
+  "lexical_backends": [
+    "tfidf",
+    "bm25",
+    "lsi_inductive"
+  ],
+  "model_pin": {
+    "dual_encoder": "sentence-transformers/all-MiniLM-L6-v2",
+    "normalize_embeddings": true,
+    "note": "the cross-encoder is not pinned here because it is not an arm of this comparison; it is candidate-constrained and belongs to the conditional protocol section",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "tokenizer_sha256": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+    "weights_sha256": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db"
+  },
+  "result_class": "primary",
+  "results": {
+    "per_corpus": {
+      "diagnostic": {
+        "complementarity": {
+          "both": 25,
+          "lexical_only": 3,
+          "lexical_only_recovered_by_gated": 1,
+          "neither": 19,
+          "oracle_union": 39,
+          "semantic_only": 11,
+          "semantic_only_lost_by_gated": 7
+        },
+        "gate_fired": 28,
+        "gate_fired_rate": 0.4827586206896552,
+        "mean_difference_vs_semantic": -0.05172413793103448,
+        "n": 58,
+        "top1": {
+          "hybrid_equal": 0.5517241379310345,
+          "hybrid_gated": 0.5689655172413793,
+          "hybrid_gated_fallback": 0.5172413793103449,
+          "rrf_lexical": 0.4827586206896552,
+          "semantic": 0.6206896551724138
+        },
+        "top1_among_fired": 0.2857142857142857,
+        "top1_among_unfired": 0.8333333333333334
+      },
+      "hipaa": {
+        "complementarity": {
+          "both": 16,
+          "lexical_only": 5,
+          "lexical_only_recovered_by_gated": 2,
+          "neither": 32,
+          "oracle_union": 36,
+          "semantic_only": 15,
+          "semantic_only_lost_by_gated": 8
+        },
+        "gate_fired": 58,
+        "gate_fired_rate": 0.8529411764705882,
+        "mean_difference_vs_semantic": -0.08823529411764706,
+        "n": 68,
+        "top1": {
+          "hybrid_equal": 0.36764705882352944,
+          "hybrid_gated": 0.36764705882352944,
+          "hybrid_gated_fallback": 0.3382352941176471,
+          "rrf_lexical": 0.3088235294117647,
+          "semantic": 0.45588235294117646
+        },
+        "top1_among_fired": 0.3448275862068966,
+        "top1_among_unfired": 0.5
+      },
+      "nist": {
+        "complementarity": {
+          "both": 29,
+          "lexical_only": 11,
+          "lexical_only_recovered_by_gated": 7,
+          "neither": 52,
+          "oracle_union": 54,
+          "semantic_only": 14,
+          "semantic_only_lost_by_gated": 3
+        },
+        "gate_fired": 70,
+        "gate_fired_rate": 0.660377358490566,
+        "mean_difference_vs_semantic": 0.08490566037735849,
+        "n": 106,
+        "top1": {
+          "hybrid_equal": 0.46226415094339623,
+          "hybrid_gated": 0.49056603773584906,
+          "hybrid_gated_fallback": 0.42452830188679247,
+          "rrf_lexical": 0.37735849056603776,
+          "semantic": 0.4056603773584906
+        },
+        "top1_among_fired": 0.42857142857142855,
+        "top1_among_unfired": 0.6111111111111112
+      },
+      "pf": {
+        "complementarity": {
+          "both": 18,
+          "lexical_only": 14,
+          "lexical_only_recovered_by_gated": 8,
+          "neither": 45,
+          "oracle_union": 49,
+          "semantic_only": 17,
+          "semantic_only_lost_by_gated": 10
+        },
+        "gate_fired": 70,
+        "gate_fired_rate": 0.7446808510638298,
+        "mean_difference_vs_semantic": 0.031914893617021274,
+        "n": 94,
+        "top1": {
+          "hybrid_equal": 0.39361702127659576,
+          "hybrid_gated": 0.40425531914893614,
+          "hybrid_gated_fallback": 0.35106382978723405,
+          "rrf_lexical": 0.3404255319148936,
+          "semantic": 0.3723404255319149
+        },
+        "top1_among_fired": 0.34285714285714286,
+        "top1_among_unfired": 0.5833333333333334
+      }
+    },
+    "primary": {
+      "arm": "hybrid_gated",
+      "comparator": "semantic",
+      "estimand": "mean paired Top-1 difference over 268 requirements",
+      "gatekeeping": "non-inferiority established; superiority test performed",
+      "mean_difference": 0.022388059701492536,
+      "n": 268,
+      "stratified_bootstrap": {
+        "coverage": "90% two-sided (95% one-sided)",
+        "high": 0.06716417910447761,
+        "low": -0.022388059701492536
+      },
+      "test_1_non_inferiority": {
+        "alpha": 0.05,
+        "ci_confidence": 0.9,
+        "ci_high": 0.06596076706389235,
+        "ci_low": -0.021184647660907285,
+        "delta": 0.05,
+        "df": 267,
+        "equivalent": false,
+        "mean_difference": 0.022388059701492536,
+        "n": 268,
+        "p_lower": 0.003258403638112533,
+        "p_tost": 0.1482604986388158,
+        "p_upper": 0.1482604986388158,
+        "se": 0.026398412374370014,
+        "t_lower": 2.7421368631915706,
+        "t_upper": -1.0459697313204963
+      },
+      "test_2_superiority": {
+        "ci_high": 0.07462686567164178,
+        "ci_low": -0.029850746268656716,
+        "confidence": 0.95,
+        "mean_difference": 0.022388059701492536,
+        "n": 268,
+        "n_permutations": 100000,
+        "p_method": "sign_flip_permutation",
+        "p_value": 0.47624523754762454
+      }
+    }
+  },
+  "seeds": {
+    "bootstrap": 20260801,
+    "permutation": 20260801
+  },
+  "spec_hashes": {
+    "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
+    "hybrid_spec.py": "a1b4c78966321f37bf17fc019333363f1e819a552c5ea60dfbd39e5be190597a",
+    "run_hybrid.py": "b33459d9b132277a2c73c2c7f4e2be91b17648448d1b08e46b468e492866fc8f"
+  },
+  "status": "exploratory",
+  "status_reason": "design frozen before outcome, but the gate was motivated by complementarity already observed in these corpora; hybrid_equal was observed before registration",
+  "timestamp_utc": "2026-08-02T01:39:25.703574+00:00"
+}

@@ -1,0 +1,157 @@
+{
+  "alpha": 0.05,
+  "argv": [
+    "run_hybrid.py",
+    "--legacy-lsi"
+  ],
+  "delta": 0.05,
+  "environment": {
+    "numpy": "1.26.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.2"
+  },
+  "git": {
+    "commit": "5e8947a928daba1faa55121ac2bade3b617a4a3a",
+    "dirty": true
+  },
+  "input_manifest_sha256": "93259026e5cc90998a2ab182a21b95660c36b67f20907a3c38cece128913fa0c",
+  "is_sensitivity_arm": true,
+  "lexical_backends": [
+    "tfidf",
+    "bm25",
+    "lsi"
+  ],
+  "model_pin": {
+    "dual_encoder": "sentence-transformers/all-MiniLM-L6-v2",
+    "normalize_embeddings": true,
+    "note": "the cross-encoder is not pinned here because it is not an arm of this comparison; it is candidate-constrained and belongs to the conditional protocol section",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "tokenizer_sha256": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+    "weights_sha256": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db"
+  },
+  "result_class": "sensitivity",
+  "results": {
+    "per_corpus": {
+      "diagnostic": {
+        "complementarity": {
+          "both": 25,
+          "lexical_only": 3,
+          "lexical_only_recovered_by_gated": 1,
+          "neither": 19,
+          "oracle_union": 39,
+          "semantic_only": 11,
+          "semantic_only_lost_by_gated": 7
+        },
+        "gate_fired": 28,
+        "gate_fired_rate": 0.4827586206896552,
+        "mean_difference_vs_semantic": -0.034482758620689655,
+        "n": 58,
+        "top1": {
+          "hybrid_equal": 0.5689655172413793,
+          "hybrid_gated": 0.5862068965517241,
+          "hybrid_gated_fallback": 0.5,
+          "rrf_lexical": 0.4827586206896552,
+          "semantic": 0.6206896551724138
+        },
+        "top1_among_fired": 0.32142857142857145,
+        "top1_among_unfired": 0.8333333333333334
+      },
+      "hipaa": {
+        "complementarity": {
+          "both": 15,
+          "lexical_only": 4,
+          "lexical_only_recovered_by_gated": 2,
+          "neither": 33,
+          "oracle_union": 35,
+          "semantic_only": 16,
+          "semantic_only_lost_by_gated": 8
+        },
+        "gate_fired": 58,
+        "gate_fired_rate": 0.8529411764705882,
+        "mean_difference_vs_semantic": -0.08823529411764706,
+        "n": 68,
+        "top1": {
+          "hybrid_equal": 0.38235294117647056,
+          "hybrid_gated": 0.36764705882352944,
+          "hybrid_gated_fallback": 0.3088235294117647,
+          "rrf_lexical": 0.27941176470588236,
+          "semantic": 0.45588235294117646
+        },
+        "top1_among_fired": 0.3448275862068966,
+        "top1_among_unfired": 0.5
+      },
+      "nist": {
+        "complementarity": {
+          "both": 33,
+          "lexical_only": 10,
+          "lexical_only_recovered_by_gated": 7,
+          "neither": 53,
+          "oracle_union": 53,
+          "semantic_only": 10,
+          "semantic_only_lost_by_gated": 3
+        },
+        "gate_fired": 70,
+        "gate_fired_rate": 0.660377358490566,
+        "mean_difference_vs_semantic": 0.09433962264150944,
+        "n": 106,
+        "top1": {
+          "hybrid_equal": 0.4811320754716981,
+          "hybrid_gated": 0.5,
+          "hybrid_gated_fallback": 0.44339622641509435,
+          "rrf_lexical": 0.4056603773584906,
+          "semantic": 0.4056603773584906
+        },
+        "top1_among_fired": 0.44285714285714284,
+        "top1_among_unfired": 0.6111111111111112
+      },
+      "pf": {
+        "complementarity": {
+          "both": 20,
+          "lexical_only": 15,
+          "lexical_only_recovered_by_gated": 9,
+          "neither": 44,
+          "oracle_union": 50,
+          "semantic_only": 15,
+          "semantic_only_lost_by_gated": 10
+        },
+        "gate_fired": 70,
+        "gate_fired_rate": 0.7446808510638298,
+        "mean_difference_vs_semantic": 0.031914893617021274,
+        "n": 94,
+        "top1": {
+          "hybrid_equal": 0.39361702127659576,
+          "hybrid_gated": 0.40425531914893614,
+          "hybrid_gated_fallback": 0.3723404255319149,
+          "rrf_lexical": 0.3723404255319149,
+          "semantic": 0.3723404255319149
+        },
+        "top1_among_fired": 0.34285714285714286,
+        "top1_among_unfired": 0.5833333333333334
+      }
+    },
+    "sensitivity": {
+      "arm": "hybrid_gated_legacy_lsi",
+      "comparator": "semantic",
+      "inference": "NONE. Descriptive only. This arm carries no non-inferiority or superiority claim; see the primary run for those.",
+      "mean_difference": 0.026119402985074626,
+      "n": 268,
+      "stratified_bootstrap": {
+        "coverage": "90% two-sided (95% one-sided)",
+        "high": 0.0708955223880597,
+        "low": -0.018656716417910446
+      }
+    }
+  },
+  "seeds": {
+    "bootstrap": 20260801,
+    "permutation": 20260801
+  },
+  "spec_hashes": {
+    "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
+    "hybrid_spec.py": "a1b4c78966321f37bf17fc019333363f1e819a552c5ea60dfbd39e5be190597a",
+    "run_hybrid.py": "b33459d9b132277a2c73c2c7f4e2be91b17648448d1b08e46b468e492866fc8f"
+  },
+  "status": "exploratory",
+  "status_reason": "design frozen before outcome, but the gate was motivated by complementarity already observed in these corpora; hybrid_equal was observed before registration",
+  "timestamp_utc": "2026-08-02T01:40:06.109528+00:00"
+}
