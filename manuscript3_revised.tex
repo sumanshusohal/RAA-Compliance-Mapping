@@ -191,18 +191,28 @@ A model that reranks a candidate list inherits that list's ceiling exactly as a 
 A recurring finding in information retrieval is that measured improvements need not survive a change of collection or of baseline.
 \citet{Armstrong2009} examined a decade of ad-hoc retrieval results and found that reported gains largely failed to accumulate, because systems were repeatedly compared against weak baselines rather than against the strongest available.
 \citet{Yang2019} reached a similar conclusion for early neural ranking models, showing that several reported gains shrank or disappeared against a properly tuned lexical baseline.
-\citet{Voorhees2000} had earlier established a related point about the measurement instrument itself: relevance judgments vary between assessors, so absolute effectiveness figures are properties of a collection and its annotators rather than of a system alone.
+\citet{Voorhees2000} had earlier established a more precise point about the measurement instrument itself: assessor disagreement changes individual relevance judgments and absolute effectiveness scores, while the comparative ranking of systems remains substantially more stable.
+The useful reading is therefore not that evaluation is unreliable, but that absolute figures belong to a collection and its assessors while comparisons between systems travel better.
 
 The response in modern retrieval has been to evaluate across heterogeneous collections rather than to optimize one.
-BEIR~\citep{Thakur2021} assembles retrieval tasks from different domains specifically to test zero-shot transfer, and reports that no single architecture dominates: models that lead on one collection are beaten on others, and lexical baselines remain strong on domains far from the training distribution.
-The same concern has been raised in adjacent fields, where benchmark results have been shown not to transfer to freshly collected data drawn from the same nominal distribution~\citep{Recht2019}, and where the construct validity of benchmarks themselves has been questioned~\citep{BowmanDahl2021}.
-Within software engineering, \citet{Sim2003} argued that benchmarks advance a field only when the community treats their construction as a research contribution subject to scrutiny, rather than as infrastructure.
+BEIR~\citep{Thakur2021} assembles retrieval tasks from different domains specifically to test zero-shot transfer, and reports that performance varies substantially across collections: BM25 remains a robust baseline, while reranking and late-interaction methods perform best on average at greater computational cost.
+The lesson we take is not that one family of methods wins, but that a single collection is a poor guide to how a method will behave on the next one.
+
+Adjacent fields have made a compatible point with a useful nuance.
+\citet{Recht2019} rebuilt image classification test sets following the original collection procedure and found substantial drops in absolute accuracy, while the relative ordering of models and the gains between them largely transferred.
+Sensitivity to how a dataset is constructed therefore shows up in levels more readily than in rankings, which is why we report per-corpus levels alongside contrasts rather than only the contrasts.
+\citet{BowmanDahl2021}, in a position paper, argue that benchmarks in natural language understanding often fail to measure the capability they claim to, raising construct validity rather than reliability as the central concern.
+Within software engineering, \citet{Sim2003} argued that shared benchmarks accelerate progress and help form research communities; we draw the further inference, which is ours rather than theirs, that this makes the construction of a benchmark a research contribution deserving the same scrutiny as a method.
 
 This literature bears directly on our design.
 Traceability research has often evaluated on a single collection, and the compliance-mapping variant has few public collections of any kind, which creates pressure to construct one.
-A constructed collection is a legitimate diagnostic instrument, but its authors also choose its vocabulary, and any method whose mechanism targets that vocabulary will be measured on a corpus built to reward it.
-We therefore evaluate the same frozen methods on one engineered corpus and three independently authored ones, and report the contrast between them as the result rather than reporting the best number.
-To our knowledge no prior work in regulatory traceability has done this, and Section~\ref{sec:results} shows the contrast is large enough to reverse a conclusion drawn from the engineered corpus alone.
+A constructed collection is a legitimate diagnostic instrument, but its authors also choose its vocabulary, and that vocabulary may align with the mechanism of the intervention being tested, which would overestimate how far the intervention transfers.
+We therefore evaluate the same frozen methods on one engineered corpus and three externally authored ones, whose source texts and mappings were not written by us, and report the contrast between them as the result rather than reporting the best number.
+
+The three external corpora are independent of us but not of each other.
+All three come from the NIST ecosystem and map to the same SP~800-53 control catalogue, so they are correlated replications rather than independent samples of regulatory text, and we treat them as such throughout.
+We are not aware of prior work in regulatory traceability that compares conclusions drawn from an engineered corpus against externally authored ones, though we make this claim from familiarity with the literature rather than from a structured search.
+Section~\ref{sec:results} shows the contrast is large enough to reverse a conclusion drawn from the engineered corpus alone.
 
 
 %% ================================================================
@@ -773,7 +783,7 @@ Borg, M., Runeson, P., Ard\"o, A., 2014. Recovering from a decade: a systematic 
 Armstrong, T.G., Moffat, A., Webber, W., Zobel, J., 2009. Improvements that don't add up: ad-hoc retrieval results since 1998. In: Proc.\ 18th ACM Conf.\ on Information and Knowledge Management (CIKM). pp.\ 601--610.
 
 \bibitem[Bowman and Dahl(2021)]{BowmanDahl2021}
-Bowman, S.R., Dahl, G.E., 2021. What will it take to fix benchmarking in natural language understanding? In: Proc.\ NAACL-HLT. pp.\ 4843--4855.
+Bowman, S.R., Dahl, G., 2021. What will it take to fix benchmarking in natural language understanding? In: Proc.\ NAACL-HLT. pp.\ 4843--4855.
 
 \bibitem[Bran et~al.(2024)]{Bran2024}
 Bran, A.M., Cox, S., Schilter, O., Baldassari, C., White, A.D., Schwaller, P., 2024. Augmenting large language models with chemistry tools. Nat.\ Mach.\ Intell.\ 6, 525--535.
