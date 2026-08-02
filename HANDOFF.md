@@ -126,7 +126,54 @@ plus evaluation queries (`include_regs_in_fit=True`) and never said so.
    approximation is approximate; and PF and CSF both return
    `equivalent=True` at δ=0.05 while HIPAA does not (p_tost=0.114), so the
    superiority prediction is neither supported nor excluded there.
-2. ~~**Hybrid spec**~~ **DRAFTED, NOT YET TIMESTAMPED.** `hybrid_spec.py`
+2. ~~**Hybrid spec**~~ **FROZEN, PUSHED AND TAGGED. AWAITING THE OSF DOI.**
+
+   > **DO NOT RUN `run_hybrid.py` UNTIL THE OSF REGISTRATION EXISTS.**
+   > Everything below was built to make one contrast credible. Running it
+   > before the registration throws that away and cannot be undone.
+
+   Public state: tag `hybrid-analysis-spec-v1` at commit
+   `25ce391d5e00bbb8218cf46878c256c88b2655f0` on
+   `https://github.com/sumanshusohal/RAA-Compliance-Mapping`. The tag is
+   annotated and carries the hashes in its own message.
+
+   ```
+   OSF DOI      : [RECORD IT HERE ONCE REGISTERED]
+   registered on: [DATE]
+   ```
+
+   Registered content, text hashes taken with LF normalization:
+
+   | file | sha256 |
+   |---|---|
+   | `hybrid_spec.py` | `a1b4c789…90597a` |
+   | `run_hybrid.py` | `b33459d9…66fc8f` |
+   | `test_hybrid_spec.py` | `d0336d6c…07b827` |
+   | `freeze_backends.py` | `b20d326e…741482` |
+   | `confirmatory_stats.py` | `79ec294a…7e1104` |
+   | `frozen_backends/manifest.json` | `93259026…13fa0c` |
+
+   **The analysis never loads a model.** `freeze_backends.py` runs every
+   backend once and hashes the score matrices; `run_hybrid.py` consumes only
+   those, verifies each hash against the manifest, and aborts on mismatch.
+   The dual-encoder is pinned to `all-MiniLM-L6-v2` at revision
+   `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`, passed explicitly. Matrices
+   regenerated under the enforced pin were byte-identical to those made
+   before it.
+
+   **Disclosure that must survive into the writeup.** The secondary arm
+   `hybrid_equal` was computed during method development, before
+   registration: Top-1 0.4623 (CSF), 0.3676 (HIPAA), 0.3936 (PF), 0.5517
+   (diagnostic). It is observed, not preregistered. Do not delete it: the
+   gated arm applies exactly that fusion to gated queries, so removing it
+   would hide part of the primary mechanism. The primary arm has never been
+   run.
+
+   Primary uses **inductive** LSI. The transductive variant is a sensitivity
+   arm behind `--legacy-lsi` and emits no primary claim.
+
+   Design detail, unchanged from the original draft:
+   `hybrid_spec.py`
    freezes the design: equal-weight semantic RRF and a semantic-primary gated
    variant, against semantic alone, lexical RRF, full RAA, and the
    reformulation-off control. Primary arm `hybrid_gated`, primary endpoint
@@ -148,8 +195,13 @@ plus evaluation queries (`include_regs_in_fit=True`) and never said so.
    still exploratory, and confirmatory status needs this file applied
    unchanged to a corpus that does not exist yet.
 
-   Remaining before any arm runs: a PUBLIC timestamp of the spec hash. A local
-   commit is not one.
+   Remaining before any arm runs: the OSF registration. The push and the tag
+   are done, but a git timestamp is not evidence, since commit dates are
+   settable environment variables. `osf_registration_text.md` is paste-ready
+   with the commit, tag and repository filled in. Attach the whole
+   `frozen_backends/` directory including all 32 `.npy` arrays and
+   `confirmatory_stats.py`; a manifest freezes hashes, not availability, and
+   without the arrays the registration cannot be re-run from itself.
 3. **Full RAA on the shared protocol**, so the pipeline can be labelled
    honestly. Runs only after the spec above is timestamped.
 4. **Corpus sensitivities**: 800-53 5.1.1 as the HIPAA-native target
@@ -195,6 +247,17 @@ python run_confirmatory.py                   # RQ2 moderation + TOST, recorded
 python precision_analysis.py                 # outcome-blind power analysis
 python gap_metrics.py                        # gap distributions + spec hash
 python scan_secrets.py                       # before every push
+
+# Hybrid. Safe to run at any time:
+python hybrid_spec.py                        # print the frozen spec + hash
+python test_hybrid_spec.py --with-score-all  # spec test suite
+python run_hybrid.py --self-test             # runner, synthetic fixtures only
+python run_hybrid.py --verify-only           # check inputs, compute nothing
+USE_TF=0 python freeze_backends.py           # regenerate inputs (idempotent)
+
+# NOT safe until the OSF DOI exists:
+python run_hybrid.py                         # THE PRIMARY ARM
+python run_hybrid.py --legacy-lsi            # transductive sensitivity arm
 ```
 
 Credentials come from `ANTHROPIC_API_KEY` in the environment only. Never a
