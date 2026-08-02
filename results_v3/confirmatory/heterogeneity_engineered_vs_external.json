@@ -34,8 +34,8 @@
     "n": 268
   },
   "git": {
-    "commit": "38c7ab8a6d2bfb607ed43d9766bf208d740db5e9",
-    "dirty": true
+    "commit": "8158a1aceb0e0b365f2c9c36b72fad2562c48c68",
+    "dirty": false
   },
   "is_a_test_of_corpus_type": false,
   "per_corpus_means": {
@@ -56,10 +56,10 @@
   "scope_limit": "descriptive contrast only; does not generalize to engineered versus external corpora as populations, and cannot separate authorship from other properties of the NIST ecosystem",
   "spec_hashes": {
     "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
-    "heterogeneity_test.py": "9c72dceef12676a63904f1ad322eaa8543cf95ec0cbfe3e235e317ef806b08a4"
+    "heterogeneity_test.py": "5bcb8cc80e571e93e425e38d0a1a1069a5fd081ef7c3986ce07719db476755fb"
   },
   "status": "exploratory",
   "status_reason": "written in response to review, after the per-corpus effects were known; not preregistered",
-  "timestamp_utc": "2026-08-02T02:26:49.726429+00:00",
+  "timestamp_utc": "2026-08-02T02:29:11.337030+00:00",
   "why_not": "corpus type is assigned at the corpus level; there is one engineered corpus and three external ones, so the effective n for this question is 4 clusters. A requirement-level procedure would be cluster-level pseudoreplication."
 }
