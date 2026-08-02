@@ -346,10 +346,34 @@ Finally, the \emph{calibrated selective decision} governs the accept/abstain out
 \label{sec:dataset}
 %% ================================================================
 
-We evaluate on two corpora with complementary strengths.
-The first is a purpose-built diagnostic benchmark in which we control the degree of vocabulary mismatch, allowing us to isolate the phenomenon each agent component is designed to address.
-The second is a real-world benchmark assembled entirely from artifacts published by NIST, in which both the texts and the ground-truth mapping were authored independently of this work.
-The diagnostic benchmark tells us \emph{why} a component helps; the real-world benchmark tells us whether that help survives contact with authentic regulatory text.
+We evaluate on four corpora: one we constructed, and three assembled entirely from artifacts published by NIST, in which both the texts and the ground-truth mappings were authored independently of this work.
+The engineered corpus tells us \emph{why} a component helps, because we control the degree of vocabulary mismatch in it.
+The three external corpora tell us whether that help survives contact with authentic regulatory text, and, because there are three rather than one, whether a conclusion drawn from any single one of them would have held on the others.
+
+Table~\ref{tab:corpora} summarizes them. All three external corpora map into the same 300-control corpus drawn from SP~800-53, so differences between them are differences in the regulatory side of the mapping rather than in the target catalogue.
+
+\begin{table}[t]
+\caption{The four evaluation corpora. Recall@20 is the share of requirements for which the dual-encoder places a gold control in its top 20, and bounds any method that reranks that shortlist.}
+\label{tab:corpora}
+\centering
+\small
+\begin{tabular}{@{}llrrrc@{}}
+\toprule
+Corpus & Ground truth & Reqs & Ctrls & Links & R@20 \\
+\midrule
+Diagnostic & authored here & 58 & 110 & 86 & .983 \\
+CSF~1.1 & NIST crosswalk & 106 & 300 & 495 & .906 \\
+HIPAA & NIST OLIR & 68 & 300 & 274 & .882 \\
+Privacy Fw. & NIST crosswalk & 94 & 300 & 456 & .840 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two properties of this design need stating before the results.
+
+The three external corpora are independent of us but not of each other. All are NIST products mapping into one catalogue, so they are correlated replications rather than independent samples of regulatory text, and a result that holds across all three is weaker evidence than three unrelated corpora would provide. We treat this as a limitation throughout and return to it in Section~\ref{sec:threats}.
+
+NIST describes these mappings as concept relationship mappings rather than assertions of implementation, and marks the HIPAA OLIR ``Comprehensive: No''~\citep{NISTIR8477}. They are therefore a silver standard. A predicted link that the crosswalk does not list is not automatically wrong, and we say ``addresses'' rather than ``implements'' throughout.
 
 \subsection{Diagnostic benchmark}
 \label{sec:dataset-synth}
@@ -380,11 +404,29 @@ Two subcategories whose informative reference is ``all controls'' are excluded a
 
 This corpus is a substantially harder and more faithful test than the diagnostic benchmark in three respects.
 The candidate pool is nearly three times larger (300 vs.\ 110 controls); the mapping is genuinely many-to-many with dense multi-label structure; and, critically, neither the texts nor the links were authored by us, so no component of the agent can be inadvertently tuned to the ground truth.
-It also differs in character: CSF subcategories and SP~800-53 controls are both written in NIST's institutional style, so the regulation-to-implementation vocabulary gap is far narrower than in the diagnostic benchmark.
-As Section~\ref{sec:results-real} shows, this difference in gap severity is precisely what determines how much query reformulation contributes.
+It also differs in character: CSF subcategories and SP~800-53 controls are both written in NIST's institutional style, so the regulation-to-implementation vocabulary gap is narrower than in the diagnostic benchmark.
+An earlier version of this work had only this corpus and the diagnostic one, and concluded from the contrast between them that gap severity determines how much reformulation contributes. Sections~\ref{sec:results-multi} and \ref{sec:results-gap} test that conclusion against two further corpora and do not support it.
 One caveat bounds the interpretation of this corpus: NIST characterizes its crosswalks as \emph{concept relationship} mappings between documentary standards---indicating that a control's outcomes support, in whole or in part, a CSF subcategory---rather than as evidence that any organization has implemented a control satisfying a requirement~\citep{NISTIR8477}.
 Accordingly, we treat this benchmark as a test of reference-link recovery between framework artifacts, not of implemented-compliance verification, and we scope our claims to that task.
 The extraction scripts and the generated CSV files are included in the supplementary material for exact reproducibility.
+
+\subsection{HIPAA Security Rule to SP 800-53}
+\label{sec:dataset-hipaa}
+
+The third corpus maps requirements of the HIPAA Security Rule to SP~800-53 controls through NIST's OLIR crosswalk published with SP~800-66 Revision~2. It contains 68 requirements and 274 links.
+
+It is included because it differs from the CSF corpus in the one respect that matters for our question. Its requirement side is statutory text rather than framework prose, written by a different institution for a different purpose, so the vocabulary distance between a requirement and its controls is the widest of the three external corpora. If the reformulation benefit observed on the engineered corpus is a function of vocabulary distance, this is the corpus where it should reappear.
+
+The builder fetches and hashes each of the six raw responses from NIST's Cybersecurity and Privacy Reference Tool and stores them alongside the generated files, so the corpus can be rebuilt without querying a live service. Every control reference resolves.
+
+One version caveat. The OLIR targets SP~800-53 Revision~5.1.1 while our control corpus is drawn from 5.2.0. The two differ by a single control, SA-24, and all 1{,}241 links in the source crosswalk resolve in both, so we use 5.2.0 for consistency with the other corpora and note the substitution.
+
+\subsection{NIST Privacy Framework to SP 800-53}
+\label{sec:dataset-pf}
+
+The fourth corpus maps subcategories of the NIST Privacy Framework to the same control corpus, 94 requirements and 456 links, through the crosswalk NIST publishes alongside SP~800-53.
+
+Its role is to separate two explanations that the CSF corpus alone confounds. CSF is both NIST-authored and narrow-gap, so a null result there could be attributed to either. The Privacy Framework is also NIST-authored and also narrow-gap, but it is a different framework with a different subject matter, and its subcategory identifiers and texts have no overlap with the CSF corpus. Six subcategories that carry no link and five blanket references are dropped by the builder, control enhancements are collapsed to their base control, and no control reference is left unresolved.
 
 
 %% ================================================================
@@ -551,11 +593,58 @@ What it does show is that a cheap first stage followed by a reranker is a strong
 Third, taken with Section~\ref{sec:results-synth}, the deterministic agent never significantly out-ranks a neural baseline under a matched protocol on either benchmark.
 It holds no decision-quality edge either: TF-IDF has higher coverage (0.792 vs.\ 0.721) and the cross-encoder pipeline higher selective accuracy (0.639 vs.\ 0.478).
 
-These cross-benchmark results delimit the contribution honestly.
-The single robust, significant positive finding across both benchmarks is that domain-aware reformulation helps under wide regulatory-to-implementation vocabulary mismatch (diagnostic benchmark); on same-institution text it is inert, and neural reranking is the stronger ranker.
+Taken alone, these two corpora invite a tidy conclusion: reformulation helps where the vocabulary gap is wide and is inert where it is narrow. That is what an earlier version of this work concluded. The next two subsections test it.
+
+\subsection{Does the reformulation benefit replicate? (RQ1)}
+\label{sec:results-multi}
+
+Table~\ref{tab:multi} gives the reformulation contrast on all four corpora, each scored once per requirement over the full control corpus so that the four figures are on a common footing.
+
+\begin{table}[t]
+\caption{Effect of domain-aware reformulation on Top-1 accuracy, measured identically on all four corpora. Intervals are requirement-level bootstrap; $p$ from paired sign-flip permutation.}
+\label{tab:multi}
+\centering
+\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+Corpus & $n$ & $\Delta$Top-1 & 95\% CI & $p$ \\
+\midrule
+Diagnostic (engineered) & 58 & $+.1405$ & $[+.037, +.246]$ & $.009$ \\
+\midrule
+CSF~1.1 & 106 & $+.0088$ & $[-.023, +.044]$ & $.65$ \\
+HIPAA & 68 & $+.0078$ & $[-.059, +.076]$ & $.84$ \\
+Privacy Fw. & 94 & $+.0027$ & $[-.043, +.051]$ & $.95$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The effect is an order of magnitude larger on the engineered corpus than on any of the three external ones, and it is distinguishable from zero only there. The three external effects are not merely smaller; their intervals comfortably include zero and their $p$-values range from $0.65$ to $0.95$.
+
+The answer to RQ1 is therefore no. The benefit does not replicate.
+
+Note what does not separate the four rows. HIPAA has the widest measured vocabulary gap of the three external corpora and the statutory source text that ought to make reformulation most useful, yet its effect ($+.008$) is indistinguishable from the Privacy Framework's ($+.003$), and both are far below the engineered corpus. The split in Table~\ref{tab:multi} falls exactly along the line between the corpus we wrote and the corpora we did not.
+
+\subsection{Does measured vocabulary gap explain it? (RQ2)}
+\label{sec:results-gap}
+
+RQ1's answer leaves an alternative explanation open: perhaps the engineered corpus simply has a wider gap, and gap is what matters. We test this directly with a requirement-level measure of vocabulary distance, defined in Section~\ref{sec:protocol} and computed from a frozen tokenizer and corpus-relative IDF, regressing the paired Top-1 difference on standardized gap with corpus fixed effects.
+
+Pooled over the three external corpora, the interaction between gap and reformulation benefit is $+0.0137$, 95\% CI $[-0.0139, +0.0434]$, sign-flip permutation $p = 0.376$, $n = 268$. Gap does not predict who benefits from reformulation.
+
+Adding the engineered corpus moves the same coefficient to $+0.0236$, $p = 0.089$, $n = 326$. That movement is itself the finding: the apparent moderation is carried by the engineered corpus rather than by any property that varies smoothly across corpora.
+
+Two further observations bound what the gap measure does and does not do. It predicts \emph{lexical failure} reliably: Spearman correlations between gap and TF-IDF correctness are $-.754$, $-.359$, $-.272$ and $-.475$ across the four corpora, all $p < .05$. But it does not predict \emph{semantic advantage}: the same correlation against the dual-encoder's margin over TF-IDF gives $+.335$, $-.082$, $-.143$ and $+.302$, inconsistent in sign and two indistinguishable from zero. A wide gap tells you term matching will struggle. It does not tell you that a thesaurus will help.
+
+The answer to RQ2 is therefore also no, and the two answers together are the paper's central result: what separates the data is whether a corpus was engineered, not how wide its measured vocabulary gap is.
+
+\subsection{What this does and does not license}
+
+We are deliberately careful about the causal claim available here. We have four corpora, one engineered and three external, and the three external ones share a NIST lineage and a common target catalogue. That supports the statement that the effect fails to replicate outside the corpus it was demonstrated on. It does not support a general quantitative claim that engineered benchmarks inflate gains by a particular factor, which would need engineered and external corpora sampled independently across several institutions.
+
+Nor is this a result about our thesaurus being poorly built. The mechanism is sound where the corpus rewards it. The point is narrower and more uncomfortable: we wrote the thesaurus and we wrote the corpus that demonstrates its value, and a benchmark constructed by the authors of the intervention it evaluates cannot settle whether that intervention transfers.
+
 This leaves the agent without a demonstrated case on accuracy, and we do not construct one from its other properties.
 Recording each step establishes where a mapping came from; it does not establish that the record is useful to an auditor, which would need a study with practitioners, and we did not measure execution determinism under pinned dependencies.
-A natural synthesis, which we leave to future work, is to admit the cross-encoder as a backend \emph{inside} the agent's fusion loop, keeping the step record while inheriting the learned relevance signal.
 
 \subsection{Open-world gap detection}
 \label{sec:results-openworld}
