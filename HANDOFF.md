@@ -146,9 +146,18 @@ plus evaluation queries (`include_regs_in_fit=True`) and never said so.
    contributors    : Sumanshu Sohal alone. Darshankumar Prajapati is a
                      co-author on the manuscript but was not involved in the
                      post-rejection work this registration covers.
-   registration URL: [RECORD ONCE ARCHIVING COMPLETES]
-   DOI             : [RECORD ONCE ISSUED]
+   registration    : https://osf.io/nzxrv
+   DOI             : 10.17605/OSF.IO/NZXRV
+   registered at   : 2026-08-01 21:24, public, CC0 1.0 Universal
    ```
+
+   Cite as: Sohal, S. (2026). Prospectively registered exploratory analysis:
+   gated hybrid lexical-semantic retrieval for regulatory traceability.
+   https://doi.org/10.17605/OSF.IO/NZXRV
+
+   All seven registered text artifacts were verified byte-identical to their
+   registered hashes immediately before the primary arm was first run, and the
+   tag still resolves to the registered commit.
 
    Registered content, text hashes taken with LF normalization:
 
