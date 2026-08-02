@@ -6,10 +6,11 @@
     "ci_high": 0.24913595762974935,
     "ci_low": 0.025033803172152373,
     "coverage": "95% two-sided",
-    "method": "within-group",
+    "method": "within-group, CONDITIONAL on these four corpora",
     "n_boot": 10000,
     "seed": 20260801
   },
+  "defensible_claim": "the large effect on the engineered corpus did not reproduce in the three external corpora",
   "difference": 0.1340749556813633,
   "engineered": {
     "corpora": [
@@ -33,28 +34,32 @@
     "n": 268
   },
   "git": {
-    "commit": "b2b88cc38769f34c11db070c3db968b84b2f0478",
+    "commit": "38c7ab8a6d2bfb607ed43d9766bf208d740db5e9",
     "dirty": true
   },
+  "is_a_test_of_corpus_type": false,
   "per_corpus_means": {
     "diagnostic": 0.1404967159277504,
     "hipaa": 0.007843137254901964,
     "nist": 0.008790056903264449,
     "pf": 0.0027228976697061826
   },
-  "permutation": {
-    "method": "label permutation",
+  "permutation_sensitivity_only": {
+    "do_not_report_as": "a test that corpus types differ",
+    "method": "requirement-level label permutation",
     "n_permutations": 100000,
     "p_value": 0.0008199918000819992,
-    "seed": 20260801
+    "seed": 20260801,
+    "valid_only_if": "requirements exchangeable across corpus types"
   },
-  "question": "does the reformulation effect differ between the engineered corpus and the pooled external corpora",
-  "scope_limit": "one engineered corpus against three correlated NIST replications; establishes that these corpora differ, not that engineered benchmarks inflate effects in general, and cannot separate authorship from other properties of the NIST ecosystem",
+  "question": "how large is the observed contrast between the engineered corpus and the pooled external corpora",
+  "scope_limit": "descriptive contrast only; does not generalize to engineered versus external corpora as populations, and cannot separate authorship from other properties of the NIST ecosystem",
   "spec_hashes": {
     "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
-    "heterogeneity_test.py": "dfb06808dcd43db76941413e801602d21fb14e6ec3c3e77f1fd60d12f08393e4"
+    "heterogeneity_test.py": "9c72dceef12676a63904f1ad322eaa8543cf95ec0cbfe3e235e317ef806b08a4"
   },
   "status": "exploratory",
   "status_reason": "written in response to review, after the per-corpus effects were known; not preregistered",
-  "timestamp_utc": "2026-08-02T02:14:47.095305+00:00"
+  "timestamp_utc": "2026-08-02T02:26:49.726429+00:00",
+  "why_not": "corpus type is assigned at the corpus level; there is one engineered corpus and three external ones, so the effective n for this question is 4 clusters. A requirement-level procedure would be cluster-level pseudoreplication."
 }

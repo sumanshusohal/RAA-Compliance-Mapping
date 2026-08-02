@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Direct test that the reformulation effect differs between corpus types.
+"""Observed contrast between the engineered corpus and the external corpora.
 
 WHY THIS EXISTS
 ---------------
@@ -7,28 +7,45 @@ The manuscript claimed that the reformulation benefit "does not replicate"
 on external corpora, supported by a significant effect on the engineered
 corpus and non-significant effects on the three external ones.
 
-That is not a test. A significant result in one group and a non-significant
-result in another does not establish that the two differ; the comparison of
-significance is not the significance of the comparison. The engineered corpus
-also has the smallest n, so the difference in p-values is partly a difference
-in power.
+That comparison is not itself evidence that the effects differ; the comparison
+of significance is not the significance of the comparison. The engineered
+corpus also has the smallest n, so part of the difference in p-values is a
+difference in power. This script quantifies the contrast instead of leaving it
+to be inferred from two p-values.
 
-This script tests the contrast directly: is the mean paired Top-1 difference
-on the engineered corpus different from the mean on the pooled external
-corpora? Two procedures, both at the requirement level:
+WHAT THIS CAN AND CANNOT DO. READ BEFORE CITING ANY NUMBER FROM IT.
+-------------------------------------------------------------------
+This script reports the observed contrast between the engineered corpus and
+the pooled external corpora. It does NOT test a corpus-type effect, and an
+earlier version of it wrongly claimed to.
 
-  * permutation - shuffle the engineered/external label across requirements
-    and recompute the difference of means. This builds a null in which corpus
-    type carries no information.
-  * bootstrap   - resample within each group and report the interval for the
-    difference of means.
+That version permuted the engineered/external label across all 326
+requirements. Corpus type is not assigned to requirements; it is assigned to
+CORPORA, and there is one engineered corpus and three external ones. Shuffling
+requirement labels treats requirements as exchangeable across corpus types
+when requirements within a corpus share authors, construction procedure,
+subject matter and target catalogue. That is cluster-level pseudoreplication,
+and it is the same unit-of-analysis error this project already removed at the
+seed level, committed again one level up.
 
-SCOPE, stated because it is easy to overread. This compares one engineered
-corpus against three external corpora that are themselves correlated
-replications from a single institution. A significant contrast establishes
-that these corpora differ, not that engineered benchmarks in general inflate
-effects. It cannot separate "we authored it" from any other property that
-distinguishes our corpus from NIST's.
+The design has an effective sample size of FOUR clusters for any question
+about corpus type, with one observation in the engineered group. No procedure
+can identify a corpus-type effect from that. More corpora would be needed, not
+more requirements inside the corpora we have.
+
+What is reported instead:
+
+  * the observed difference of means, as a descriptive quantity;
+  * a bootstrap interval CONDITIONAL on these four corpora, which describes
+    sampling of requirements within the corpora we happen to have, and says
+    nothing about corpora we do not;
+  * a requirement-level permutation p-value retained only as a labelled
+    sensitivity analysis, valid solely under an exchangeability assumption
+    that this design gives no reason to believe.
+
+The defensible conclusion is: the large effect on the engineered corpus did
+not reproduce in the three external corpora. Not: engineered and external
+corpora differ as populations.
 
 This analysis is EXPLORATORY. It was written after seeing the per-corpus
 effects, in response to review, and is not covered by the hybrid
@@ -112,7 +129,11 @@ def main():
     print(f"external    n={len(ext):3d}  mean {ext.mean():+.4f}")
     print(f"difference           {obs:+.4f}\n")
 
-    # --- permutation: shuffle the group label -------------------------------
+    # --- permutation, SENSITIVITY ONLY --------------------------------------
+    # Valid only if requirements are exchangeable across corpus types, which
+    # this design gives no reason to believe: corpus type is a cluster-level
+    # property and there is one engineered cluster. Reported so the reader can
+    # see what a requirement-level procedure would say, NOT as a test.
     rng = np.random.default_rng(SEED)
     n_eng = len(eng)
     null = np.empty(N_PERM)
@@ -130,8 +151,15 @@ def main():
         draws[i] = a.mean() - b.mean()
     lo, hi = np.quantile(draws, [0.025, 0.975])
 
-    print(f"permutation p (two-sided, {N_PERM} shuffles) = {p_perm:.5f}")
-    print(f"bootstrap 95% CI for the difference = [{lo:+.4f}, {hi:+.4f}]")
+    print(f"bootstrap 95% CI, CONDITIONAL on these four corpora = "
+          f"[{lo:+.4f}, {hi:+.4f}]")
+    print(f"requirement-level permutation p = {p_perm:.5f}  "
+          f"(SENSITIVITY ONLY, not a test of corpus type)")
+    print()
+    print("Effective clusters for a corpus-type question: 4 (1 engineered,")
+    print("3 external). No procedure identifies a corpus-type effect from")
+    print("that. Defensible claim: the large engineered effect did not")
+    print("reproduce in the three external corpora.")
     print()
 
     # Per-corpus contrast against the pooled external mean, descriptive.
@@ -143,13 +171,20 @@ def main():
         "status": "exploratory",
         "status_reason": "written in response to review, after the per-corpus "
                          "effects were known; not preregistered",
-        "question": "does the reformulation effect differ between the "
+        "question": "how large is the observed contrast between the "
                     "engineered corpus and the pooled external corpora",
-        "scope_limit": "one engineered corpus against three correlated NIST "
-                       "replications; establishes that these corpora differ, "
-                       "not that engineered benchmarks inflate effects in "
-                       "general, and cannot separate authorship from other "
-                       "properties of the NIST ecosystem",
+        "is_a_test_of_corpus_type": False,
+        "why_not": "corpus type is assigned at the corpus level; there is "
+                   "one engineered corpus and three external ones, so the "
+                   "effective n for this question is 4 clusters. A "
+                   "requirement-level procedure would be cluster-level "
+                   "pseudoreplication.",
+        "defensible_claim": "the large effect on the engineered corpus did "
+                            "not reproduce in the three external corpora",
+        "scope_limit": "descriptive contrast only; does not generalize to "
+                       "engineered versus external corpora as populations, "
+                       "and cannot separate authorship from other properties "
+                       "of the NIST ecosystem",
         "timestamp_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "argv": sys.argv,
         "git": git_state(),
@@ -158,11 +193,16 @@ def main():
         "external": {"corpora": list(EXTERNAL), "n": len(ext),
                      "mean": float(ext.mean())},
         "difference": obs,
-        "permutation": {"p_value": float(p_perm), "n_permutations": N_PERM,
-                        "seed": SEED, "method": "label permutation"},
+        "permutation_sensitivity_only": {
+            "p_value": float(p_perm), "n_permutations": N_PERM,
+            "seed": SEED, "method": "requirement-level label permutation",
+            "valid_only_if": "requirements exchangeable across corpus types",
+            "do_not_report_as": "a test that corpus types differ"},
         "bootstrap": {"ci_low": float(lo), "ci_high": float(hi),
                       "n_boot": cs.BOOTSTRAP_N, "seed": SEED,
-                      "coverage": "95% two-sided", "method": "within-group"},
+                      "coverage": "95% two-sided",
+                      "method": "within-group, CONDITIONAL on these four "
+                                "corpora"},
         "per_corpus_means": {k: float(v.mean()) for k, v in groups.items()},
         "spec_hashes": {"heterogeneity_test.py": sha256(os.path.abspath(__file__)),
                         "confirmatory_stats.py": sha256(
