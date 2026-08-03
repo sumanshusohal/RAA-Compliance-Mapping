@@ -11,8 +11,8 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "4e46f6426a9ad060d1a1eba26f8d411f343705ae",
-    "dirty": true
+    "commit": "0f97f22b3295a9cb85d69c7f6572df6382db961f",
+    "dirty": false
   },
   "lsi_fit": "controls_only",
   "protocol": {
@@ -87,5 +87,5 @@
   },
   "status": "exploratory",
   "status_reason": "unplanned; written in response to review",
-  "timestamp_utc": "2026-08-03T15:59:40.022419+00:00"
+  "timestamp_utc": "2026-08-03T16:01:36.984812+00:00"
 }
