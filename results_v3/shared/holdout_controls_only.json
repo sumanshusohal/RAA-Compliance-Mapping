@@ -1,10 +1,8 @@
 {
   "argv": [
     "holdout_lsi_factorial.py",
-    "--corpus",
-    "pf",
-    "--runs",
-    "3"
+    "--lsi-fit",
+    "controls_only"
   ],
   "cell": "repeated holdout + controls_only LSI",
   "environment": {
@@ -13,7 +11,7 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "7d659b531867c1aba495bf75d44485724dd896a8",
+    "commit": "d38c2806f4405c02324045c8c9f10a553e5bcc84",
     "dirty": true
   },
   "lsi_fit": "controls_only",
@@ -22,23 +20,65 @@
     "base_seed": 42,
     "cal_ratio": 0.2,
     "holdout_ratio": 0.3,
-    "n_splits": 3
+    "n_splits": 30
   },
   "ranking_only": true,
   "results": {
-    "pf": {
-      "ci_high": 0.10526315789473684,
-      "ci_low": -0.03508771929824561,
+    "diagnostic": {
+      "ci_high": 0.22413793103448276,
+      "ci_low": 0.034482758620689655,
       "losses": 1,
-      "mean_difference": 0.03508771929824561,
-      "multi_top1": 0.42105263157894735,
-      "n": 57,
-      "p_sign_flip": 0.6254337456625434,
-      "reform_top1": 0.45614035087719296,
-      "ties": 53,
-      "times_tested_max": 3,
-      "times_tested_min": 1,
-      "wins": 3
+      "mean_difference": 0.1206896551724138,
+      "multi_top1": 0.46551724137931033,
+      "n": 58,
+      "p_sign_flip": 0.03870961290387096,
+      "reform_top1": 0.5862068965517241,
+      "ties": 49,
+      "times_tested_max": 15,
+      "times_tested_min": 4,
+      "wins": 8
+    },
+    "hipaa": {
+      "ci_high": 0.058823529411764705,
+      "ci_low": -0.058823529411764705,
+      "losses": 2,
+      "mean_difference": 0.0,
+      "multi_top1": 0.3088235294117647,
+      "n": 68,
+      "p_sign_flip": 1.0,
+      "reform_top1": 0.3088235294117647,
+      "ties": 64,
+      "times_tested_max": 15,
+      "times_tested_min": 5,
+      "wins": 2
+    },
+    "nist": {
+      "ci_high": 0.07547169811320754,
+      "ci_low": -0.009433962264150943,
+      "losses": 1,
+      "mean_difference": 0.02830188679245283,
+      "multi_top1": 0.37735849056603776,
+      "n": 106,
+      "p_sign_flip": 0.3756962430375696,
+      "reform_top1": 0.4056603773584906,
+      "ties": 101,
+      "times_tested_max": 15,
+      "times_tested_min": 4,
+      "wins": 4
+    },
+    "pf": {
+      "ci_high": 0.0851063829787234,
+      "ci_low": -0.010638297872340425,
+      "losses": 1,
+      "mean_difference": 0.031914893617021274,
+      "multi_top1": 0.3404255319148936,
+      "n": 94,
+      "p_sign_flip": 0.3759562404375956,
+      "reform_top1": 0.3723404255319149,
+      "ties": 89,
+      "times_tested_max": 15,
+      "times_tested_min": 4,
+      "wins": 4
     }
   },
   "spec_hashes": {
@@ -47,5 +87,5 @@
   },
   "status": "exploratory",
   "status_reason": "unplanned; written in response to review",
-  "timestamp_utc": "2026-08-02T14:26:45.284556+00:00"
+  "timestamp_utc": "2026-08-02T14:28:59.475143+00:00"
 }

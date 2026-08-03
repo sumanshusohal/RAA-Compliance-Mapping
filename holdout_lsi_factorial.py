@@ -54,9 +54,15 @@ CORPORA = {
     "pf": ("pf_benchmark", ""),
     "diagnostic": ("diagnostic_benchmark", "diag_"),
 }
-# Matching the published ablation protocol.
-HOLDOUT_RATIO = 0.30
-CAL_RATIO = 0.20
+# Matching the published ablation protocol: raa_agent.parse_args defaults
+# --holdout 0.20 and --cal 0.15, not 0.30/0.20. Getting these wrong made the
+# reimplementation fail to reproduce HIPAA and PF, since the test-set size per
+# split changes and with it which requirements are scored how often. Verified
+# against the original per-seed test-set sizes: HIPAA gives 13 per split under
+# 0.20 across its five framework strata, which is what the released
+# perquery CSVs contain.
+HOLDOUT_RATIO = 0.20
+CAL_RATIO = 0.15
 N_RUNS = 30
 BASE_SEED = 42
 
