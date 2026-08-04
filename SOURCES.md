@@ -50,8 +50,16 @@ prediction.
 
 ## Privacy Framework benchmark (`pf_benchmark/`)
 
-NIST-authored throughout, with a narrower vocabulary gap than HIPAA. 94
-requirements, 456 links.
+NIST-authored throughout: both the Privacy Framework subcategories and the
+SP 800-53 controls they map into are NIST products. 94 requirements, 456
+links.
+
+Do NOT describe this corpus as having a narrower vocabulary gap than HIPAA,
+as an earlier version of this file did. `gap_metrics.py` fits IDF within each
+corpus, so gap values are comparable between requirements of one corpus and
+not between corpora. The same prohibition applies here as to the HIPAA
+section above, in the opposite direction, and it is on the retraction list in
+HANDOFF.md.
 
 | artifact | source | SHA-256 |
 |---|---|---|

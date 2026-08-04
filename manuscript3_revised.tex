@@ -993,7 +993,9 @@ During the preparation of this work, the authors used generative AI and AI-assis
 \section*{Data availability}
 All four evaluation corpora are provided as supplementary material: the diagnostic benchmark (58 requirements, 110 controls, 86 links), and the CSF~1.1 (106 subcategories, 495 links), HIPAA Security Rule (68 requirements, 274 links) and Privacy Framework (94 subcategories, 456 links) corpora, which share one 300-control corpus drawn from SP~800-53r5. The scripts that regenerate the three NIST corpora from NIST's published OSCAL catalog and crosswalk spreadsheets are included.
 The complete evaluation framework, all baselines, the agent implementation, the domain thesaurus and concept patterns, the ablation and open-world harness, and the trace-export utility that generated Table~\ref{tab:trace} are available at \url{https://github.com/sumanshusohal/RAA-Compliance-Mapping}.
-All experiments are deterministic given a seed; the exact 30-seed logs underlying every table are included with the release.
+All experiments are deterministic given a seed.
+The 30-seed logs underlying the holdout tables are included with the release; the one-pass, factorial and preregistered hybrid results are not seed logs, and each is backed by a JSON record carrying its arguments, git commit, library versions and SHA-256 hashes of every analysis module and input it used.
+\texttt{audit\_records.py} checks every record against the working tree and exits non-zero if any of them was produced from an uncommitted state or references a file that has since changed.
 
 \appendix
 \section{Domain thesaurus}

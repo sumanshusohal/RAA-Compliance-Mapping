@@ -57,10 +57,30 @@ An open-world stress test shows abstention detects only ~24% of genuine no-match
 (avg 4.4 gaps/seed), an open limitation.
 
 **Since the DKE submission, the evaluation has grown to four corpora and the headline finding
-has changed.** The reformulation effect does not replicate on real text: +0.140 on the
-engineered diagnostic corpus against +0.009 (CSF), +0.008 (HIPAA) and +0.003 (PF). What
-separates the data is engineered versus real, not measured vocabulary gap. All four corpora
-are exploratory; no preregistration predates them. See `HANDOFF.md`.
+has changed.** All ranking results are now measured the same way: one scoring pass per
+requirement over the full control corpus, with LSI fitted on control documents only.
+
+The +0.121 reformulation estimate on the diagnostic corpus we built (p=0.039) did not recur.
+The three NIST corpora give +0.028 (CSF), 0.000 (HIPAA) and +0.032 (PF), none distinguishable
+from zero. Two things qualify all four numbers:
+
+- each turns on very few requirements. Wins/losses/ties are 8/1/49, 4/1/101, 2/2/64 and
+  4/1/89, so fewer than ten decisions carry each corpus-level figure;
+- each moves by up to 0.029 when the latent-semantic backend is refitted on a different
+  population, which is a choice unrelated to reformulation and, on the external corpora, is
+  as large as the effect itself.
+
+The evaluation protocol contributes nothing to these particular estimates: repeated holdouts
+and a single full-population pass agree to four decimals, because under a controls-only fit
+no part of this deterministic pipeline depends on the split. That is a fact about this design,
+not about evaluation protocols generally, and it does not hold for the decision metrics.
+
+What separates the data is our corpus against the NIST ones. It is not measured vocabulary
+gap: that measure is fitted per corpus and provides no scale on which corpora can be compared.
+
+All four corpora are exploratory. The one preregistered analysis is the gated hybrid
+(doi:10.17605/OSF.IO/NZXRV), and because its hypothesis came from these corpora it is
+preregistered but still exploratory. See `HANDOFF.md`.
 
 ## Architecture
 
