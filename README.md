@@ -19,6 +19,9 @@ requirement, then a paired sign-flip randomization test + bootstrap), which avoi
 pseudoreplication of testing across overlapping seed splits. Agent variants are calibrated
 end-to-end to a 0.80 coverage target.
 
+The tables immediately below are the repeated-holdout decision-metric tables and are
+descriptive. The cross-corpus ranking results further down use the one-pass protocol.
+
 **Diagnostic benchmark** (engineered vocabulary mismatch, 58 reqs / 110 controls / 86 links):
 
 | Method | Top-1 | MRR@5 | Coverage |
@@ -28,10 +31,10 @@ end-to-end to a 0.80 coverage target.
 | Cross-encoder | 0.647 | 0.733 | 0.719 |
 | Full Agent (RAA) | 0.644 | 0.737 | 0.833 |
 
-Domain-aware reformulation is the one component that significantly improves ranking here
-(query-level +0.14 Top-1 over fusion, p = 0.009). Neural retrieval is not out-ranked by the agent,
-but does not beat it either (agent vs dual-encoder p ≈ 1.0). No method wins on coverage —
-LSI (0.922) is highest.
+Reformulation is the one component that improves ranking here. Under the primary one-pass
+protocol it gains +0.121 Top-1 over fusion (p = 0.039), by flipping correctness on 9 of 58
+requirements. Neural retrieval is not out-ranked by the agent, but does not beat it either
+(agent vs dual-encoder p ≈ 1.0). No method wins on coverage — LSI (0.922) is highest.
 
 **Real-world benchmark** (NIST CSF → SP 800-53r5 official crosswalk, 106 reqs / 300 controls / 495 links):
 
@@ -42,11 +45,13 @@ LSI (0.922) is highest.
 | Cross-encoder | **0.562** | **0.666** | 0.775 |
 | Full Agent (RAA) | 0.406 | 0.508 | 0.721 |
 
-On same-institution text, **no deterministic component significantly improves ranking**
-(reformulation +0.01 Top-1 p = 0.65; fusion +0.03 p = 0.51). The agent has no coverage or
-selective-accuracy edge. A two-stage cross-encoder pipeline scores higher (+0.154, p = 0.002),
-but it reranks a 20-candidate shortlist rather than the full corpus, so it is reported in a
-separate protocol section and not as a like-for-like ranking win.
+On this corpus **no deterministic component significantly improves ranking** (reformulation
++0.028 Top-1 p = 0.38 under the primary protocol; fusion +0.03 p = 0.51). The agent has no
+coverage or selective-accuracy edge. As a complete system, dual-encoder retrieval followed by
+cross-encoder reranking beats every single-stage method here (+0.154, p = 0.002). That result
+stands as an end-to-end comparison; as a comparison between reranking methods it is bounded
+by the first stage, whose Recall@20 is 0.906, and the paper reports the ceiling alongside the
+score rather than discounting it.
 
 We do not offer a qualitative advantage in place of the missing metric one. The agent records
 each step and its inputs, which establishes where a mapping came from. Whether that record is
@@ -91,9 +96,11 @@ attributed separately:
 Ranking tools:
 1. **Retrieve + Fuse** — Multi-backend retrieval (TF-IDF, BM25, LSI) with Reciprocal Rank Fusion
 2. **Reformulate** — Domain-aware query expansion via a curated compliance thesaurus (20 concept families, 32 regex patterns), triggered by a scale-invariant top-2 relative margin
-3. **Decompose** — Query decomposition for compound regulations (own ablation flag)
+3. **Decompose** — Query decomposition for compound regulations (own ablation flag). This is
+   a ranking tool: on the shared population it changes the ranking for one requirement,
+   HIPAA 58, and for none elsewhere.
 
-Decision tools (never reorder the ranking):
+Decision tools (measured: these reorder nothing on any of the four corpora):
 4. **Cross-Reference** — Cross-framework corroboration from a static family→framework taxonomy (no ground-truth leakage)
 5. **Verify** — Bidirectional check: query the requirement corpus with the control's text; if the requirement is not recovered in the top decile, tighten the acceptance threshold
 6. **Selective decision** — Calibrated accept/abstain thresholds
@@ -116,8 +123,10 @@ author-built and used only as a diagnostic instrument. All three real corpora ma
 - **HIPAA** (`hipaa_benchmark/`): 68 requirements / 274 links, regulation-to-control against
   statutory source text, built from the NIST OLIR crosswalk. The builder snapshots and hashes
   all six raw CPRT responses under `cprt_snapshots/`.
-- **Privacy Framework** (`pf_benchmark/`): 94 requirements / 456 links, NIST-authored, a
-  narrower vocabulary gap than HIPAA.
+- **Privacy Framework** (`pf_benchmark/`): 94 requirements / 456 links, NIST-authored, with
+  a different subject matter from HIPAA. We do not compare their vocabulary gaps: the gap
+  measure is fitted per corpus and gives no common scale, and that comparison is on the
+  retraction list in HANDOFF.md.
 
 NIST describes these crosswalks as concept-relationship mappings (NIST IR 8477) and marks the
 HIPAA OLIR "Comprehensive: No", so they are a silver standard. The task is reference-link
