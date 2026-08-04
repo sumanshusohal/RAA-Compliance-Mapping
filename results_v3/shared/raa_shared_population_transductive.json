@@ -2,9 +2,7 @@
   "argv": [
     "score_raa.py",
     "--lsi-fit",
-    "transductive",
-    "--out",
-    "shared_raa_scores_transductive.csv"
+    "transductive"
   ],
   "environment": {
     "numpy": "1.26.4",
@@ -13,7 +11,7 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "241aec1a32f594ae43c4e901e8142fd6ab2bc898",
+    "commit": "37bb443a21a12ed54eb36744c52dfad441283b2f",
     "dirty": true
   },
   "lsi_fit": "transductive",
@@ -27,20 +25,28 @@
       "multi": {
         "expanded": 0,
         "gate_fired": 0,
-        "n": 58,
-        "top1_changed": 0
+        "n": 58
       },
       "raa_full": {
         "expanded": 52,
         "gate_fired": 58,
+        "n": 58
+      },
+      "raa_full_vs_reform": {
+        "differing_rids": [],
         "n": 58,
+        "ranking_changed": 0,
         "top1_changed": 0
       },
       "reform": {
         "expanded": 52,
         "gate_fired": 58,
+        "n": 58
+      },
+      "reform_vs_multi": {
         "n": 58,
-        "top1_changed": 0
+        "ranking_changed": 25,
+        "top1_changed": 14
       },
       "top1_changed_reform_vs_multi": {
         "changed": 14,
@@ -51,20 +57,30 @@
       "multi": {
         "expanded": 0,
         "gate_fired": 0,
-        "n": 68,
-        "top1_changed": 0
+        "n": 68
       },
       "raa_full": {
         "expanded": 48,
         "gate_fired": 68,
+        "n": 68
+      },
+      "raa_full_vs_reform": {
+        "differing_rids": [
+          58
+        ],
         "n": 68,
+        "ranking_changed": 1,
         "top1_changed": 0
       },
       "reform": {
         "expanded": 48,
         "gate_fired": 68,
+        "n": 68
+      },
+      "reform_vs_multi": {
         "n": 68,
-        "top1_changed": 0
+        "ranking_changed": 18,
+        "top1_changed": 9
       },
       "top1_changed_reform_vs_multi": {
         "changed": 9,
@@ -75,20 +91,28 @@
       "multi": {
         "expanded": 0,
         "gate_fired": 0,
-        "n": 106,
-        "top1_changed": 0
+        "n": 106
       },
       "raa_full": {
         "expanded": 63,
         "gate_fired": 106,
+        "n": 106
+      },
+      "raa_full_vs_reform": {
+        "differing_rids": [],
         "n": 106,
+        "ranking_changed": 0,
         "top1_changed": 0
       },
       "reform": {
         "expanded": 63,
         "gate_fired": 106,
+        "n": 106
+      },
+      "reform_vs_multi": {
         "n": 106,
-        "top1_changed": 0
+        "ranking_changed": 17,
+        "top1_changed": 10
       },
       "top1_changed_reform_vs_multi": {
         "changed": 10,
@@ -99,20 +123,28 @@
       "multi": {
         "expanded": 0,
         "gate_fired": 0,
-        "n": 94,
-        "top1_changed": 0
+        "n": 94
       },
       "raa_full": {
         "expanded": 79,
         "gate_fired": 94,
+        "n": 94
+      },
+      "raa_full_vs_reform": {
+        "differing_rids": [],
         "n": 94,
+        "ranking_changed": 0,
         "top1_changed": 0
       },
       "reform": {
         "expanded": 79,
         "gate_fired": 94,
+        "n": 94
+      },
+      "reform_vs_multi": {
         "n": 94,
-        "top1_changed": 0
+        "ranking_changed": 27,
+        "top1_changed": 13
       },
       "top1_changed_reform_vs_multi": {
         "changed": 13,
@@ -123,11 +155,11 @@
   "rel_gap_retry_threshold": 0.1,
   "spec_hashes": {
     "raa_agent.py": "80c41afbd6b101e749bc12cf0c22ee9a67662d825bcdc08dc98ff0fd0aef19f2",
-    "score_raa.py": "1ceb77e98f1cd6b10a97c600e27e41706675e032d70813ea12eb9e841b5412f3"
+    "score_raa.py": "6abc6a0d98c856bfec00e4eeeaf6cddfea9cc622d338790aa68c66a4eab86dfc"
   },
   "status": "exploratory",
   "thresholds": "conf_thr=gap_thr=0.0; ranking is independent of them",
-  "timestamp_utc": "2026-08-02T02:49:21.312208+00:00",
+  "timestamp_utc": "2026-08-04T02:24:56.093759+00:00",
   "top1": {
     "csf": {
       "multi": 0.4056603773584906,
