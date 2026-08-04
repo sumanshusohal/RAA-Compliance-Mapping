@@ -17,9 +17,25 @@ spec was timestamped, and those ablations compute the reform-vs-multi
 contrast that is the test itself. Confirmatory status cannot be claimed on
 these corpora at any later date. See HANDOFF.md.
 
+TWO SOURCES OF PAIRED DIFFERENCES
+  --source holdout  reads results_v3/<corpus>/perquery_{multi,reform}.csv and
+                    collapses each requirement to its mean over the splits it
+                    was tested in. This is the repeated-holdout regime, with
+                    LSI fitted on controls plus the train and calibration
+                    requirements.
+  --source onepass  reads one scoring pass per requirement over the full
+                    control corpus from shared_raa_scores.csv, with LSI fitted
+                    on control documents alone.
+
+The two are different estimands and their numbers are not interchangeable.
+The moderation coefficient must come from whichever source the manuscript
+reports the per-corpus effects from, or the interaction is being fitted to
+differences the paper does not otherwise show.
+
 Usage:
   python run_confirmatory.py [--delta 0.05] [--metric top1]
                              [--corpora nist,hipaa,pf] [--tag NAME]
+                             [--source holdout|onepass]
 """
 import argparse
 import datetime as dt
@@ -53,6 +69,9 @@ CORPORA = {
 TREATMENT = "reform"
 BASELINE = "multi"
 
+ONEPASS_CSV = "shared_raa_scores.csv"
+ONEPASS_METRIC = {"top1": "top1", "rr": "rr@5"}
+
 
 def sha256(path):
     with open(path, "rb") as f:
@@ -82,14 +101,38 @@ def per_query_means(path, metric):
     return df.groupby("rid")[metric].mean()
 
 
-def load_corpus_diffs(name, metric):
+def onepass_series(name, metric):
+    """One value per requirement from the single full-corpus scoring pass.
+
+    No aggregation is involved: each requirement is scored once, so there is
+    nothing to average over. Returned in the same shape as per_query_means so
+    the two sources are interchangeable downstream.
+    """
+    bench, _ = CORPORA[name]
+    col = ONEPASS_METRIC[metric]
+    df = pd.read_csv(os.path.join(HERE, ONEPASS_CSV))
+    df = df[df.corpus == bench]
+    if df.empty:
+        raise SystemExit(f"{name}: no rows for {bench} in {ONEPASS_CSV}")
+    wide = df.pivot_table(index="rid", columns="method", values=col)
+    for v in (TREATMENT, BASELINE):
+        if v not in wide.columns:
+            raise SystemExit(f"{name}: {ONEPASS_CSV} has no {v} rows")
+    return wide[TREATMENT], wide[BASELINE]
+
+
+def load_corpus_diffs(name, metric, source):
     """Paired per-requirement difference and gap score for one corpus."""
     bench, prefix = CORPORA[name]
-    rdir = os.path.join(RESULTS, name)
-    paths = {v: os.path.join(rdir, f"perquery_{v}.csv")
-             for v in (TREATMENT, BASELINE)}
-    treat = per_query_means(paths[TREATMENT], metric)
-    base = per_query_means(paths[BASELINE], metric)
+    if source == "onepass":
+        treat, base = onepass_series(name, metric)
+        paths = {"onepass": os.path.join(HERE, ONEPASS_CSV)}
+    else:
+        rdir = os.path.join(RESULTS, name)
+        paths = {v: os.path.join(rdir, f"perquery_{v}.csv")
+                 for v in (TREATMENT, BASELINE)}
+        treat = per_query_means(paths[TREATMENT], metric)
+        base = per_query_means(paths[BASELINE], metric)
 
     regs, controls, mappings = gap_metrics.load_corpus(
         os.path.join(HERE, bench), prefix)
@@ -108,7 +151,7 @@ def load_corpus_diffs(name, metric):
         inputs[os.path.relpath(p, HERE)] = sha256(p)
 
     return {"rids": shared, "diffs": diffs, "gaps": gapv,
-            "n": len(shared),
+            "n": len(shared), "source": source,
             "n_treatment_rows": int(len(treat)),
             "n_baseline_rows": int(len(base)),
             "n_with_gap": int(len(gaps)),
@@ -127,6 +170,10 @@ def main():
                     help="comma-separated results_v3 subdirectories")
     ap.add_argument("--alpha", type=float, default=0.05)
     ap.add_argument("--tag", default=None, help="output filename stem")
+    ap.add_argument("--source", default="holdout",
+                    choices=("holdout", "onepass"),
+                    help="where the paired differences come from; see the "
+                         "module docstring, the two are different estimands")
     args = ap.parse_args()
 
     names = [c.strip() for c in args.corpora.split(",") if c.strip()]
@@ -139,9 +186,16 @@ def main():
     print("The ablations that produced these rows predate any timestamped")
     print("spec and already contained this contrast. See HANDOFF.md.")
     print("=" * 72)
+    if args.source == "onepass":
+        print("source: one scoring pass per requirement over the full control")
+        print("corpus, LSI fitted on controls only.")
+    else:
+        print("source: repeated stratified holdouts, LSI fitted on controls")
+        print("plus the train and calibration requirements.")
     print()
 
-    per_corpus = {name: load_corpus_diffs(name, args.metric) for name in names}
+    per_corpus = {name: load_corpus_diffs(name, args.metric, args.source)
+                  for name in names}
 
     diffs = np.concatenate([per_corpus[n]["diffs"] for n in names])
     gaps = np.concatenate([per_corpus[n]["gaps"] for n in names])
@@ -164,6 +218,14 @@ def main():
         "argv": sys.argv,
         "contrast": f"{TREATMENT} - {BASELINE}",
         "metric": args.metric,
+        "source": args.source,
+        "source_note": (
+            "one scoring pass per requirement over the full control corpus, "
+            "LSI fitted on control documents only"
+            if args.source == "onepass" else
+            "repeated stratified holdouts collapsed to one value per "
+            "requirement, LSI fitted on controls plus train and calibration "
+            "requirements"),
         "delta": args.delta,
         "alpha": args.alpha,
         "git": git_state(),
