@@ -1,8 +1,6 @@
 {
   "argv": [
-    "holdout_lsi_factorial.py",
-    "--lsi-fit",
-    "controls_only"
+    "holdout_lsi_factorial.py"
   ],
   "cell": "repeated holdout + controls_only LSI",
   "environment": {
@@ -11,7 +9,7 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "0f97f22b3295a9cb85d69c7f6572df6382db961f",
+    "commit": "15a11970c42f6b5805a36f44efcb92db84ce3d7c",
     "dirty": false
   },
   "lsi_fit": "controls_only",
@@ -83,9 +81,9 @@
   },
   "spec_hashes": {
     "holdout_lsi_factorial.py": "aae58cf30bfac8d31c6237dbc3e08dac93cc6f1d882a175f8a633b4707b3b74d",
-    "raa_agent.py": "80c41afbd6b101e749bc12cf0c22ee9a67662d825bcdc08dc98ff0fd0aef19f2"
+    "raa_agent.py": "83c485c8b543cba440737c8f97ffc14db87e031d56824abe057da00c3c06dd8b"
   },
   "status": "exploratory",
   "status_reason": "unplanned; written in response to review",
-  "timestamp_utc": "2026-08-03T16:01:36.984812+00:00"
+  "timestamp_utc": "2026-08-04T15:19:48.905018+00:00"
 }
