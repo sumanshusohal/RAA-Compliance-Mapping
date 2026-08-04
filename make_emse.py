@@ -183,6 +183,12 @@ def convert(src):
     # into Declarations instead.
     out = out.replace(r"\printcredits", "")
 
+    # The bibliography is an inline thebibliography environment, so no .bst is
+    # used at all. Leaving Elsevier's \bibliographystyle behind pointed the
+    # Springer build at cas-model2-names.bst, which is not in the Springer
+    # template and is not needed here.
+    out = re.sub(r"\\bibliographystyle\{[^}]*\}\s*\n", "", out)
+
     # Replace the three starred declaration sections with one Declarations
     # block, placed where the first of them was.
     first = out.find(r"\section*{Declaration of competing interest}")
@@ -229,6 +235,7 @@ def main():
         ("declarations present", r"\subsection*{Data availability}" in out),
         ("no printcredits", r"\printcredits" not in out),
         ("bibliography kept", r"\begin{thebibliography}" in out),
+        ("no Elsevier bst", "cas-model2-names" not in out),
         ("statements heading", r"\section*{Statements and Declarations}" in out),
         ("no 4th-level headings", r"\paragraph{" not in out),
         ("affiliation is an org", r"\orgname{Independent Researcher}," in out),
