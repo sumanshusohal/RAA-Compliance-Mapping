@@ -1,0 +1,272 @@
+{
+  "alpha": 0.05,
+  "argv": [
+    "run_confirmatory.py",
+    "--source",
+    "onepass",
+    "--corpora",
+    "nist,hipaa,pf,diagnostic",
+    "--tag",
+    "reform_vs_multi_top1_onepass_with_diagnostic"
+  ],
+  "contrast": "reform - multi",
+  "corpora": {
+    "diagnostic": {
+      "inputs": {
+        "diagnostic_benchmark\\diag_controls.csv": "787aafae0394b4abe4c875b12ce068f496ab795f8ada34a84f846ee29e452474",
+        "diagnostic_benchmark\\diag_mappings.csv": "63912c07c261234aab83777c26f461df13fc54eac8e97668e3a46ce4851610d9",
+        "diagnostic_benchmark\\diag_regs.csv": "662751aa7af06fecf035370bbb8305d0f69f1e1f59f4afcab56ea8c2e5582259",
+        "shared_raa_scores.csv": "c9a01c4656baa945e16799cb50cec454436721d70b29b62989d1351c233b866a"
+      },
+      "mean_baseline": 0.46551724137931033,
+      "mean_gap": 0.7387841238725277,
+      "mean_treatment": 0.5862068965517241,
+      "n": 58,
+      "n_baseline_rows": 58,
+      "n_treatment_rows": 58,
+      "n_with_gap": 58,
+      "source": "onepass"
+    },
+    "hipaa": {
+      "inputs": {
+        "hipaa_benchmark\\controls.csv": "1a880294731254fdcbb285fab82f7a49610949c37a6693e4e1ffe7ce409fd0ab",
+        "hipaa_benchmark\\mappings.csv": "1b6f4eac56e5a390f02e8a237abca022b67d5e457ff1750b2cc76bd114dfe10e",
+        "hipaa_benchmark\\regs.csv": "3b5e8dd2aabb04010da85ecf8e95cca8e49daede5c54fff70ef5596a081c6fe2",
+        "shared_raa_scores.csv": "c9a01c4656baa945e16799cb50cec454436721d70b29b62989d1351c233b866a"
+      },
+      "mean_baseline": 0.3088235294117647,
+      "mean_gap": 0.8404212795990522,
+      "mean_treatment": 0.3088235294117647,
+      "n": 68,
+      "n_baseline_rows": 68,
+      "n_treatment_rows": 68,
+      "n_with_gap": 68,
+      "source": "onepass"
+    },
+    "nist": {
+      "inputs": {
+        "csf_benchmark\\csf_controls.csv": "1a880294731254fdcbb285fab82f7a49610949c37a6693e4e1ffe7ce409fd0ab",
+        "csf_benchmark\\csf_mappings.csv": "3e3bd358a924931dbc905bd427d48aeec88466fc3c35d27f5d4056ca3d76b34a",
+        "csf_benchmark\\csf_regs.csv": "a78dace31ec5835ba5c2e3f314f4addb107f1647a773d8bd7bbc5f10e77b0a81",
+        "shared_raa_scores.csv": "c9a01c4656baa945e16799cb50cec454436721d70b29b62989d1351c233b866a"
+      },
+      "mean_baseline": 0.37735849056603776,
+      "mean_gap": 0.7552394007366166,
+      "mean_treatment": 0.4056603773584906,
+      "n": 106,
+      "n_baseline_rows": 106,
+      "n_treatment_rows": 106,
+      "n_with_gap": 106,
+      "source": "onepass"
+    },
+    "pf": {
+      "inputs": {
+        "pf_benchmark\\controls.csv": "1a880294731254fdcbb285fab82f7a49610949c37a6693e4e1ffe7ce409fd0ab",
+        "pf_benchmark\\mappings.csv": "4ce64fba4363f89d4dd90e840e0f67472ef687bc7c79ceb9d7e7fd5c9c5bbab4",
+        "pf_benchmark\\regs.csv": "1f97e08ad2ba5f86d51165d2ac2ab6d85f7af77b338edfb183af16a00fce54f8",
+        "shared_raa_scores.csv": "c9a01c4656baa945e16799cb50cec454436721d70b29b62989d1351c233b866a"
+      },
+      "mean_baseline": 0.3404255319148936,
+      "mean_gap": 0.8022175364389234,
+      "mean_treatment": 0.3723404255319149,
+      "n": 94,
+      "n_baseline_rows": 94,
+      "n_treatment_rows": 94,
+      "n_with_gap": 94,
+      "source": "onepass"
+    }
+  },
+  "delta": 0.05,
+  "environment": {
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.2",
+    "scipy": "1.15.3"
+  },
+  "equivalence_tost": {
+    "diagnostic": {
+      "alpha": 0.05,
+      "ci_confidence": 0.9,
+      "ci_high": 0.2037337824998081,
+      "ci_low": 0.03764552784501947,
+      "delta": 0.05,
+      "df": 57,
+      "equivalent": false,
+      "mean_difference": 0.1206896551724138,
+      "n": 58,
+      "p_lower": 0.0005528946709018381,
+      "p_tost": 0.919947325445802,
+      "p_upper": 0.919947325445802,
+      "se": 0.04966668213719304,
+      "t_lower": 3.4367033960698645,
+      "t_upper": 1.4232812044329743
+    },
+    "hipaa": {
+      "alpha": 0.05,
+      "ci_confidence": 0.9,
+      "ci_high": 0.04942109259277255,
+      "ci_low": -0.04942109259277255,
+      "delta": 0.05,
+      "df": 67,
+      "equivalent": true,
+      "mean_difference": 0.0,
+      "n": 68,
+      "p_lower": 0.04808337183053799,
+      "p_tost": 0.04808337183053799,
+      "p_upper": 0.04808337183053799,
+      "se": 0.029630442547297988,
+      "t_lower": 1.6874537030686207,
+      "t_upper": -1.6874537030686207
+    },
+    "nist": {
+      "alpha": 0.05,
+      "ci_confidence": 0.9,
+      "ci_high": 0.06317529516073454,
+      "ci_low": -0.006571521575828881,
+      "delta": 0.05,
+      "df": 105,
+      "equivalent": false,
+      "mean_difference": 0.02830188679245283,
+      "n": 106,
+      "p_lower": 0.00015756671317086976,
+      "p_tost": 0.15209762184776535,
+      "p_upper": 0.15209762184776535,
+      "se": 0.021014465431661456,
+      "t_lower": 3.726094629772464,
+      "t_upper": -1.0325322468044178
+    },
+    "pf": {
+      "alpha": 0.05,
+      "ci_confidence": 0.9,
+      "ci_high": 0.07126594145694347,
+      "ci_low": -0.00743615422290092,
+      "delta": 0.05,
+      "df": 93,
+      "equivalent": false,
+      "mean_difference": 0.031914893617021274,
+      "n": 94,
+      "p_lower": 0.00041071135689648867,
+      "p_tost": 0.22353280574024048,
+      "p_upper": 0.22353280574024048,
+      "se": 0.02368542243185552,
+      "t_lower": 3.4584518748903754,
+      "t_upper": -0.7635543100407324
+    }
+  },
+  "equivalence_verdict_descriptive": {
+    "diagnostic": {
+      "ci_high": 0.20689655172413793,
+      "ci_low": 0.05172413793103448,
+      "confidence": 0.9,
+      "delta": 0.05,
+      "mean_difference": 0.1206896551724138,
+      "method": "bootstrap_ci_inclusion_not_tost",
+      "n": 58,
+      "verdict": "meaningfully_positive"
+    },
+    "hipaa": {
+      "ci_high": 0.04411764705882353,
+      "ci_low": -0.04411764705882353,
+      "confidence": 0.9,
+      "delta": 0.05,
+      "mean_difference": 0.0,
+      "method": "bootstrap_ci_inclusion_not_tost",
+      "n": 68,
+      "verdict": "practically_equivalent"
+    },
+    "nist": {
+      "ci_high": 0.0660377358490566,
+      "ci_low": 0.0,
+      "confidence": 0.9,
+      "delta": 0.05,
+      "mean_difference": 0.02830188679245283,
+      "method": "bootstrap_ci_inclusion_not_tost",
+      "n": 106,
+      "verdict": "inconclusive"
+    },
+    "pf": {
+      "ci_high": 0.07446808510638298,
+      "ci_low": 0.0,
+      "confidence": 0.9,
+      "delta": 0.05,
+      "mean_difference": 0.031914893617021274,
+      "method": "bootstrap_ci_inclusion_not_tost",
+      "n": 94,
+      "verdict": "inconclusive"
+    }
+  },
+  "git": {
+    "commit": "ba1113ac6a6c6b2bcc8d8de065cc7d9a3ea13af3",
+    "dirty": false
+  },
+  "metric": "top1",
+  "moderation_pooled": {
+    "ci_high": 0.04385051743961214,
+    "ci_low": -0.0003391917783950244,
+    "coefficient": 0.020769634467103615,
+    "interpretation": "no direction identified; interval includes zero",
+    "n": 326,
+    "n_permutations": 100000,
+    "p_method": "sign_flip_permutation",
+    "p_value": 0.06881931180688193
+  },
+  "seeds": {
+    "bootstrap": 20260801,
+    "bootstrap_n": 10000,
+    "permutation": 20260801,
+    "permutation_n": 100000
+  },
+  "source": "onepass",
+  "source_note": "one scoring pass per requirement over the full control corpus, LSI fitted on control documents only",
+  "spec_hashes": {
+    "confirmatory_stats.py": "d0a73baf5dd18060fa810f5fe4ac4a1331e3834c74d53fe430b763d2e3db857e",
+    "gap_metrics.py": "278cf58e1c376ec389e3466c221a2a9c8173afecd9f242d38faa8299be6474eb",
+    "run_confirmatory.py": "3637d0d880f9f1d46ce7491d7526380241e57c04ea8aabe412f628b33cc712a1"
+  },
+  "status": "exploratory",
+  "status_reason": "analysis spec not timestamped before the reform-vs-multi contrast was computed",
+  "superiority_sign_flip": {
+    "diagnostic": {
+      "ci_high": 0.22413793103448276,
+      "ci_low": 0.034482758620689655,
+      "confidence": 0.95,
+      "mean_difference": 0.1206896551724138,
+      "n": 58,
+      "n_permutations": 100000,
+      "p_method": "sign_flip_permutation",
+      "p_value": 0.03870961290387096
+    },
+    "hipaa": {
+      "ci_high": 0.058823529411764705,
+      "ci_low": -0.058823529411764705,
+      "confidence": 0.95,
+      "mean_difference": 0.0,
+      "n": 68,
+      "n_permutations": 100000,
+      "p_method": "sign_flip_permutation",
+      "p_value": 1.0
+    },
+    "nist": {
+      "ci_high": 0.07547169811320754,
+      "ci_low": -0.009433962264150943,
+      "confidence": 0.95,
+      "mean_difference": 0.02830188679245283,
+      "n": 106,
+      "n_permutations": 100000,
+      "p_method": "sign_flip_permutation",
+      "p_value": 0.3756962430375696
+    },
+    "pf": {
+      "ci_high": 0.0851063829787234,
+      "ci_low": -0.010638297872340425,
+      "confidence": 0.95,
+      "mean_difference": 0.031914893617021274,
+      "n": 94,
+      "n_permutations": 100000,
+      "p_method": "sign_flip_permutation",
+      "p_value": 0.3759562404375956
+    }
+  },
+  "timestamp_utc": "2026-08-04T00:38:56.439621+00:00"
+}
