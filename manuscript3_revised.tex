@@ -42,27 +42,15 @@
 \cortext[1]{Corresponding author}
 
 \begin{abstract}
-Compliance mapping links natural-language regulatory requirements to the organizational controls that address them, and in most organizations it is still done by hand.
-Public collections for the task are scarce, so methods are usually measured on benchmarks their own authors build.
-This paper asks how far such a measurement carries.
+\textbf{Context.} Compliance mapping links regulatory requirements to the controls that address them. Public collections are scarce, so methods are usually measured on benchmarks their own authors build.
 
-We evaluate one frozen set of retrieval methods on four corpora under a single ranking protocol, in which every requirement is scored once over the full control corpus.
-One corpus is a diagnostic instrument we built to isolate vocabulary mismatch (58~requirements, 110~controls, 86~links).
-The other three take their requirements, controls and links from NIST: the Cybersecurity Framework~1.1 (106~requirements, 495~links), the HIPAA Security Rule (68, 274) and the Privacy Framework (94, 456), all mapping into one 300-control corpus drawn from SP~800-53, so they are externally authored but not independent of one another.
+\textbf{Objective.} We ask how far one such measurement carries.
 
-The $+0.121$ estimate on the corpus we built (95\% CI $[+0.034, +0.224]$, $p = 0.039$) did not recur.
-On the three NIST corpora the estimates are $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero and all imprecise.
-Two properties of these estimates matter as much as their values.
-Each rests on a handful of requirements: reformulation changes whether the top-ranked control is correct for 9 of 58 requirements on the diagnostic corpus and for 5, 4 and 5 on the external ones.
-And each moves with a choice unrelated to reformulation: refitting the latent-semantic backend on a different population shifts the external estimates by up to $0.029$, which is larger than the estimates themselves.
-The choice between repeated holdouts and a single pass, by contrast, contributes nothing to these ranking estimates, because under a controls-only fit no part of this deterministic pipeline depends on the split. That is a fact about this design, not about evaluation protocols in general, and it does not extend to the decision metrics, which need a calibrated threshold and therefore do depend on the split.
-A requirement-level measure of vocabulary distance does not identify which requirements benefit \emph{within} a corpus either ($+0.013$, 95\% CI $[-0.011, +0.038]$, $p = 0.31$, $n = 268$).
+\textbf{Method.} We evaluate a frozen set of retrieval methods on four corpora under one ranking protocol, scoring every requirement once over the full control corpus. One corpus is a diagnostic instrument we built to isolate vocabulary mismatch. The other three take their texts and links from NIST: Cybersecurity Framework 1.1, the HIPAA Security Rule and the Privacy Framework, all mapping into a single 300-control corpus from SP 800-53, so they are externally authored but not independent.
 
-A separate preregistered test shows the same corpus-to-corpus spread inside one frozen design.
-Routing a query to lexical fusion only when a dual-encoder is unconfident rules out a mean loss of five Top-1 points or more relative to the dual-encoder alone ($p = 0.003$) and provides no evidence of superiority ($p = 0.48$), while producing $+0.085$ on one corpus against $-0.088$ on another.
+\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation, externally as large as the effect itself. Vocabulary distance does not identify who benefits within a corpus ($p = 0.31$, $n = 268$). A preregistered gated hybrid shows the same spread: non-inferiority established ($p = 0.003$), no superiority ($p = 0.48$), $+0.085$ on one corpus against $-0.088$ on another.
 
-We report a negative result about our own system rather than a compensating qualitative claim: no deterministic component improves ranking significantly on any external corpus, and the agent holds no coverage or selective-accuracy advantage.
-All four corpora, the frozen analysis specification, the evaluation harness and the implementation are public, and the preregistration is at \texttt{doi:10.17605/OSF.IO/NZXRV}.
+\textbf{Conclusion.} A benchmark built by the authors of the intervention it evaluates did not predict how that intervention behaves elsewhere. Corpora, specification, harness and implementation are public; the preregistration is at doi:10.17605/OSF.IO/NZXRV.
 \end{abstract}
 
 \begin{highlights}
@@ -74,7 +62,7 @@ All four corpora, the frozen analysis specification, the evaluation harness and 
 \end{highlights}
 
 \begin{keywords}
-Regulatory compliance \sep Requirements traceability \sep Information retrieval \sep Multi-stage retrieval \sep Query reformulation \sep Selective prediction \sep Rank fusion
+Regulatory compliance \sep Requirements traceability \sep Information retrieval \sep Query reformulation \sep Benchmark validity \sep Replication
 \end{keywords}
 
 \maketitle
