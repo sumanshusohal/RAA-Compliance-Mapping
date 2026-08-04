@@ -283,7 +283,7 @@ corpus sizes. Both overreach.
 ```
 USE_TF=0 python score_all.py                 # shared-population ranking table
 USE_TF=0 python score_raa.py                 # full RAA, one pass, inductive
-USE_TF=0 python score_raa.py --lsi-fit transductive
+USE_TF=0 python score_raa.py --lsi-fit transductive   # writes its own CSV
 python analyze_onepass.py                    # primary reformulation record
 USE_TF=0 python holdout_lsi_factorial.py     # cell A (controls-only holdout)
 USE_TF=0 python holdout_lsi_factorial.py --lsi-fit train_cal   # cell B

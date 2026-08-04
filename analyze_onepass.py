@@ -190,6 +190,22 @@ def main():
             return 1
         results[fit] = analyse(csv)
 
+    # The two fitting regimes must not produce the same file. score_raa.py
+    # once defaulted --out to the inductive filename whatever --lsi-fit said,
+    # so running the transductive arm without --out overwrote the primary
+    # scores and both arms below silently reported the same numbers. The
+    # inputs have identical shape and columns, so nothing else catches it.
+    hashes = {fit: sha256(os.path.join(HERE, csv))
+              for fit, csv in FITS.items()}
+    if len(set(hashes.values())) != len(hashes):
+        print("ABORT: the LSI fitting regimes have identical input files.")
+        for fit, csv in FITS.items():
+            print(f"  {fit:13s} {csv}  {hashes[fit][:12]}")
+        print("Regenerate with:")
+        print("  USE_TF=0 python score_raa.py")
+        print("  USE_TF=0 python score_raa.py --lsi-fit transductive")
+        return 1
+
     for fit in FITS:
         print(f"=== LSI fit: {fit} ===")
         print(f"{'corpus':11s} {'n':>4s} {'multi':>7s} {'reform':>7s} "

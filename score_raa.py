@@ -243,12 +243,26 @@ def score_corpus(key, directory, prefix, variants, lsi_fit):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--corpus", choices=sorted(CORPORA))
-    ap.add_argument("--out", default="shared_raa_scores.csv")
+    # --out defaults per fitting regime, deliberately. It used to default to
+    # shared_raa_scores.csv whatever --lsi-fit said, so running the
+    # transductive arm without also passing --out silently overwrote the
+    # primary inductive scores with transductive ones. Nothing downstream
+    # notices: the file has the same columns and the same row count, and the
+    # only symptom is that analyze_onepass.py reports identical numbers for
+    # two arms that should differ.
+    ap.add_argument("--out", default=None,
+                    help="output CSV; defaults to shared_raa_scores.csv for "
+                         "the inductive fit and "
+                         "shared_raa_scores_transductive.csv for the "
+                         "transductive one")
     ap.add_argument("--lsi-fit", choices=("inductive", "transductive"),
                     default="inductive",
                     help="inductive = controls only (shared protocol); "
                          "transductive = controls plus all requirement texts")
     args = ap.parse_args()
+    if args.out is None:
+        args.out = ("shared_raa_scores.csv" if args.lsi_fit == "inductive"
+                    else "shared_raa_scores_transductive.csv")
 
     # Two things are needed and they are not the same contrast.
     #
