@@ -19,7 +19,7 @@
     "scipy": "1.15.3"
   },
   "git": {
-    "commit": "8385286a8e8ce8dfe7e978642e1df5075ef28dd9",
+    "commit": "14ed9a4289e7ecaf9a26ad343c4a561f023b662d",
     "dirty": false
   },
   "input_hashes": {
@@ -291,9 +291,9 @@
   "spec_hashes": {
     "analyze_onepass.py": "eccb0a2df6627fa9b77d0cc42dac514fd5c3ae5a0e45e14f170bec8d8addd9e7",
     "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
-    "score_raa.py": "07ab27deb515ec204f18ccc85f6aa7160dd0ff60f0ffdbaea7eabe325dc73d89"
+    "score_raa.py": "6d2ef50696c66e6bbeb691f6d62bedef85e8c6157a86806c751a6d270b85d7c0"
   },
   "status": "exploratory",
   "status_reason": "unplanned analysis written in response to review, after the per-corpus effects were known",
-  "timestamp_utc": "2026-08-04T02:34:26.592599+00:00"
+  "timestamp_utc": "2026-08-04T02:36:09.438847+00:00"
 }
