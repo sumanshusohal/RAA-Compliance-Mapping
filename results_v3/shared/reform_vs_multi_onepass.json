@@ -19,12 +19,12 @@
     "scipy": "1.15.3"
   },
   "git": {
-    "commit": "d29fa9d669834a6fadaedfbabb49bbed0ab9cda6",
+    "commit": "b631e0523c7059db5b98e18e6ee4bb4d304e824e",
     "dirty": false
   },
   "input_hashes": {
     "shared_raa_scores.csv": "8b4ce4ce95e632a5cae3ec08a069771122594db7e99204036049e8fe06cc30e8",
-    "shared_raa_scores_transductive.csv": "a54fb3ddeaa55aca051570c4c02143b021c5f59e39276f28dadd56e3576b87c9"
+    "shared_raa_scores_transductive.csv": "91b07f693940f82d70d0937ae1a1b525022fa62575674e8171ec5528cf12e296"
   },
   "iterations": {
     "bootstrap": 10000,
@@ -295,5 +295,5 @@
   },
   "status": "exploratory",
   "status_reason": "unplanned analysis written in response to review, after the per-corpus effects were known",
-  "timestamp_utc": "2026-08-04T15:11:54.927478+00:00"
+  "timestamp_utc": "2026-08-04T15:12:27.613499+00:00"
 }
