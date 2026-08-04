@@ -216,23 +216,22 @@ Registered primary: +0.022, p_NI=0.003, p_sup=0.48, n=268. Per corpus
    fitting regimes. Protocol rule 3 in the old numbering (`rrf_lexical` is
    not RAA) is closed for ranking. Instrumentation separates `gate_fired`,
    `expanded` and `top1_changed`.
-4. **Manuscript, remaining.** The reframe to cross-corpus evaluation is done
-   through abstract, RQs, contributions, protocol, results, discussion,
-   threats and conclusion. Still open:
-   - Qwen under the conditional-reranking block: score the 2 HIPAA parse
-     failures as failures (Top-1 0.4559), report availability 0.9706 and
-     valid-output accuracy 0.4697 separately, pin the revision, no AURC from
-     constant confidence, run candidate-order sensitivity.
-   - Document that the diagnostic corpus contains paraphrased ISO 27001, PCI
-     DSS and SOC 2 statements written as author summaries.
-   - Old-paper remnants: README reproduction steps, cover letter.
-   - Abstract is ~350 words. Fine for Elsevier, too long for EMSE.
-   - Compile and visually inspect all ten tables in Overleaf. No LaTeX
-     toolchain is installed locally; `tools/check_tex.py`-style structural
-     checks are all that has been run.
-   - If the target becomes EMSE: Springer template, abstract 150–250 words,
-     6 keywords, decimal headings, declarations section, DOI links,
-     alphabetized references, drop the Elsevier highlights block.
+4. **Manuscript.** Reframed to cross-corpus evaluation throughout. Abstract
+   is structured Context/Objective/Method/Results/Conclusion at 257 words,
+   six keywords, subsections down from 34 to 17. The three result tables are
+   generated from the records by `make_tables.py`; `--check` verifies the
+   manuscript against them and gates a push. The LLM arm is formally out of
+   scope and the related-work section says why. Licences added: MIT for code,
+   CC BY 4.0 for corpora. Still open:
+   - `manuscript_emse.tex` has NEVER been compiled. No LaTeX toolchain here.
+     Build it on Overleaf with the Springer Nature template (it supplies
+     sn-jnl.cls and sn-basic.bst) and read the PDF. Ten tables to inspect.
+   - DOIs on the 56 references. Springer asks for them; they need individual
+     lookup and no script does it.
+   - Verify the bibliography is alphabetical after any addition.
+   - `manuscript3_revised.tex` stays the source of truth. Edit it and
+     regenerate with `python make_emse.py`; do not edit the EMSE file.
+
 5. **Corpus sensitivities**: 800-53 5.1.1 as the HIPAA-native target
    (5.2.0 differs by one control, SA-24, and all 1,241 links resolve in
    both); enhancement collapsing; a `vocab_regime` field for the diagnostic
@@ -289,6 +288,12 @@ USE_TF=0 python holdout_lsi_factorial.py     # cell A (controls-only holdout)
 USE_TF=0 python holdout_lsi_factorial.py --lsi-fit train_cal   # cell B
 python run_confirmatory.py --source onepass  # RQ2 moderation, primary source
 python run_confirmatory.py                   # same, holdout source
+python gap_correlations.py                   # the eight Spearman coefficients
+
+# Integrity gates. Run both before any push.
+python audit_records.py                      # dirty flags and moved hashes
+python make_tables.py --check                # manuscript tables vs records
+python make_emse.py                          # regenerate the Springer version
 python heterogeneity_test.py                 # descriptive contrast only
 USE_TF=0 python run_local_all.py             # open-weight LLM, all corpora
 python precision_analysis.py                 # outcome-blind power analysis
