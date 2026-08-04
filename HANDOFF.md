@@ -216,21 +216,40 @@ Registered primary: +0.022, p_NI=0.003, p_sup=0.48, n=268. Per corpus
    fitting regimes. Protocol rule 3 in the old numbering (`rrf_lexical` is
    not RAA) is closed for ranking. Instrumentation separates `gate_fired`,
    `expanded` and `top1_changed`.
-4. **Manuscript.** Reframed to cross-corpus evaluation throughout. Abstract
-   is structured Context/Objective/Method/Results/Conclusion at 257 words,
-   six keywords, subsections down from 34 to 17. The three result tables are
-   generated from the records by `make_tables.py`; `--check` verifies the
-   manuscript against them and gates a push. The LLM arm is formally out of
-   scope and the related-work section says why. Licences added: MIT for code,
-   CC BY 4.0 for corpora. Still open:
+4. **Manuscript.** Reframed to cross-corpus evaluation. Structured abstract
+   at 238 words, six keywords, subsections down from 34 to 17, bibliography
+   alphabetised. Four quantitative tables are generated from records by
+   `make_tables.py --check`; the other seven are hand-maintained and that is
+   stated in its docstring. LLM arm is a declared scope boundary with its
+   threat to external validity recorded, not an unfinished experiment.
+   Licences: MIT for code, CC BY 4.0 for corpora.
+
+   **Blocking before submission:**
    - `manuscript_emse.tex` has NEVER been compiled. No LaTeX toolchain here.
-     Build it on Overleaf with the Springer Nature template (it supplies
-     sn-jnl.cls and sn-basic.bst) and read the PDF. Ten tables to inspect.
-   - DOIs on the 56 references. Springer asks for them; they need individual
-     lookup and no script does it.
-   - Verify the bibliography is alphabetical after any addition.
-   - `manuscript3_revised.tex` stays the source of truth. Edit it and
-     regenerate with `python make_emse.py`; do not edit the EMSE file.
+     Build on Overleaf with the Springer Nature template (supplies sn-jnl.cls
+     and sn-basic.bst) and read the PDF. Eleven tables, plus floats,
+     algorithms, page breaks and reference wrapping to inspect.
+   - Fill the `CITY`/`COUNTRY` placeholders on both independent-researcher
+     affiliations in `make_emse.py`. Left as placeholders deliberately; do
+     not guess them.
+   - Archive the submission commit to Zenodo or a new OSF component and cite
+     that DOI in the data-availability statement. A mutable branch is not an
+     archival artifact. This is NOT an update to the registration, which is
+     immutable and still accurate.
+   - Confirm "provided as supplementary material" is literally true at
+     upload, or point at the archived release instead.
+
+   **Non-blocking:**
+   - DOIs on the 56 references; needs individual lookup.
+   - Activate CI: copy `ci/github-workflow-checks.yml` to
+     `.github/workflows/`. Needs a token with the `workflow` scope.
+   - Consider a forest plot of the four reformulation effects in place of a
+     table; it carries the heterogeneity better.
+   - Consider moving legacy holdout tables, the full trace and the constant
+     sweeps to supplementary material.
+
+   `manuscript3_revised.tex` is the source of truth. Edit it and regenerate
+   with `python make_emse.py`; never edit the EMSE file directly.
 
 5. **Corpus sensitivities**: 800-53 5.1.1 as the HIPAA-native target
    (5.2.0 differs by one control, SA-24, and all 1,241 links resolve in
@@ -247,9 +266,8 @@ Registered primary: +0.022, p_NI=0.003, p_sup=0.48, n=268. Per corpus
    the understating direction and is now 41% (35/86), because 14 matched
    positives also share no content words. `dke_manuscript2.tex` is left
    uncorrected on purpose: it is the version that was submitted to DKE.
-6. **LLM**: candidate-order sensitivity (candidates are currently supplied in
-   first-stage rank order), pinned Hugging Face model and tokenizer
-   revisions, a strict shared validator rejecting duplicate IDs and
+6. **LLM**, only if the arm is ever reinstated: candidate-order sensitivity
+   (candidates are currently supplied in first-stage rank order), a strict shared validator rejecting duplicate IDs and
    out-of-range confidence, a contamination check by masking framework
    identifiers, and one batched API pass. Confidence is a constant 1.0 from
    the local model, so calibration is a precondition for any AURC result.
@@ -289,6 +307,7 @@ USE_TF=0 python holdout_lsi_factorial.py --lsi-fit train_cal   # cell B
 python run_confirmatory.py --source onepass  # RQ2 moderation, primary source
 python run_confirmatory.py                   # same, holdout source
 python gap_correlations.py                   # the eight Spearman coefficients
+python model_pins.py                         # verify the model revisions
 
 # Integrity gates. Run both before any push.
 python audit_records.py                      # dirty flags and moved hashes
