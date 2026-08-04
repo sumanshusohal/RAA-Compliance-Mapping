@@ -207,6 +207,8 @@ Retrieval-augmented generation~\citep{Lewis2020} conditions generation on retrie
 This matters for our setting because it changes what a reranking baseline is.
 A model that reranks a candidate list inherits that list's ceiling exactly as a cross-encoder does, so the protocol distinction we draw in Section~\ref{sec:protocol} between end-to-end and candidate-constrained methods applies to LLM rerankers unchanged, and comparing a one-pass LLM against methods evaluated over repeated holdouts compares different estimands rather than different methods.
 
+We state plainly that we do not evaluate an LLM reranker here, and why. Our released harness contains an open-weight arm, but its model and tokenizer revisions are not pinned, its sensitivity to the order in which candidates are presented is untested, and its confidence output is a constant, which rules out any selective-prediction measurement. Reporting it under those conditions would add a number that could not be reproduced or interpreted. The scope of this paper is accordingly the deterministic and neural retrieval methods listed in Section~\ref{sec:protocol}, and a properly pinned LLM comparison is left to future work rather than claimed here.
+
 \subsection{Benchmark validity and the transfer of retrieval results}
 \label{sec:related-benchmarks}
 
@@ -381,7 +383,9 @@ NIST describes these mappings as concept relationship mappings rather than asser
 \label{sec:dataset-synth}
 
 The diagnostic benchmark contains 58 requirements drawn from seven frameworks: GDPR (8), NIST CSF and SP~800-53 (12), HIPAA (10), PCI~DSS (10), ISO~27001 (8), SOX ITGC (4), and SOC~2 (6).
-Requirements are sourced from official regulatory text and simplified to single-clause statements.
+Each requirement is a single-clause statement we wrote to summarize an obligation in the source framework.
+For ISO~27001, PCI~DSS and SOC~2 this is a paraphrase rather than a quotation, because those documents are not openly published, and we redistribute none of them.
+The requirement vocabulary in this corpus is therefore ours, which is one reason it cannot settle whether a thesaurus we also wrote transfers elsewhere.
 The 110-control corpus is stratified by design.
 Fifty-nine controls are labelled \texttt{perfect}: near-paraphrases of the corresponding requirement that represent the easy retrieval case.
 Twenty-seven are labelled \texttt{good}: correct mappings expressed in different terminology.

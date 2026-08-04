@@ -82,6 +82,22 @@ this as its most important external-validity limitation.
 The diagnostic benchmark is author-constructed to isolate vocabulary mismatch.
 Every requirement is a simplified single-clause statement adapted from official
 regulatory text (GDPR, NIST CSF/800-53, HIPAA, PCI DSS, ISO 27001, SOX, SOC 2).
+
+**"Adapted" means paraphrased, and for three of those frameworks that matters
+legally as well as scientifically.** ISO 27001, PCI DSS and SOC 2 are not open
+publications: ISO/IEC standards are sold by ISO and national bodies, the PCI
+DSS is published by the PCI Security Standards Council under its own terms,
+and SOC 2 criteria are AICPA material. The requirements drawn from them here
+are author-written one-line summaries of the obligation, not reproductions of
+the standards' wording, and none of those documents is redistributed in this
+repository. The GDPR, NIST and HIPAA requirements are paraphrases of texts
+that are themselves public.
+
+Two consequences. Anyone reusing this corpus is reusing our summaries, not the
+standards, and should not treat a requirement string as quotable standard
+text. And because the summaries are ours, their vocabulary is ours: this is
+part of why the corpus cannot settle whether a thesaurus we also wrote
+transfers elsewhere.
 Controls comprise 59 `perfect`-labelled positives, 27 `good`-labelled
 positives, 20 `hard_neg` and 4 `neg`, as released in the `match_type` column of
 `diag_controls.csv`; the thesaurus and concept patterns were frozen before the
