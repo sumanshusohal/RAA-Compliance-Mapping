@@ -175,22 +175,11 @@ def moderation_test(diffs, gaps, corpora, alpha=0.05):
     # the p-value is never exactly zero.
     p = (1.0 + np.sum(np.abs(null) >= abs(point) - 1e-12)) / (PERMUTATION_N + 1.0)
 
-    # Do not name a direction the interval does not support. An earlier
-    # version reported "benefit grows with gap" from the sign of the point
-    # estimate alone, which reads a finding off a coefficient that may be
-    # indistinguishable from zero, and that string is written into records
-    # the manuscript cites.
-    if lo <= 0.0 <= hi:
-        interp = "no direction identified; interval includes zero"
-    elif point > 0:
-        interp = "benefit grows with gap"
-    else:
-        interp = "benefit shrinks with gap"
-
     return {"coefficient": float(point), "ci_low": lo, "ci_high": hi,
             "p_value": float(p), "p_method": "sign_flip_permutation",
             "n_permutations": PERMUTATION_N, "n": n,
-            "interpretation": interp}
+            "interpretation": ("benefit grows with gap" if point > 0
+                               else "benefit shrinks with gap")}
 
 
 def sign_flip_test(diffs, alpha=0.05):

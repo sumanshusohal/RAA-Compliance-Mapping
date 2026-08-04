@@ -202,6 +202,22 @@ def main():
     labels = np.concatenate([[n] * per_corpus[n]["n"] for n in names])
 
     moderation = cs.moderation_test(diffs, gaps, labels, alpha=args.alpha)
+
+    # cs.moderation_test names a direction from the sign of the point estimate
+    # alone: "benefit grows with gap" whenever it is positive, whether or not
+    # the interval excludes zero. That string is written into records the
+    # manuscript cites, so it is overridden here rather than in
+    # confirmatory_stats.py. That module is one of the seven artifacts hashed
+    # in the OSF registration (doi:10.17605/OSF.IO/NZXRV) and must stay
+    # byte-identical to the registered version; editing it would break the
+    # hash for a reason unrelated to the registered analysis, which does not
+    # call moderation_test at all.
+    if moderation["ci_low"] <= 0.0 <= moderation["ci_high"]:
+        moderation["interpretation"] = ("no direction identified; interval "
+                                        "includes zero")
+    moderation["interpretation_note"] = (
+        "direction reported only when the bootstrap interval excludes zero; "
+        "see run_confirmatory.py, not confirmatory_stats.py")
     superiority = {n: cs.sign_flip_test(per_corpus[n]["diffs"], alpha=args.alpha)
                    for n in names}
     equivalence = {n: cs.tost(per_corpus[n]["diffs"], args.delta, alpha=args.alpha)
