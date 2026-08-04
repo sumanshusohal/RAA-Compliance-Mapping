@@ -16,7 +16,7 @@
         "diagnostic_benchmark\\diag_controls.csv": "787aafae0394b4abe4c875b12ce068f496ab795f8ada34a84f846ee29e452474",
         "diagnostic_benchmark\\diag_mappings.csv": "63912c07c261234aab83777c26f461df13fc54eac8e97668e3a46ce4851610d9",
         "diagnostic_benchmark\\diag_regs.csv": "662751aa7af06fecf035370bbb8305d0f69f1e1f59f4afcab56ea8c2e5582259",
-        "shared_raa_scores.csv": "c9a01c4656baa945e16799cb50cec454436721d70b29b62989d1351c233b866a"
+        "shared_raa_scores.csv": "755d936f3788d81607003cb29298eb1ef19392c06ee2c46a2fb10eb1cf42003b"
       },
       "mean_baseline": 0.46551724137931033,
       "mean_gap": 0.7387841238725277,
@@ -32,7 +32,7 @@
         "hipaa_benchmark\\controls.csv": "1a880294731254fdcbb285fab82f7a49610949c37a6693e4e1ffe7ce409fd0ab",
         "hipaa_benchmark\\mappings.csv": "1b6f4eac56e5a390f02e8a237abca022b67d5e457ff1750b2cc76bd114dfe10e",
         "hipaa_benchmark\\regs.csv": "3b5e8dd2aabb04010da85ecf8e95cca8e49daede5c54fff70ef5596a081c6fe2",
-        "shared_raa_scores.csv": "c9a01c4656baa945e16799cb50cec454436721d70b29b62989d1351c233b866a"
+        "shared_raa_scores.csv": "755d936f3788d81607003cb29298eb1ef19392c06ee2c46a2fb10eb1cf42003b"
       },
       "mean_baseline": 0.3088235294117647,
       "mean_gap": 0.8404212795990522,
@@ -48,7 +48,7 @@
         "csf_benchmark\\csf_controls.csv": "1a880294731254fdcbb285fab82f7a49610949c37a6693e4e1ffe7ce409fd0ab",
         "csf_benchmark\\csf_mappings.csv": "3e3bd358a924931dbc905bd427d48aeec88466fc3c35d27f5d4056ca3d76b34a",
         "csf_benchmark\\csf_regs.csv": "a78dace31ec5835ba5c2e3f314f4addb107f1647a773d8bd7bbc5f10e77b0a81",
-        "shared_raa_scores.csv": "c9a01c4656baa945e16799cb50cec454436721d70b29b62989d1351c233b866a"
+        "shared_raa_scores.csv": "755d936f3788d81607003cb29298eb1ef19392c06ee2c46a2fb10eb1cf42003b"
       },
       "mean_baseline": 0.37735849056603776,
       "mean_gap": 0.7552394007366166,
@@ -64,7 +64,7 @@
         "pf_benchmark\\controls.csv": "1a880294731254fdcbb285fab82f7a49610949c37a6693e4e1ffe7ce409fd0ab",
         "pf_benchmark\\mappings.csv": "4ce64fba4363f89d4dd90e840e0f67472ef687bc7c79ceb9d7e7fd5c9c5bbab4",
         "pf_benchmark\\regs.csv": "1f97e08ad2ba5f86d51165d2ac2ab6d85f7af77b338edfb183af16a00fce54f8",
-        "shared_raa_scores.csv": "c9a01c4656baa945e16799cb50cec454436721d70b29b62989d1351c233b866a"
+        "shared_raa_scores.csv": "755d936f3788d81607003cb29298eb1ef19392c06ee2c46a2fb10eb1cf42003b"
       },
       "mean_baseline": 0.3404255319148936,
       "mean_gap": 0.8022175364389234,
@@ -197,15 +197,16 @@
     }
   },
   "git": {
-    "commit": "ba1113ac6a6c6b2bcc8d8de065cc7d9a3ea13af3",
+    "commit": "0dafcaef6dbe6ef7e6a57080aa5f02f263be696f",
     "dirty": false
   },
   "metric": "top1",
   "moderation_pooled": {
-    "ci_high": 0.04385051743961214,
-    "ci_low": -0.0003391917783950244,
-    "coefficient": 0.020769634467103615,
+    "ci_high": 0.043850517439612144,
+    "ci_low": -0.00033919177839500207,
+    "coefficient": 0.020769634467103597,
     "interpretation": "no direction identified; interval includes zero",
+    "interpretation_note": "direction reported only when the bootstrap interval excludes zero; see run_confirmatory.py, not confirmatory_stats.py",
     "n": 326,
     "n_permutations": 100000,
     "p_method": "sign_flip_permutation",
@@ -220,9 +221,9 @@
   "source": "onepass",
   "source_note": "one scoring pass per requirement over the full control corpus, LSI fitted on control documents only",
   "spec_hashes": {
-    "confirmatory_stats.py": "d0a73baf5dd18060fa810f5fe4ac4a1331e3834c74d53fe430b763d2e3db857e",
+    "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
     "gap_metrics.py": "278cf58e1c376ec389e3466c221a2a9c8173afecd9f242d38faa8299be6474eb",
-    "run_confirmatory.py": "3637d0d880f9f1d46ce7491d7526380241e57c04ea8aabe412f628b33cc712a1"
+    "run_confirmatory.py": "2f84c2c828fc02e243f39cf66bc85eae5bf39fb408fadf0cd227786d16e1fe89"
   },
   "status": "exploratory",
   "status_reason": "analysis spec not timestamped before the reform-vs-multi contrast was computed",
@@ -268,5 +269,5 @@
       "p_value": 0.3759562404375956
     }
   },
-  "timestamp_utc": "2026-08-04T00:38:56.439621+00:00"
+  "timestamp_utc": "2026-08-04T02:28:43.769517+00:00"
 }
