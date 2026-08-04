@@ -19,11 +19,11 @@
     "scipy": "1.15.3"
   },
   "git": {
-    "commit": "0ec541648d9614312af0c1abc066962f105e879b",
+    "commit": "f2f699968e04edff8fee4a0a8dfab806ffa4e17e",
     "dirty": false
   },
   "input_hashes": {
-    "shared_raa_scores.csv": "a54fb3ddeaa55aca051570c4c02143b021c5f59e39276f28dadd56e3576b87c9",
+    "shared_raa_scores.csv": "755d936f3788d81607003cb29298eb1ef19392c06ee2c46a2fb10eb1cf42003b",
     "shared_raa_scores_transductive.csv": "a54fb3ddeaa55aca051570c4c02143b021c5f59e39276f28dadd56e3576b87c9"
   },
   "iterations": {
@@ -34,15 +34,15 @@
   "results_by_lsi_fit": {
     "inductive": {
       "_contrast": {
-        "bootstrap_ci_high": 0.23391662377766342,
-        "bootstrap_ci_low": 0.015803525476067958,
+        "bootstrap_ci_high": 0.20548121461657232,
+        "bootstrap_ci_low": 0.0009006690684508489,
         "bootstrap_n": 10000,
         "conditional_on": "these four corpora only",
         "coverage": "95% two-sided",
-        "difference": 0.1206896551724138,
+        "difference": 0.09830159547092127,
         "engineered_mean": 0.1206896551724138,
         "engineered_n": 58,
-        "external_mean": 0.0,
+        "external_mean": 0.022388059701492536,
         "external_n": 268,
         "is_a_test_of_corpus_type": false,
         "seed": 20260801,
@@ -51,110 +51,110 @@
       "diagnostic": {
         "ci_confidence": 0.95,
         "ci_high": 0.22413793103448276,
-        "ci_low": 0.017241379310344827,
+        "ci_low": 0.034482758620689655,
         "exact_sign_test": {
-          "losses": 2,
+          "losses": 1,
           "method": "exact binomial on discordant pairs",
-          "n_discordant": 11,
-          "p_exact_two_sided": 0.0654296875,
-          "ties": 47,
-          "wins": 9
+          "n_discordant": 9,
+          "p_exact_two_sided": 0.0390625,
+          "ties": 49,
+          "wins": 8
         },
         "mean_difference": 0.1206896551724138,
-        "multi_top1": 0.4827586206896552,
+        "multi_top1": 0.46551724137931033,
         "n": 58,
         "n_permutations": 100000,
-        "p_sign_flip": 0.06628933710662893,
-        "reform_top1": 0.603448275862069,
+        "p_sign_flip": 0.03870961290387096,
+        "reform_top1": 0.5862068965517241,
         "tost": {
           "delta": 0.05,
           "equivalent": false,
-          "p_lower": 0.001592833879484165,
-          "p_tost": 0.8963382026912543,
-          "p_upper": 0.8963382026912543
+          "p_lower": 0.0005528946709018381,
+          "p_tost": 0.919947325445802,
+          "p_upper": 0.919947325445802
         },
         "tost_boundary_sensitive": false
       },
       "hipaa": {
         "ci_confidence": 0.95,
-        "ci_high": 0.029411764705882353,
-        "ci_low": -0.07352941176470588,
-        "exact_sign_test": {
-          "losses": 2,
-          "method": "exact binomial on discordant pairs",
-          "n_discordant": 3,
-          "p_exact_two_sided": 1.0,
-          "ties": 65,
-          "wins": 1
-        },
-        "mean_difference": -0.014705882352941176,
-        "multi_top1": 0.27941176470588236,
-        "n": 68,
-        "n_permutations": 100000,
-        "p_sign_flip": 1.0,
-        "reform_top1": 0.2647058823529412,
-        "tost": {
-          "delta": 0.05,
-          "equivalent": false,
-          "p_lower": 0.08627156413059023,
-          "p_tost": 0.08627156413059023,
-          "p_upper": 0.0069212655341274725
-        },
-        "tost_boundary_sensitive": false
-      },
-      "nist": {
-        "ci_confidence": 0.95,
-        "ci_high": 0.03773584905660377,
-        "ci_low": -0.03773584905660377,
+        "ci_high": 0.058823529411764705,
+        "ci_low": -0.058823529411764705,
         "exact_sign_test": {
           "losses": 2,
           "method": "exact binomial on discordant pairs",
           "n_discordant": 4,
           "p_exact_two_sided": 1.0,
-          "ties": 102,
+          "ties": 64,
           "wins": 2
         },
         "mean_difference": 0.0,
-        "multi_top1": 0.4056603773584906,
-        "n": 106,
+        "multi_top1": 0.3088235294117647,
+        "n": 68,
         "n_permutations": 100000,
         "p_sign_flip": 1.0,
-        "reform_top1": 0.4056603773584906,
+        "reform_top1": 0.3088235294117647,
         "tost": {
           "delta": 0.05,
           "equivalent": true,
-          "p_lower": 0.004810665136747069,
-          "p_tost": 0.004810665136747069,
-          "p_upper": 0.004810665136747069
+          "p_lower": 0.04808337183053799,
+          "p_tost": 0.04808337183053799,
+          "p_upper": 0.04808337183053799
+        },
+        "tost_boundary_sensitive": true
+      },
+      "nist": {
+        "ci_confidence": 0.95,
+        "ci_high": 0.07547169811320754,
+        "ci_low": -0.009433962264150943,
+        "exact_sign_test": {
+          "losses": 1,
+          "method": "exact binomial on discordant pairs",
+          "n_discordant": 5,
+          "p_exact_two_sided": 0.375,
+          "ties": 101,
+          "wins": 4
+        },
+        "mean_difference": 0.02830188679245283,
+        "multi_top1": 0.37735849056603776,
+        "n": 106,
+        "n_permutations": 100000,
+        "p_sign_flip": 0.3756962430375696,
+        "reform_top1": 0.4056603773584906,
+        "tost": {
+          "delta": 0.05,
+          "equivalent": false,
+          "p_lower": 0.00015756671317086976,
+          "p_tost": 0.15209762184776535,
+          "p_upper": 0.15209762184776535
         },
         "tost_boundary_sensitive": false
       },
       "pf": {
         "ci_confidence": 0.95,
-        "ci_high": 0.05319148936170213,
-        "ci_low": -0.031914893617021274,
+        "ci_high": 0.0851063829787234,
+        "ci_low": -0.010638297872340425,
         "exact_sign_test": {
-          "losses": 2,
+          "losses": 1,
           "method": "exact binomial on discordant pairs",
           "n_discordant": 5,
-          "p_exact_two_sided": 1.0,
+          "p_exact_two_sided": 0.375,
           "ties": 89,
-          "wins": 3
+          "wins": 4
         },
-        "mean_difference": 0.010638297872340425,
-        "multi_top1": 0.3723404255319149,
+        "mean_difference": 0.031914893617021274,
+        "multi_top1": 0.3404255319148936,
         "n": 94,
         "n_permutations": 100000,
-        "p_sign_flip": 1.0,
-        "reform_top1": 0.3829787234042553,
+        "p_sign_flip": 0.3759562404375956,
+        "reform_top1": 0.3723404255319149,
         "tost": {
           "delta": 0.05,
           "equivalent": false,
-          "p_lower": 0.006401929784088683,
-          "p_tost": 0.05140283674680995,
-          "p_upper": 0.05140283674680995
+          "p_lower": 0.00041071135689648867,
+          "p_tost": 0.22353280574024048,
+          "p_upper": 0.22353280574024048
         },
-        "tost_boundary_sensitive": true
+        "tost_boundary_sensitive": false
       }
     },
     "transductive": {
@@ -289,11 +289,11 @@
     "permutation": 20260801
   },
   "spec_hashes": {
-    "analyze_onepass.py": "148c9a0f391fc03e26de88fbf0fb1ed445edbdf142555913d5e6410c146113ea",
+    "analyze_onepass.py": "eccb0a2df6627fa9b77d0cc42dac514fd5c3ae5a0e45e14f170bec8d8addd9e7",
     "confirmatory_stats.py": "d0a73baf5dd18060fa810f5fe4ac4a1331e3834c74d53fe430b763d2e3db857e",
-    "score_raa.py": "6abc6a0d98c856bfec00e4eeeaf6cddfea9cc622d338790aa68c66a4eab86dfc"
+    "score_raa.py": "07ab27deb515ec204f18ccc85f6aa7160dd0ff60f0ffdbaea7eabe325dc73d89"
   },
   "status": "exploratory",
   "status_reason": "unplanned analysis written in response to review, after the per-corpus effects were known",
-  "timestamp_utc": "2026-08-04T02:25:00.034753+00:00"
+  "timestamp_utc": "2026-08-04T02:26:43.475900+00:00"
 }
