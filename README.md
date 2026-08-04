@@ -5,7 +5,10 @@ compliance traceability recovery. RAA combines domain-aware query reformulation,
 retrieval fusion, cross-framework corroboration, bidirectional verification, and calibrated
 selective prediction to map regulatory requirements to implementation controls. It executes a
 fixed conditional sequence of deterministic tools (not an open-ended language-model loop) and
-emits a structured, auditable trace for every decision.
+emits a structured execution trace for every decision, recording the
+inputs, transformations, scores and effective thresholds behind it. Whether
+such a record is useful under audit is a question about practitioners that
+this work does not test.
 
 ## Key Results (30-seed evaluation)
 
@@ -206,7 +209,7 @@ python raa_agent.py --regs diagnostic_benchmark/diag_regs.csv \
   --mappings diagnostic_benchmark/diag_mappings.csv \
   --backend agent --runs 30 --open-world-frac 0.5
 
-# Export reasoning traces (Table 6)
+# Export execution traces (Table 6)
 python raa_agent.py ... --backend agent --export-traces
 ```
 

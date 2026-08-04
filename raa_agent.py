@@ -809,8 +809,8 @@ def build_semantic_scorer(control_texts: Sequence[str],
     import model_pins
     from sentence_transformers import SentenceTransformer
     model_name = model_name or model_pins.DUAL_ENCODER
-    revision = revision or model_pins.PINS.get(model_name)
-    model = SentenceTransformer(model_name, revision=revision)
+    model = SentenceTransformer(
+        model_name, revision=model_pins.require(model_name, revision))
     ctrl_emb = model.encode(list(control_texts), convert_to_numpy=True,
                             normalize_embeddings=True, show_progress_bar=False)
     def score_fn(q: str) -> np.ndarray:
@@ -828,9 +828,8 @@ def build_crossencoder_reranker(control_texts: Sequence[str],
     from sentence_transformers import SentenceTransformer, CrossEncoder
     bi_model = bi_model or model_pins.DUAL_ENCODER
     ce_model = ce_model or model_pins.CROSS_ENCODER
-    bi = SentenceTransformer(bi_model,
-                             revision=model_pins.PINS.get(bi_model))
-    ce = CrossEncoder(ce_model, revision=model_pins.PINS.get(ce_model))
+    bi = SentenceTransformer(bi_model, revision=model_pins.require(bi_model))
+    ce = CrossEncoder(ce_model, revision=model_pins.require(ce_model))
     ctrl_emb = bi.encode(list(control_texts), convert_to_numpy=True,
                          normalize_embeddings=True, show_progress_bar=False)
     ctrl_list = list(control_texts)

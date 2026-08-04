@@ -60,6 +60,27 @@ def _check_against_registration():
     return True
 
 
+def require(model_name, revision=None):
+    """Return the revision to load `model_name` at, or refuse.
+
+    PINS.get() returns None for an unknown model, and passing None as a
+    revision loads through refs/main. Every caller that used .get() therefore
+    had a silent unpinned path for any model outside PINS, which makes "every
+    neural path is pinned" true of the defaults and false in general.
+
+    A caller may still use an unlisted model, but only by naming the revision
+    explicitly, so the choice is recorded at the call site.
+    """
+    if revision:
+        return revision
+    if model_name in PINS:
+        return PINS[model_name]
+    raise ValueError(
+        f"{model_name!r} has no pinned revision. Add it to model_pins.PINS, "
+        f"or pass revision=... explicitly. Loading by name alone resolves "
+        f"through refs/main and is not reproducible.")
+
+
 def resolved_revision(model_name):
     """What the local cache actually holds, for recording alongside results.
 
