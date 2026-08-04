@@ -19,11 +19,11 @@
     "scipy": "1.15.3"
   },
   "git": {
-    "commit": "14ed9a4289e7ecaf9a26ad343c4a561f023b662d",
+    "commit": "d29fa9d669834a6fadaedfbabb49bbed0ab9cda6",
     "dirty": false
   },
   "input_hashes": {
-    "shared_raa_scores.csv": "755d936f3788d81607003cb29298eb1ef19392c06ee2c46a2fb10eb1cf42003b",
+    "shared_raa_scores.csv": "8b4ce4ce95e632a5cae3ec08a069771122594db7e99204036049e8fe06cc30e8",
     "shared_raa_scores_transductive.csv": "a54fb3ddeaa55aca051570c4c02143b021c5f59e39276f28dadd56e3576b87c9"
   },
   "iterations": {
@@ -291,9 +291,9 @@
   "spec_hashes": {
     "analyze_onepass.py": "eccb0a2df6627fa9b77d0cc42dac514fd5c3ae5a0e45e14f170bec8d8addd9e7",
     "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
-    "score_raa.py": "6d2ef50696c66e6bbeb691f6d62bedef85e8c6157a86806c751a6d270b85d7c0"
+    "score_raa.py": "6fb12f7ed47065bdd0602753807b18e40e98b487a7b3e393160929b8dc5bed65"
   },
   "status": "exploratory",
   "status_reason": "unplanned analysis written in response to review, after the per-corpus effects were known",
-  "timestamp_utc": "2026-08-04T02:36:09.438847+00:00"
+  "timestamp_utc": "2026-08-04T15:11:54.927478+00:00"
 }
