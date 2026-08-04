@@ -11,7 +11,7 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "962edcf653981fcbc5261d31bc78ee49f09cdc37",
+    "commit": "d57669a15d4f764557d5fb3f9696cd1a561954f3",
     "dirty": false
   },
   "lsi_fit": "train_cal",
@@ -83,9 +83,9 @@
   },
   "spec_hashes": {
     "holdout_lsi_factorial.py": "aae58cf30bfac8d31c6237dbc3e08dac93cc6f1d882a175f8a633b4707b3b74d",
-    "raa_agent.py": "f81828c860752602721234d712e016e695eed1778c3691a67586e9625535e062"
+    "raa_agent.py": "354c0ae1bc3290f04e19f0fc4a78f8d8677c57cfbabbafa33656701435303c54"
   },
   "status": "exploratory",
   "status_reason": "unplanned; written in response to review",
-  "timestamp_utc": "2026-08-04T15:47:14.188765+00:00"
+  "timestamp_utc": "2026-08-04T23:23:31.642407+00:00"
 }
