@@ -9,7 +9,7 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "6a2f63d008f8959944de2370d643ea903d50b82b",
+    "commit": "8f0b4f794f6f5cc3143893e93ab706eaefbda80c",
     "dirty": false
   },
   "lsi_fit": "controls_only",
@@ -81,9 +81,9 @@
   },
   "spec_hashes": {
     "holdout_lsi_factorial.py": "aae58cf30bfac8d31c6237dbc3e08dac93cc6f1d882a175f8a633b4707b3b74d",
-    "raa_agent.py": "f81828c860752602721234d712e016e695eed1778c3691a67586e9625535e062"
+    "raa_agent.py": "354c0ae1bc3290f04e19f0fc4a78f8d8677c57cfbabbafa33656701435303c54"
   },
   "status": "exploratory",
   "status_reason": "unplanned; written in response to review",
-  "timestamp_utc": "2026-08-04T15:46:24.291642+00:00"
+  "timestamp_utc": "2026-08-04T23:22:41.996997+00:00"
 }
