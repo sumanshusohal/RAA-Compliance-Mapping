@@ -624,7 +624,7 @@ Corpus & $n$ & +Multi & +Reform & $\Delta$Top-1 & 95\% CI & W/L/T \\
 \midrule
 Diagnostic (ours) & 58 & .466 & .586 & $+.121$ & $[+.034, +.224]$ & 8/1/49 \\
 \midrule
-CSF~1.1 & 106 & .377 & .406 & $+.028$ & $[-.009, +.076]$ & 4/1/101 \\
+CSF~1.1 & 106 & .377 & .406 & $+.028$ & $[-.009, +.075]$ & 4/1/101 \\
 HIPAA & 68 & .309 & .309 & $\pm.000$ & $[-.059, +.059]$ & 2/2/64 \\
 Privacy Fw. & 94 & .340 & .372 & $+.032$ & $[-.011, +.085]$ & 4/1/89 \\
 \bottomrule
@@ -665,7 +665,7 @@ Two things changed between the figures an earlier version of this work reported 
 \cmidrule(l){5-6}
 Corpus & hold/ctrl & hold/train & 1-pass/ctrl & LSI fit & protocol \\
 \midrule
-Diagnostic  & $+.121$ & $+.141$ & $+.121$ & $+.020$ & $.000$ \\
+Diagnostic  & $+.121$ & $+.140$ & $+.121$ & $+.020$ & $.000$ \\
 CSF~1.1     & $+.028$ & $+.009$ & $+.028$ & $-.020$ & $.000$ \\
 HIPAA       & $\pm.000$ & $+.008$ & $\pm.000$ & $+.008$ & $.000$ \\
 Privacy Fw. & $+.032$ & $+.003$ & $+.032$ & $-.029$ & $.000$ \\
@@ -677,7 +677,7 @@ The protocol column is zero on every corpus, to four decimal places. That is clo
 
 The fitting column does the work, and it has no consistent sign: $+0.020$, $-0.020$, $+0.008$, $-0.029$. Fitting LSI on the training and calibration requirements as well as the controls neither reliably inflates nor reliably deflates the estimate; it moves it by two or three points in whichever direction. A third fitting population, controls plus every requirement including the scored ones, gives $+0.121$, $0.000$, $-0.015$ and $+0.011$, so across the three regimes the CSF estimate spans $0.028$, the HIPAA estimate $0.023$ and the Privacy Framework estimate $0.029$.
 
-That span is as large as the effects themselves on the external corpora. Two things follow. The external estimates are not precise enough to support a claim about the sign of the reformulation effect, quite apart from its significance. And the diagnostic estimate stays between $+0.121$ and $+0.141$ across all three regimes, which we note without explaining: with nine discordant requirements, a point estimate holding still across three fits is weak evidence about anything, and we do not offer it as a property of the corpus.
+That span is as large as the effects themselves on the external corpora. Two things follow. The external estimates are not precise enough to support a claim about the sign of the reformulation effect, quite apart from its significance. And the diagnostic estimate stays between $+0.121$ and $+0.140$ across all three regimes, which we note without explaining: with nine discordant requirements, a point estimate holding still across three fits is weak evidence about anything, and we do not offer it as a property of the corpus.
 
 Cell~B reproduces the four figures the earlier version of this work reported, to four decimal places and including their $p$-values. That is our check that the reimplementation behind this factorial is faithful.
 
