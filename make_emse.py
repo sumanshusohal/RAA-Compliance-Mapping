@@ -78,9 +78,14 @@ of Domain-Aware Query Reformulation for Regulatory Traceability}
   \orgaddress{\city{Williamsburg}, \postcode{40769}, \state{KY},
   \country{USA}}}
 
-\affil[2]{\orgname{Independent Researcher}}
+%% TODO before submission: Springer requires city and country on every
+%% affiliation. Fill both in below. They are deliberately left as
+%% placeholders rather than guessed.
+\affil[2]{\orgname{Independent Researcher},
+  \orgaddress{\city{CITY}, \country{COUNTRY}}}
 
-\affil[3]{\orgname{Independent Researcher}, \orgaddress{\country{USA}}}
+\affil[3]{\orgname{Independent Researcher},
+  \orgaddress{\city{CITY}, \country{COUNTRY}}}
 """
 
 DECLARATIONS = r"""
@@ -120,13 +125,18 @@ analysis scripts and the trace-export utility are available at
 Licence. The preregistration of the gated hybrid analysis is at
 \url{https://doi.org/10.17605/OSF.IO/NZXRV}.
 
-All experiments are deterministic given a seed. The 30-seed logs underlying
-the holdout tables are included with the release; the one-pass, factorial and
+Experiments use recorded inputs, fixed seeds and fixed inference settings,
+with Hugging Face model revisions pinned in every path that loads one. Exact
+execution stability across hardware and software environments was not
+evaluated, so we claim repeatability of our own runs rather than bitwise
+reproducibility on arbitrary machines. The 30-seed logs underlying the
+holdout tables are included with the release; the one-pass, factorial and
 preregistered hybrid results are backed by JSON records carrying their
 arguments, git commit, library versions and SHA-256 hashes of every analysis
 module and input. \texttt{audit\_records.py} checks every record against the
-working tree, and \texttt{make\_tables.py --check} verifies that the tables in
-this paper match those records.
+working tree and against the commit it names, and \texttt{make\_tables.py
+--check} verifies that the four primary quantitative tables in this paper
+match those records.
 
 \subsection*{Author contributions}
 \textbf{Sumanshu Sohal}: conceptualization, methodology, software,

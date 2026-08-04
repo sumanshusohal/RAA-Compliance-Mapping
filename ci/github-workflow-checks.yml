@@ -29,7 +29,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install analysis dependencies
-        run: pip install numpy pandas scipy
+        run: pip install numpy pandas scipy scikit-learn
 
       - name: Byte-compile every module
         run: python -m compileall -q .

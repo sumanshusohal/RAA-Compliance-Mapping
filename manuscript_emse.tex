@@ -35,20 +35,25 @@ of Domain-Aware Query Reformulation for Regulatory Traceability}
   \orgaddress{\city{Williamsburg}, \postcode{40769}, \state{KY},
   \country{USA}}}
 
-\affil[2]{\orgname{Independent Researcher}}
+%% TODO before submission: Springer requires city and country on every
+%% affiliation. Fill both in below. They are deliberately left as
+%% placeholders rather than guessed.
+\affil[2]{\orgname{Independent Researcher},
+  \orgaddress{\city{CITY}, \country{COUNTRY}}}
 
-\affil[3]{\orgname{Independent Researcher}, \orgaddress{\country{USA}}}
+\affil[3]{\orgname{Independent Researcher},
+  \orgaddress{\city{CITY}, \country{COUNTRY}}}
 
 
 \abstract{\textbf{Context.} Compliance mapping links regulatory requirements to the controls that address them. Public collections are scarce, so methods are usually measured on benchmarks their own authors build.
 
 \textbf{Objective.} We ask how far one such measurement carries.
 
-\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora. One is a diagnostic instrument we built to isolate vocabulary mismatch. The other three take their texts and links from NIST and map into a single 300-control corpus from SP 800-53, so they are externally authored but not independent.
+\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora. One is a diagnostic instrument we built to isolate vocabulary mismatch. The other three take their texts and links from NIST and share a single 300-control target corpus, so they are externally authored but not independent.
 
-\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that within-corpus vocabulary distance moderates the effect ($p = 0.31$, $n = 268$), an inconclusive interval rather than a demonstrated null. A preregistered gated hybrid shows the same spread: non-inferiority established ($p = 0.003$), no superiority ($p = 0.48$), $+0.085$ on one corpus against $-0.088$ on another.
+\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, nominal $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that vocabulary distance moderates the effect within a corpus ($p = 0.31$), an inconclusive interval rather than a null. A preregistered gated hybrid shows the same spread: non-inferiority established, no superiority, $+0.085$ on one corpus against $-0.088$ on another.
 
-\textbf{Conclusion.} A benchmark built by the authors of the intervention it evaluates did not predict how that intervention behaves elsewhere. Corpora, specification, harness and implementation are public; the preregistration is at doi:10.17605/OSF.IO/NZXRV.}
+\textbf{Conclusion.} A benchmark built by the authors of the intervention it evaluates did not predict how that intervention behaves elsewhere. Corpora, harness and analysis code are public; the preregistration is at doi:10.17605/OSF.IO/NZXRV.}
 
 
 \keywords{Regulatory compliance, Requirements traceability, Information retrieval, Query reformulation, Benchmark validity, Replication}
@@ -180,7 +185,7 @@ Retrieval-augmented generation~\citep{Lewis2020} conditions generation on retrie
 This matters for our setting because it changes what a reranking baseline is.
 A model that reranks a candidate list inherits that list's ceiling exactly as a cross-encoder does, so the protocol distinction we draw in Section~\ref{sec:protocol} between end-to-end and candidate-constrained methods applies to LLM rerankers unchanged, and comparing a one-pass LLM against methods evaluated over repeated holdouts compares different estimands rather than different methods.
 
-We state plainly that we do not evaluate an LLM reranker here, and why. Our released harness contains an open-weight arm, but its model and tokenizer revisions are not pinned, its sensitivity to the order in which candidates are presented is untested, and its confidence output is a constant, which rules out any selective-prediction measurement. Reporting it under those conditions would add a number that could not be reproduced or interpreted. The scope of this paper is accordingly the deterministic and neural retrieval methods listed in Section~\ref{sec:protocol}, and a properly pinned LLM comparison is left to future work rather than claimed here.
+We do not evaluate a language model reranker here. This paper estimates the effect of one deterministic intervention and asks whether that estimate generalizes across corpora; it does not attempt to identify the strongest available regulatory retrieval system, and the methods it compares are those listed in Section~\ref{sec:protocol}. That is a scope boundary, and it carries a cost we state in Section~\ref{sec:threats}: our conclusions about what does and does not help are bounded by the method set we measured, and a prompted or instruction-tuned reranker could behave differently from every method here.
 
 \subsection{Benchmark validity and the transfer of retrieval results}
 \label{sec:related-benchmarks}
@@ -442,11 +447,11 @@ Second, we do \emph{not} treat the 30 seeds as independent replicates: the strat
 
 Third, we report wins, losses and ties with every paired effect. Top-1 is binary per requirement, so a paired difference is $+1$, $-1$ or $0$, and the mean difference is entirely determined by the requirements on which the two methods disagree. On corpora of this size that set is often smaller than ten. Reporting it is the only way for a reader to see how much of an estimate rests on how few decisions, and it is a fact about the data that no interval conveys on its own.
 
-Equivalence against a pre-specified $\pm 0.05$ margin is reported as a secondary result using two one-sided $t$ tests. We flag any equivalence decision whose $p$ falls within $0.01$ of $\alpha$, because with so few discordant requirements such a decision can turn on a single one. No exact equivalence test is available here; the exact sign tests reported alongside validate the superiority results only, and say nothing about whether an effect lies inside a margin.
+Equivalence against a pre-specified $\pm 0.05$ margin is reported as a secondary result using two one-sided $t$ tests. We flag any equivalence decision whose $p$ falls within $0.01$ of $\alpha$, because with so few discordant requirements such a decision can turn on a single one. We did not implement an exact matched-pair equivalence procedure; the exact sign tests reported alongside address superiority only, and say nothing about whether an effect lies inside a margin.
 
 The open-world evaluation of Section~\ref{sec:results-openworld} additionally holds out a random 50\% of controls per seed to manufacture genuine no-match queries.
 
-\medskip\noindent\textbf{Use of AI tools in this study.} No component of the system under evaluation is a language model, and no result reported here was produced by one. The agent is deterministic throughout: lexical backends, a hand-written thesaurus and regular-expression patterns, and two pre-trained sentence encoders used as fixed feature extractors. Generative AI assistants were used during the conduct of the work in two roles, both of which we state so that a reader can judge them. They were used to review and refactor the evaluation harness and the analysis scripts, including the provenance tooling described above, and to review and edit the prose of this manuscript. Every statistical procedure, number, table and citation was independently verified by the authors against the committed records, and the authors take full responsibility for the content.
+\medskip\noindent\textbf{Use of AI tools in this study.} No component of the system under evaluation is a language model, and no result reported here was produced by one. The pipeline contains no generative component and uses fixed inference settings: lexical backends, a hand-written thesaurus and regular-expression patterns, and two pre-trained sentence encoders used as fixed feature extractors at pinned revisions. Generative AI assistants were used during the conduct of the work in two roles, both of which we state so that a reader can judge them. They were used to review and refactor the evaluation harness and the analysis scripts, including the provenance tooling described above, and to review and edit the prose of this manuscript. Every statistical procedure, number, table and citation was independently verified by the authors against the committed records, and the authors take full responsibility for the content.
 
 
 %% ================================================================
@@ -667,7 +672,7 @@ We stop short of calling that a test of a corpus-type effect. Corpus type is a p
 The defensible answer to RQ1 is: the effect observed on the corpus we built did not generalize to the three external corpora.
 
 \noindent\textbf{Equivalence, as a secondary result.}
-It is tempting to strengthen ``not significant'' into ``equivalent to nothing''. These data support that only weakly. Against the pre-specified $\pm 0.05$ margin, the two one-sided tests give $p_{\text{TOST}} = 0.048$ on HIPAA, $0.152$ on CSF and $0.224$ on the Privacy Framework. Only HIPAA meets the margin, and it does so at $0.048$ against $\alpha = 0.05$, a decision that its four discordant requirements could reverse. We flag it as boundary-sensitive and headline none of it. An earlier version of this work reported CSF and the Privacy Framework as equivalent to no effect; those figures came from the repeated-holdout regime and they do not survive the move to a common protocol. We did not implement an exact equivalence procedure. Exact methods for equivalence on paired binary outcomes exist and would be preferable at these sample sizes; their absence here is a limitation of our analysis, not of the available statistics. The exact sign tests we do report validate the superiority results only.
+It is tempting to strengthen ``not significant'' into ``equivalent to nothing''. These data support that only weakly. Against the pre-specified $\pm 0.05$ margin, the two one-sided tests give $p_{\text{TOST}} = 0.048$ on HIPAA, $0.152$ on CSF and $0.224$ on the Privacy Framework. Only HIPAA meets the margin, and it does so at $0.048$ against $\alpha = 0.05$, a decision that its four discordant requirements could reverse. We flag it as boundary-sensitive and headline none of it. An earlier version of this work reported CSF and the Privacy Framework as equivalent to no effect; those figures came from the repeated-holdout regime and they do not survive the move to a common protocol. We did not implement an exact matched-pair equivalence procedure; the equivalence results reported here use the stated $t$-based approximation, which is why we treat them as secondary and flag decisions near $\alpha$. The exact sign tests we do report address superiority only.
 
 \noindent\textbf{What this does not establish.}
 It does not establish why the split falls where it does. Our corpus differs from the external three in authorship, and also in size, construction procedure, subject breadth and provenance. With one corpus on that side of the comparison these cannot be separated. Section~\ref{sec:threats} returns to it.
@@ -766,12 +771,12 @@ Bidirectional verification provides a small, statistically fragile improvement o
 Detecting roughly one no-match query in four is far from deployment-ready, and a sensitivity sweep of the verification-tightening constant (Section~\ref{sec:sensitivity}) does not change this regime.
 We conclude that abstention calibrated for coverage on answerable queries does not, on its own, solve open-world gap detection, and that a dedicated no-match signal is needed---a limitation we make explicit rather than obscure, and a priority for future work.
 
-\subsection{Traces and sensitivity to the hand-set constants}
+\subsection{Execution traces and sensitivity to the hand-set constants}
 \label{sec:sensitivity}
 
 \noindent\textbf{An example trace.}
 
-Each agent decision is accompanied by a reasoning trace, exported verbatim by the evaluation harness and recording, at the decision step, the effective (post-adjustment) thresholds actually applied.
+Each agent decision is accompanied by an execution trace, exported verbatim by the evaluation harness and recording, at the decision step, the effective (post-adjustment) thresholds actually applied.
 Table~\ref{tab:trace} reproduces one such trace directly from the exported log (diagnostic benchmark, seed~42), for a GDPR requirement exhibiting vocabulary mismatch.
 
 \begin{table}[t]
@@ -941,7 +946,9 @@ A null that holds across all three is therefore weaker evidence than a null acro
 Testing that requires externally authored corpora from different institutions, ideally with a different target catalogue, and it is the single most valuable extension of this work.
 
 For the same reason we make no quantitative claim about how much engineered benchmarks inflate effects.
-The comparison here is one engineered corpus against three correlated external ones, which supports a claim about replication failure and not a ratio.
+The comparison here is one corpus of our own against three correlated external ones. It supports a claim that the initial estimate did not generalize across those three, and not a ratio, and not a formal replication result: the initial estimate was never published, and three corpora sharing a lineage are not three independent attempts.
+
+Our conclusions are also bounded by the set of methods we measured. We compare lexical backends, their fusion, a curated thesaurus, a dual-encoder and a cross-encoder reranker, and we do not evaluate a prompted or instruction-tuned language model as a reranker. Recent work in this area reports that such models can be competitive with supervised rerankers without task-specific training~\citep{Sun2023}, and one of the closest studies to ours compares prompting against conventional traceability methods on regulatory text~\citep{Etezadi2026}. A statement of the form ``no method we tried helps on the external corpora'' therefore does not extend to that family, and the comparison is a natural next step rather than one this paper settles.
 
 The diagnostic benchmark covers 7 frameworks and the external corpora three framework pairs; real organizations may need to map across dozens of standards (e.g., FedRAMP, CMMC, DORA, NIS2), and the thesaurus would require extension for new domains.
 Corpus sizes (58, 106, 68 and 94 requirements) limit statistical power, and we do not claim that repeated seeds overcome this: the 30 stratified splits overlap heavily and are not independent replicates, so we base all inference on requirement-level paired tests (Section~\ref{sec:protocol-stats}) rather than on across-seed variance, and we report the small open-world denominator (4.4 no-match queries per seed) explicitly.
@@ -1026,13 +1033,18 @@ analysis scripts and the trace-export utility are available at
 Licence. The preregistration of the gated hybrid analysis is at
 \url{https://doi.org/10.17605/OSF.IO/NZXRV}.
 
-All experiments are deterministic given a seed. The 30-seed logs underlying
-the holdout tables are included with the release; the one-pass, factorial and
+Experiments use recorded inputs, fixed seeds and fixed inference settings,
+with Hugging Face model revisions pinned in every path that loads one. Exact
+execution stability across hardware and software environments was not
+evaluated, so we claim repeatability of our own runs rather than bitwise
+reproducibility on arbitrary machines. The 30-seed logs underlying the
+holdout tables are included with the release; the one-pass, factorial and
 preregistered hybrid results are backed by JSON records carrying their
 arguments, git commit, library versions and SHA-256 hashes of every analysis
 module and input. \texttt{audit\_records.py} checks every record against the
-working tree, and \texttt{make\_tables.py --check} verifies that the tables in
-this paper match those records.
+working tree and against the commit it names, and \texttt{make\_tables.py
+--check} verifies that the four primary quantitative tables in this paper
+match those records.
 
 \subsection*{Author contributions}
 \textbf{Sumanshu Sohal}: conceptualization, methodology, software,

@@ -25,7 +25,13 @@ import sys
 import numpy as np
 import pandas as pd
 
-MODEL = "all-MiniLM-L6-v2"
+import model_pins
+
+# Pinned, like every other neural path. Loading by name alone resolves
+# through refs/main and this machine holds two cached snapshots of this
+# model, so an unpinned load is not reproducible.
+MODEL = model_pins.DUAL_ENCODER
+REVISION = model_pins.DUAL_ENCODER_REVISION
 K = 20
 
 CORPORA = [
@@ -100,9 +106,9 @@ def main():
         targets.append((d, p))
     targets = targets or CORPORA
 
-    print(f"First-stage candidate export: {MODEL}, k={K}\n")
+    print(f"First-stage candidate export: {MODEL}@{REVISION[:8]}, k={K}\n")
     print("CANDIDATE-SET CEILING (bounds every reranker):")
-    model = SentenceTransformer(MODEL)
+    model = SentenceTransformer(MODEL, revision=REVISION)
 
     summary = []
     for directory, prefix in targets:

@@ -797,10 +797,20 @@ def build_lsi_scorer(control_texts: Sequence[str], reg_texts: Sequence[str], n_c
 
 
 def build_semantic_scorer(control_texts: Sequence[str],
-                          model_name: str = "all-MiniLM-L6-v2"):
-    """Sentence-Transformers dual-encoder scorer."""
+                          model_name: str = None,
+                          revision: str = None):
+    """Sentence-Transformers dual-encoder scorer, at a pinned revision.
+
+    The revision is passed explicitly. Loading by name alone resolves through
+    refs/main, which is not a stable reference: this machine holds two cached
+    snapshots of all-MiniLM-L6-v2, so an unpinned load is a coin toss that
+    nothing downstream records.
+    """
+    import model_pins
     from sentence_transformers import SentenceTransformer
-    model = SentenceTransformer(model_name)
+    model_name = model_name or model_pins.DUAL_ENCODER
+    revision = revision or model_pins.PINS.get(model_name)
+    model = SentenceTransformer(model_name, revision=revision)
     ctrl_emb = model.encode(list(control_texts), convert_to_numpy=True,
                             normalize_embeddings=True, show_progress_bar=False)
     def score_fn(q: str) -> np.ndarray:
@@ -810,13 +820,17 @@ def build_semantic_scorer(control_texts: Sequence[str],
 
 
 def build_crossencoder_reranker(control_texts: Sequence[str],
-                                 bi_model: str = "all-MiniLM-L6-v2",
-                                 ce_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
+                                 bi_model: str = None,
+                                 ce_model: str = None,
                                  rerank_k: int = 20):
-    """Dual-encoder retrieval + cross-encoder reranking."""
+    """Dual-encoder retrieval + cross-encoder reranking, both pinned."""
+    import model_pins
     from sentence_transformers import SentenceTransformer, CrossEncoder
-    bi = SentenceTransformer(bi_model)
-    ce = CrossEncoder(ce_model)
+    bi_model = bi_model or model_pins.DUAL_ENCODER
+    ce_model = ce_model or model_pins.CROSS_ENCODER
+    bi = SentenceTransformer(bi_model,
+                             revision=model_pins.PINS.get(bi_model))
+    ce = CrossEncoder(ce_model, revision=model_pins.PINS.get(ce_model))
     ctrl_emb = bi.encode(list(control_texts), convert_to_numpy=True,
                          normalize_embeddings=True, show_progress_bar=False)
     ctrl_list = list(control_texts)
