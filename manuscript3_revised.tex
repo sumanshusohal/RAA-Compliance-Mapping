@@ -14,11 +14,11 @@
 \def\floatpagepagefraction{1}
 \def\textpagefraction{.001}
 
-\shorttitle{Regulatory Alignment Agent for Automated Compliance Mapping}
+\shorttitle{Cross-corpus evaluation of query reformulation for regulatory traceability}
 
 \shortauthors{S.~Sohal and D.~Prajapati}
 
-\title[mode = title]{Benchmark Sensitivity in Regulatory Traceability: A Multi-Corpus Study of Query Reformulation and Neural Retrieval}
+\title[mode = title]{Cross-Corpus Evaluation of Domain-Aware Query Reformulation for Regulatory Traceability}
 
 \author[1,2]{Sumanshu Sohal}
 \cormark[1]
@@ -42,36 +42,35 @@
 \cortext[1]{Corresponding author}
 
 \begin{abstract}
-Regulatory compliance mapping, the task of linking natural-language regulatory requirements to the organizational controls that address them, remains a predominantly manual activity in software-intensive organizations.
-Few public collections exist for it, so methods are usually measured on benchmarks their own authors construct.
-This paper asks what such benchmarks license us to conclude.
+Compliance mapping links natural-language regulatory requirements to the organizational controls that address them, and in most organizations it is still done by hand.
+Public collections for the task are scarce, so methods are usually measured on benchmarks their own authors build.
+This paper asks how far such a measurement carries.
 
-We evaluate one frozen set of retrieval methods on four corpora under a single protocol: lexical baselines, reciprocal rank fusion, domain-aware query reformulation, a dual-encoder, a cross-encoder, and an open-weight language model reranker.
-One corpus is an engineered diagnostic instrument we built to isolate vocabulary mismatch (58~requirements, 110~controls, 86~links).
-The other three carry NIST-authored ground truth: the Cybersecurity Framework 1.1 (106~requirements, 495~links), HIPAA (68, 274), and the Privacy Framework (94, 456), all mapping to one 300-control corpus of SP~800-53.
-Retrieval methods are scored once per requirement over the full control corpus; the agent ablations are aggregated to one value per requirement from repeated holdouts, which we distinguish explicitly wherever the two appear together. Methods that rerank a candidate shortlist are reported separately from those that rank the whole corpus, since the two are bounded differently.
+We evaluate one frozen set of retrieval methods on four corpora under a single ranking protocol, in which every requirement is scored once over the full control corpus.
+One corpus is a diagnostic instrument we built to isolate vocabulary mismatch (58~requirements, 110~controls, 86~links).
+The other three take their requirements, controls and links from NIST: the Cybersecurity Framework~1.1 (106~requirements, 495~links), the HIPAA Security Rule (68, 274) and the Privacy Framework (94, 456), all mapping into one 300-control corpus drawn from SP~800-53, so they are externally authored but not independent of one another.
 
-The central result is that the effect most clearly demonstrated on the engineered corpus did not reproduce on the three external ones.
-Domain-aware reformulation improves Top-1 accuracy by $+0.140$ on the engineered corpus and by $+0.009$, $+0.008$ and $+0.003$ on the NIST corpora.
-Two of the external effects are statistically equivalent to no effect within a pre-specified $\pm 0.05$ margin and the third is inconclusive.
-A requirement-level measure of vocabulary distance does not identify which requirements benefit \emph{within} a corpus: pooled over the external corpora, the interaction between standardized gap and reformulation benefit is $+0.014$ (95\% CI $[-0.014, +0.043]$, $p = 0.38$, $n = 268$).
-Because the measure is fitted per corpus, it provides no common scale on which corpora could be ranked by vocabulary distance, and with one engineered corpus the design cannot identify which of its properties is responsible for the difference.
+The reformulation benefit did not generalize.
+It is $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, $p = 0.039$) and $+0.028$, $0.000$ and $+0.032$ on the three NIST corpora, none of them distinguishable from zero.
+Two properties of these estimates matter as much as their values.
+Each rests on a handful of requirements: reformulation changes whether the top-ranked control is correct for 9 of 58 requirements on the diagnostic corpus and for 5, 4 and 5 on the external ones.
+And each moves with a choice unrelated to reformulation: refitting the latent-semantic backend on a different population shifts the external estimates by up to $0.029$, which is larger than the estimates themselves.
+The evaluation protocol, by contrast, contributes nothing, since with a controls-only fit no part of the pipeline depends on the split.
+A requirement-level measure of vocabulary distance does not identify which requirements benefit \emph{within} a corpus either ($+0.013$, 95\% CI $[-0.011, +0.038]$, $p = 0.31$, $n = 268$).
 
-A preregistered test shows the same instability inside one frozen design.
-Routing a query to lexical fusion only when the dual-encoder is unconfident rules out a mean loss of five Top-1 points or more relative to the dual-encoder alone ($p = 0.003$) and provides no evidence of superiority ($p = 0.48$), while producing $+0.085$ on one corpus against $-0.088$ on another.
-A study using either corpus alone would have reached the opposite conclusion.
+A separate preregistered test shows the same corpus-to-corpus spread inside one frozen design.
+Routing a query to lexical fusion only when a dual-encoder is unconfident rules out a mean loss of five Top-1 points or more relative to the dual-encoder alone ($p = 0.003$) and provides no evidence of superiority ($p = 0.48$), while producing $+0.085$ on one corpus against $-0.088$ on another.
 
-We report a negative result about our own system rather than a compensating qualitative claim: no deterministic component significantly improves ranking on any real corpus, and the agent holds no coverage or selective-accuracy advantage.
-The three real corpora are externally authored but not independent of one another, sharing a NIST lineage and a common target catalogue, which we treat as a limitation throughout.
+We report a negative result about our own system rather than a compensating qualitative claim: no deterministic component improves ranking significantly on any external corpus, and the agent holds no coverage or selective-accuracy advantage.
 All four corpora, the frozen analysis specification, the evaluation harness and the implementation are public, and the preregistration is at \texttt{doi:10.17605/OSF.IO/NZXRV}.
 \end{abstract}
 
 \begin{highlights}
-\item Compliance mapping formalized as selective traceability recovery with abstention
-\item Real-world evaluation on NIST's official CSF to SP 800-53r5 crosswalk (495 links)
-\item Reformulation dominates under vocabulary mismatch but is inert on same-institution text
-\item Ranking and decision quality measured separately; open-world gap detection quantified
-\item Structured multi-step reasoning traces exported for every mapping decision
+\item One frozen method set evaluated on four regulatory traceability corpora
+\item Reformulation gain of $+0.121$ on our own corpus does not appear on three NIST ones
+\item Each per-corpus estimate turns on fewer than ten discordant requirements
+\item Refitting the latent-semantic backend moves estimates more than the effect itself
+\item Preregistered gated hybrid: $+0.085$ on one corpus, $-0.088$ on another
 \end{highlights}
 
 \begin{keywords}
@@ -111,17 +110,19 @@ The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving rea
 The study is organized around three questions, stated here so the reader can check the results against them.
 
 \begin{description}
-\item[RQ1] Does the benefit of domain-aware query reformulation, established on an engineered corpus, transfer to corpora whose requirements, controls and links were authored independently of this work, and does the effect differ measurably between the two kinds of corpus?
+\item[RQ1] Under one common ranking protocol, does the benefit of domain-aware query reformulation observed on a corpus we built also appear on corpora whose requirements, controls and links were authored outside this work?
 \item[RQ2] \emph{Within} a corpus, does requirement-level vocabulary distance identify which requirements benefit from reformulation?
 \item[RQ3] Does a gated combination of lexical and semantic retrieval, whose design is frozen and publicly timestamped before it is run, recover what either family uniquely solves without giving up the other's successes?
 \end{description}
 
+RQ1 asks about generalization across corpora, not about corpus types as populations. We have four corpora, one of them ours, so the design can show whether an effect reappears elsewhere. It cannot attribute the difference to any single property of the corpus we built.
+
 \paragraph{Contributions.}
 This paper makes four contributions.
 
-First, a multi-corpus evaluation of regulatory traceability (Section~\ref{sec:dataset}) that puts one engineered corpus alongside three with NIST-authored ground truth, all sharing a single 300-control target catalogue, and scores every method once per requirement over the full corpus so that all comparisons share one estimand.
+First, a cross-corpus evaluation of regulatory traceability (Section~\ref{sec:dataset}) that puts one corpus we built alongside three with NIST-authored ground truth, all sharing a single 300-control target catalogue, and scores every method once per requirement over the full corpus so that all ranking comparisons share one estimand.
 
-Second, the findings that answer RQ1 and RQ2 (Section~\ref{sec:results}): the reformulation benefit is $+0.140$ on the engineered corpus and $+0.009$, $+0.008$ and $+0.003$ on the external ones, with two of the three statistically equivalent to no effect within a pre-specified margin; and within the external corpora, requirement-level vocabulary distance does not identify which requirements benefit. Since the mechanism of reformulation is a thesaurus written by the same authors as the engineered corpus, this is a concrete case of a benchmark failing to predict how the intervention it exercises behaves elsewhere. We are explicit that a single engineered corpus cannot identify \emph{which} of its properties is responsible.
+Second, the findings that answer RQ1 and RQ2 (Section~\ref{sec:results}). Reformulation improves Top-1 by $+0.121$ on our corpus and by $+0.028$, $0.000$ and $+0.032$ on the external ones, none of the three distinguishable from zero, and within the external corpora a requirement-level vocabulary distance does not identify who benefits. We report two properties of these estimates alongside them. Each turns on fewer than ten requirements whose top-1 correctness changes at all, and each moves by up to $0.029$ when the latent-semantic backend is refitted on a different population, a choice unrelated to reformulation. Since the mechanism of reformulation is a thesaurus written by the same authors as the corpus it succeeds on, this is a concrete case of a benchmark failing to predict how the intervention it exercises behaves elsewhere. We are explicit that a single corpus of our own construction cannot identify \emph{which} of its properties is responsible.
 
 Third, a preregistered answer to RQ3 (Section~\ref{sec:hybrid}). The gated hybrid rules out a mean loss of five Top-1 points or more against semantic retrieval alone and shows no evidence of superiority, while producing a large gain on one corpus and a nearly equal loss on another. The design, its endpoint, its margin, its test order and its prohibitions were frozen, hashed and publicly registered before the analysis ran, which constrains outcome-dependent analysis and lets a result with no headline improvement be reported as evidence.
 
@@ -392,7 +393,7 @@ These counts are the \texttt{match\_type} labels in the released \texttt{diag\_c
 The ground truth contains 86 positive links and is multi-label: 15 requirements map to two or more controls.
 
 Because the authors constructed both the control corpus and the domain thesaurus used by the reformulation tool, results on this benchmark alone could overstate the value of reformulation: the mismatched controls and the thesaurus could encode the same design intuitions.
-The real-world benchmark below removes this circularity.
+The three externally authored corpora below are what breaks that circle.
 
 \subsection{Real-world benchmark: NIST CSF to SP 800-53r5}
 \label{sec:dataset-real}
@@ -435,10 +436,20 @@ Its role is to separate two explanations that the CSF corpus alone confounds. CS
 \label{sec:protocol}
 %% ================================================================
 
-The same protocol is applied to both corpora of Section~\ref{sec:dataset}.
-We employ stratified holdout sampling by regulatory framework family (for the real-world corpus, by CSF function).
-For each random seed, each stratum contributes proportionally to three disjoint splits---training, calibration (for threshold selection), and test---with holdout ratio 0.20 and calibration ratio 0.15.
-This stratification ensures that every framework is represented in the test set for every seed, preventing framework-level confounders.
+\subsection{Two measurements, and which one carries the ranking claims}
+\label{sec:protocol-estimands}
+
+The study reports two kinds of number, and they are produced differently.
+
+\emph{Ranking} results are measured once per requirement over the full control corpus. Every requirement is scored exactly once, no split is involved, and the reported figure is the mean over all requirements of the corpus. This is the primary protocol, and every cross-corpus ranking comparison in the paper uses it.
+
+\emph{Decision} results---coverage, selective accuracy, open-world gap detection---need an acceptance threshold, and a threshold has to be chosen on data the system is not then judged on. These come from repeated stratified holdouts: for each of 30 random seeds, every stratum contributes proportionally to three disjoint splits (training, calibration, test) with holdout ratio 0.20 and calibration ratio 0.15, stratified by regulatory framework family and, on the CSF corpus, by CSF function. Requirements are tested an uneven number of times across seeds, so each is collapsed to its mean over the splits it appeared in before any comparison.
+
+The two are different estimands and we never mix them in one comparison. Tables carry the protocol in their captions.
+
+We also fix where the latent-semantic backend is fitted, because that turns out to matter more than the protocol does. Under the primary protocol, LSI is fitted on the 300 control documents alone and requirement text never enters the fit. The repeated-holdout runs fit it on the controls plus the training and calibration requirements, which excludes the test requirements but is still a larger and different fitting population. Section~\ref{sec:results-lsi} separates the two effects and reports what each contributes.
+
+\subsection{Variants and baselines}
 
 To isolate each component's marginal contribution, we evaluate six incrementally constructed variants: \textbf{Single} (one-shot BM25 retrieval with threshold-based accept/abstain), \textbf{+Multi} (adding Reciprocal Rank Fusion across TF-IDF, BM25, and LSI), \textbf{+Reform} (adding domain-aware query reformulation on ambiguous queries), \textbf{+Decomp} (adding query decomposition, disclosed as its own step rather than bundled with reformulation), \textbf{+CrossRef} (adding cross-framework corroboration), and the \textbf{Full Agent} (adding bidirectional verification).
 We further compare against three lexical baselines (TF-IDF, BM25, LSI) evaluated independently, a neural dual-encoder (\texttt{all-MiniLM-L6-v2}~\citep{Reimers2019}) using cosine similarity over sentence embeddings, and a cross-encoder reranker (\texttt{ms-marco-MiniLM-L-6-v2}) applied to the top-20 dual-encoder candidates.
@@ -446,9 +457,19 @@ Because ranking-shaping and decision-shaping tools are separated in the architec
 
 Each agent variant is calibrated \emph{end-to-end}: its base acceptance thresholds are chosen by running the complete pipeline---including reformulation and the corroboration and verification threshold adjustments---on the calibration split, so that the reported operating point reflects the target coverage (0.80) rather than the coverage of an intermediate, pre-adjustment ranking. All experiments are repeated over 30 random seeds.
 
-Two aspects of the statistical protocol deserve emphasis, both prompted by weaknesses we identified in an earlier version of this work.
+\subsection{Statistical procedure}
+\label{sec:protocol-stats}
+
+Three points, all prompted by weaknesses we identified in earlier versions of this work.
+
 First, all ranking metrics (Top-1, MRR, nDCG, recall, precision) are computed from the full candidate ranking for every query, independent of the accept/abstain decision; coverage, selective accuracy, and open-world gap detection are reported as separate decision metrics. Computing ranking metrics only over accepted queries conflates ranking effectiveness with coverage and can report a pure coverage change as a spurious ranking gain.
-Second, we do \emph{not} treat the 30 seeds as independent replicates: the stratified splits overlap heavily, so an across-seed $t$-test is pseudoreplicated and overstates significance. Instead, all significance claims use \emph{query-level} paired tests. For a given metric and pair of methods, we aggregate the metric to one value per unique requirement (its mean over the seeds in which it appears in the test split), then compare the two methods over the shared requirements with a paired sign-flip randomization test for the two-sided $p$-value and a paired bootstrap over requirements for the 95\% confidence interval of the mean difference. Seed-averaged means and their confidence intervals are still shown in the tables for description, but inference rests on the query-level tests. Significance is assessed at $\alpha = 0.05$.
+
+Second, we do \emph{not} treat the 30 seeds as independent replicates: the stratified splits overlap heavily, so an across-seed $t$-test is pseudoreplicated and overstates significance. All significance claims are made at the requirement level. For a given metric and pair of methods, we compare the two over the shared requirements with a paired sign-flip randomization test for the two-sided $p$-value and a paired bootstrap over requirements for the 95\% confidence interval of the mean difference. Seed-averaged means and their intervals still appear in the holdout tables as description, but no inference rests on them. Significance is assessed at $\alpha = 0.05$.
+
+Third, we report wins, losses and ties with every paired effect. Top-1 is binary per requirement, so a paired difference is $+1$, $-1$ or $0$, and the mean difference is entirely determined by the requirements on which the two methods disagree. On corpora of this size that set is often smaller than ten. Reporting it is the only way for a reader to see how much of an estimate rests on how few decisions, and it is a fact about the data that no interval conveys on its own.
+
+Equivalence against a pre-specified $\pm 0.05$ margin is reported as a secondary result using two one-sided $t$ tests. We flag any equivalence decision whose $p$ falls within $0.01$ of $\alpha$, because with so few discordant requirements such a decision can turn on a single one. No exact equivalence test is available here; the exact sign tests reported alongside validate the superiority results only, and say nothing about whether an effect lies inside a margin.
+
 The open-world evaluation of Section~\ref{sec:results-openworld} additionally holds out a random 50\% of controls per seed to manufacture genuine no-match queries.
 
 
@@ -463,7 +484,7 @@ The open-world evaluation of Section~\ref{sec:results-openworld} additionally ho
 Table~\ref{tab:baselines} presents the lexical and neural baseline results on the diagnostic benchmark.
 
 \begin{table}[t]
-\caption{Baseline comparison on the diagnostic benchmark (mean $\pm$ 95\% CI, 30 seeds, 110 controls, 86 positive links).}
+\caption{Baseline comparison on the diagnostic benchmark. Repeated-holdout protocol, mean $\pm$ 95\% CI over 30 seeds, 110 controls, 86 positive links. Descriptive; the cross-corpus ranking claims of Section~\ref{sec:results-multi} use the one-pass protocol instead.}
 \label{tab:baselines}
 \centering
 \small
@@ -494,7 +515,7 @@ Third, the neural encoders are the strongest rankers on this benchmark: the dual
 Table~\ref{tab:ablation} presents the incremental agent ablation on the same benchmark.
 
 \begin{table}[t]
-\caption{Agent ablation on the diagnostic benchmark (mean $\pm$ 95\% CI, 30 seeds). $\Delta$ is the marginal Top-1 gain over the previous row. Ranking metrics are decision-independent.}
+\caption{Agent ablation on the diagnostic benchmark. Repeated-holdout protocol, mean $\pm$ 95\% CI over 30 seeds; $\Delta$ is the marginal Top-1 gain over the previous row. Ranking metrics are decision-independent. The coverage and selective-accuracy columns are the reason this table uses holdouts: they need a calibrated threshold. The Top-1 column is descriptive here; Table~\ref{tab:multi} gives the primary figure.}
 \label{tab:ablation}
 \centering
 \small
@@ -512,18 +533,18 @@ Full Agent    & .644 $\pm$ .035 & .000   & .737 $\pm$ .026 & .738 $\pm$ .033 & .
 \end{tabular}
 \end{table}
 
-Statistical claims here use the query-level paired tests of Section~\ref{sec:protocol}, which avoid the seed-level pseudoreplication inherent to overlapping splits.
+Statistical claims here use the requirement-level paired tests of Section~\ref{sec:protocol-stats}, which avoid the seed-level pseudoreplication inherent to overlapping splits.
 The ablation yields four findings.
-First, query reformulation is the only component that significantly improves ranking: aggregated to one value per unique query, +Reform improves Top-1 over +Multi by $+0.140$ (95\% bootstrap CI $[+0.037, +0.254]$; sign-flip randomization $p = 0.009$) and MRR@5 by $+0.121$ ($p = 0.006$). The interval differs slightly from Table~\ref{tab:multi}'s $[+0.037, +0.246]$ because the two aggregate the same per-seed rows with different bootstrap procedures; the point estimate is identical.
-On this benchmark, where 41\% of the positive links (35/86) share no content words with their requirement, vocabulary mismatch is the primary bottleneck and domain-aware reformulation is an effective mitigation.
-Second, multi-backend fusion does \emph{not} yield a significant ranking gain at the query level (Top-1 $+0.010$, $p = 0.88$; the seed-averaged means still nudge up from 0.533 to 0.550, but the effect does not survive a query-level test).
+First, query reformulation is the only component that improves ranking. Under the primary one-pass protocol, +Reform improves Top-1 over +Multi by $+0.121$ (95\% bootstrap CI $[+0.034, +0.224]$; sign-flip randomization $p = 0.039$), and it does so by changing the top-ranked control for 9 of the 58 requirements, winning on 8 and losing on 1. The seed-averaged holdout figures in the table are larger ($0.550$ to $0.644$) because that protocol also fits LSI on the training and calibration requirements; Section~\ref{sec:results-lsi} separates the two.
+On this benchmark, where 41\% of the positive links (35/86) share no content words with their requirement, vocabulary mismatch is the main bottleneck and domain-aware reformulation is an effective mitigation for the requirements it reaches.
+Second, multi-backend fusion does \emph{not} yield a significant ranking gain at the requirement level (Top-1 $+0.010$, $p = 0.88$ on the holdout data behind this table; the seed-averaged means nudge up from 0.533 to 0.550, but the effect does not survive a requirement-level test).
 Third, the components beyond reformulation do not improve ranking at all: query decomposition leaves the ranking unchanged (few diagnostic requirements are genuinely compound), and cross-framework corroboration and bidirectional verification are decision-only tools that by construction never reorder candidates---hence the identical Top-1, MRR@5, and R@5 across the +Reform through Full Agent rows. Their effect is confined to the decision profile: relative to +Reform (coverage 0.889), corroboration and verification trade coverage (down to 0.833) for calibration, the full agent abstaining more often on mappings that lack corroboration or fail the bidirectional check.
-Fourth, the deterministic agent does not out-rank the neural baselines: the dual-encoder reaches 0.672 Top-1 and the cross-encoder 0.647, both nominally above the agent's 0.644, and at the query level the agent is statistically indistinguishable from each (agent vs.\ dual-encoder $p \approx 1.0$; agent vs.\ cross-encoder $p = 0.68$). Nor does the agent hold a decision-quality advantage: its coverage (0.833) is below LSI's (0.922) and its selective accuracy (0.648) below the dual-encoder's (0.783). The agent therefore shows no measured edge on this benchmark. We return to what does and does not follow from that in Section~\ref{sec:discussion}.
+Fourth, the deterministic agent does not out-rank the neural baselines: the dual-encoder reaches 0.672 Top-1 and the cross-encoder 0.647, both nominally above the agent's 0.644, and at the requirement level the agent is statistically indistinguishable from each (agent vs.\ dual-encoder $p \approx 1.0$; agent vs.\ cross-encoder $p = 0.68$). Nor does the agent hold a decision-quality advantage: its coverage (0.833) is below LSI's (0.922) and its selective accuracy (0.648) below the dual-encoder's (0.783). The agent therefore shows no measured edge on this benchmark. We return to what does and does not follow from that in Section~\ref{sec:discussion}.
 
 For methodological continuity with the traceability literature, Table~\ref{tab:legacy} additionally reports micro-precision and micro-recall at cut points 1 and 5, following the aggregation protocol of \citet{MarcusMaletic2003}.
 
 \begin{table}[t]
-\caption{Legacy micro-precision/recall at cut points on the diagnostic benchmark (30 seeds).}
+\caption{Legacy micro-precision/recall at cut points on the diagnostic benchmark. Repeated-holdout protocol, 30 seeds; descriptive.}
 \label{tab:legacy}
 \centering
 \small
@@ -544,14 +565,14 @@ Even under the legacy protocol, and with ranking now measured independently of t
 This is notable because LSI was specifically designed to capture latent semantic relationships~\citep{MarcusMaletic2003}; the agent's reformulation mechanism provides a more targeted form of semantic bridging on this vocabulary-mismatched corpus.
 
 
-\subsection{Real-world benchmark}
+\subsection{The CSF 1.1 corpus}
 \label{sec:results-real}
 
 Table~\ref{tab:real} reports the same protocol applied to the NIST CSF to SP~800-53r5 corpus.
 Absolute numbers are markedly lower across the board, reflecting a genuinely harder task: 300 candidate controls instead of 110, an average of 4.7 gold controls per requirement, and no controls authored to be easy.
 
 \begin{table}[t]
-\caption{Results on the real-world NIST benchmark (mean $\pm$ 95\% CI, 30 seeds, 106 requirements, 300 controls, 495 links). The two blocks use different retrieval protocols and are not directly comparable; see the text.}
+\caption{Results on the CSF~1.1 corpus. Repeated-holdout protocol, mean $\pm$ 95\% CI over 30 seeds, 106 requirements, 300 controls, 495 links. The two blocks use different retrieval protocols and are not directly comparable; see the text. Descriptive, as in Table~\ref{tab:ablation}.}
 \label{tab:real}
 \centering
 \small
@@ -579,93 +600,126 @@ Cross-enc.    & .562 $\pm$ .032 & .666 $\pm$ .026 & .454 $\pm$ .021 & .398 $\pm$
 \end{table}
 
 Three results stand out, and they qualify---rather than confirm---the diagnostic-benchmark findings of Section~\ref{sec:results-synth}.
-First, on real regulatory text no agent component significantly improves ranking.
-At the query level, neither fusion (multi vs.\ single Top-1 $+0.026$, $p = 0.51$) nor reformulation (reform vs.\ multi Top-1 $+0.009$, $p = 0.65$; MRR@5 $-0.007$, $p = 0.58$) produces a significant change.
-The seed-averaged means drift upward slightly (single 0.368 to multi 0.403), which a naive across-seed $t$-test would flag as significant, but that apparent effect does not survive the pseudoreplication-safe query-level test.
-CSF subcategories and SP~800-53 controls are both written in NIST's institutional vocabulary, so the abstraction gap the thesaurus is designed to bridge is largely absent; the reformulation gain seen under engineered mismatch does not transfer to same-institution text.
+First, on this corpus no agent component significantly improves ranking.
+Neither fusion (multi vs.\ single Top-1 $+0.026$, $p = 0.51$) nor reformulation (Table~\ref{tab:multi}: $+0.028$, $p = 0.38$) produces a significant change.
+The seed-averaged means drift upward slightly (single 0.368 to multi 0.403), which a naive across-seed $t$-test would flag as significant, but that apparent effect does not survive the pseudoreplication-safe requirement-level test.
+One explanation offers itself immediately: CSF subcategories and SP~800-53 controls are both written in NIST's institutional vocabulary, so there may be less abstraction distance for a thesaurus to bridge.
+We record that as a conjecture, not a finding. Our gap measure is fitted per corpus and gives no scale on which one corpus can be called wider-gapped than another, so nothing here tests it, and the next two subsections give reasons to doubt it.
 Decomposition and corroboration again leave the ranking untouched (decomposition rarely triggers on single-clause subcategories; a single-framework corpus offers no related frameworks to corroborate against), and verification, a decision-only tool, lowers coverage from 0.733 to 0.721 while nudging selective accuracy, correctly abstaining on some mappings at a coverage cost.
 Second, no deterministic configuration out-ranks neural retrieval under the same protocol.
-The full agent (0.406 Top-1) is statistically indistinguishable from the strongest lexical baseline (TF-IDF, 0.390; query-level $\Delta=+0.016$, $p=0.65$) and from the dual-encoder (0.402; $p=0.78$).
+The full agent (0.406 Top-1) is statistically indistinguishable from the strongest lexical baseline (TF-IDF, 0.390; requirement-level $\Delta=+0.016$, $p=0.65$) and from the dual-encoder (0.402; $p=0.78$).
 Every method in that comparison ranks all 300 controls.
 The cross-encoder does not, which is why Table~\ref{tab:real} places it in a separate block.
 It reranks the 20 candidates the dual-encoder returns, so its 0.562 Top-1 is the score of a two-stage pipeline and is capped by that shortlist: the dual-encoder puts a gold control in the top 20 for 90.6\% of requirements, and for the remaining 10 the cross-encoder cannot recover a correct answer at any rank.
-The query-level difference of $+0.154$ against the agent (95\% CI $[+0.058, +0.250]$, $p=0.002$) therefore compares a pipeline against a single-stage method, and we do not read it as a like-for-like ranking win.
+The requirement-level difference of $+0.154$ against the agent (95\% CI $[+0.058, +0.250]$, $p=0.002$) therefore compares a pipeline against a single-stage method, and we do not read it as a like-for-like ranking win.
 What it does show is that a cheap first stage followed by a reranker is a strong configuration on this corpus, which is a statement about pipeline design rather than about the reranker as a retrieval method.
 Third, taken with Section~\ref{sec:results-synth}, the deterministic agent never significantly out-ranks a neural baseline under a matched protocol on either benchmark.
 It holds no decision-quality edge either: TF-IDF has higher coverage (0.792 vs.\ 0.721) and the cross-encoder pipeline higher selective accuracy (0.639 vs.\ 0.478).
 
-Taken alone, these two corpora invite a tidy conclusion: reformulation helps where the vocabulary gap is wide and is inert where it is narrow. That is what an earlier version of this work concluded. The next two subsections test it.
+Taken alone, these two corpora invite a tidy conclusion: reformulation helps where the vocabulary gap is wide and is inert where it is narrow. That is what an earlier version of this work concluded; it was submitted and rejected on that basis rather than published. The next three subsections put all four corpora on one protocol and test the reading.
 
-\subsection{Does the reformulation benefit replicate? (RQ1)}
+\subsection{Does the reformulation benefit generalize? (RQ1)}
 \label{sec:results-multi}
 
-Table~\ref{tab:multi} gives the reformulation contrast on all four corpora, each scored once per requirement over the full control corpus so that the four figures are on a common footing.
+Table~\ref{tab:multi} gives the reformulation contrast on all four corpora under the primary protocol: one scoring pass per requirement over the full control corpus, with LSI fitted on control documents alone. The four figures are produced the same way and can be compared with each other.
 
 \begin{table}[t]
-\caption{Effect of domain-aware reformulation on Top-1 accuracy, measured identically on all four corpora. Each requirement contributes one value, its mean over the repeated-holdout splits in which it was tested; this is not a single scoring pass, and Section~\ref{sec:protocol} explains why the agent ablations cannot yet be run that way. Intervals are requirement-level bootstrap; $p$ from paired sign-flip permutation.}
+\caption{Effect of domain-aware reformulation on Top-1 accuracy, measured identically on all four corpora. One scoring pass per requirement over the full control corpus; LSI fitted on controls only. Intervals are requirement-level bootstrap, $p$ from paired sign-flip permutation. W/L/T counts requirements by whether reformulation turns a wrong top-1 into a right one, a right one into a wrong one, or leaves correctness unchanged. Ties include requirements whose top-ranked control changes without changing correctness.}
 \label{tab:multi}
 \centering
 \small
-\begin{tabular}{@{}lrrrl@{}}
+\begin{tabular}{@{}lrrrrrl@{}}
 \toprule
-Corpus & $n$ & $\Delta$Top-1 & 95\% CI & $p$ \\
+Corpus & $n$ & +Multi & +Reform & $\Delta$Top-1 & 95\% CI & W/L/T \\
 \midrule
-Diagnostic (engineered) & 58 & $+.1405$ & $[+.037, +.246]$ & $.009$ \\
+Diagnostic (ours) & 58 & .466 & .586 & $+.121$ & $[+.034, +.224]$ & 8/1/49 \\
 \midrule
-CSF~1.1 & 106 & $+.0088$ & $[-.023, +.044]$ & $.65$ \\
-HIPAA & 68 & $+.0078$ & $[-.059, +.076]$ & $.84$ \\
-Privacy Fw. & 94 & $+.0027$ & $[-.043, +.051]$ & $.95$ \\
+CSF~1.1 & 106 & .377 & .406 & $+.028$ & $[-.009, +.076]$ & 4/1/101 \\
+HIPAA & 68 & .309 & .309 & $\pm.000$ & $[-.059, +.059]$ & 2/2/64 \\
+Privacy Fw. & 94 & .340 & .372 & $+.032$ & $[-.011, +.085]$ & 4/1/89 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The effect is an order of magnitude larger on the engineered corpus than on any of the three external ones, and it is distinguishable from zero only there.
+The effect is roughly four times larger on the corpus we built than on any external corpus, and it is distinguishable from zero only there ($p = 0.039$, against $0.376$, $1.000$ and $0.376$).
 
-Comparing those $p$-values is not itself evidence that the effects differ, and the engineered corpus has the smallest $n$, so part of the difference in significance is a difference in power. We therefore quantify the contrast: the mean difference is $+0.1405$ on the engineered corpus ($n = 58$) against $+0.0064$ pooled over the external corpora ($n = 268$), a difference of $+0.1341$ with a bootstrap 95\% interval of $[+0.025, +0.249]$ \emph{conditional on these four corpora}.
+The win/loss/tie counts are the more important column. Top-1 is binary for each requirement, so these means are decided entirely by the requirements on which the two methods disagree, and there are very few of them: nine on the diagnostic corpus, five on CSF, four on HIPAA, five on the Privacy Framework. The $+0.121$ is eight requirements gained and one lost out of 58. We report the counts because an interval on its own does not tell a reader that a corpus-level conclusion rests on this many individual decisions, and because they set the scale on which the sensitivity analysis below should be read.
 
-We deliberately stop short of calling this a test of a corpus-type effect. Corpus type is a property of corpora, not of requirements, and this study has four corpora with exactly one on the engineered side. The effective sample size for any question about corpus type is therefore four clusters, not 326 requirements, and no procedure can identify a corpus-type effect from a single observation in one group. A requirement-level permutation over the same data returns $p = 0.0008$, but that procedure assumes requirements are exchangeable across corpus types when requirements within a corpus share authors, construction and target catalogue; we report it as a labelled sensitivity analysis and draw no inference from it. Answering the population question needs more corpora, not more requirements inside these ones.
+Reformulation is not idle on the external corpora; it is active and unhelpful, which is a different thing. It changes which control ranks first for 15 of the 58 diagnostic requirements, and for 14, 10 and 18 requirements on CSF, HIPAA and the Privacy Framework. Only 9, 5, 4 and 5 of those changes cross the correctness boundary. Most of the reordering on the external corpora moves one wrong control above another.
 
-The defensible answer to RQ1 is therefore: the large effect observed on the engineered corpus did not reproduce in the three external corpora.
+Comparing the four $p$-values is not itself evidence that the effects differ, and the diagnostic corpus has the smallest $n$, so part of the difference in significance is a difference in power. We therefore quantify the contrast directly: $+0.121$ on the diagnostic corpus ($n = 58$) against $+0.022$ pooled over the external corpora ($n = 268$), a difference of $+0.098$ with a bootstrap 95\% interval of $[+0.001, +0.206]$ \emph{conditional on these four corpora}. The lower end of that interval sits almost exactly on zero, so even taken on its own terms it locates a difference without measuring one.
 
-Equivalence testing sharpens the external results beyond ``not significant''. Effects on CSF ($p_{\text{TOST}} = 0.010$) and the Privacy Framework ($p_{\text{TOST}} = 0.023$) are statistically equivalent to no effect within the pre-specified $\pm 0.05$ bounds, which is stronger than a failure to reject but is not a claim that the effect is exactly zero. HIPAA remains inconclusive at the same margin ($p_{\text{TOST}} = 0.114$): its data are consistent both with no effect and with an effect up to the bound, and we claim no null there.
+We stop short of calling that a test of a corpus-type effect. Corpus type is a property of corpora, not of requirements, and this study has four corpora with exactly one of them ours. The effective sample size for any question about corpus type is four clusters, not 326 requirements, and no procedure identifies a corpus-type effect from a single observation in one group. A requirement-level permutation over the same data returns a small $p$-value, but it assumes requirements are exchangeable across corpus types when requirements within a corpus share authors, construction procedure and target catalogue. We report it as a labelled sensitivity analysis and draw no inference from it. Answering the population question needs more corpora, not more requirements inside the ones we have.
 
-What this does \emph{not} establish is why the split falls where it does. The engineered corpus differs from the external three in authorship, and also in size, construction procedure, subject breadth and provenance. With one corpus on that side of the comparison these cannot be separated. We return to it in Section~\ref{sec:threats}.
+The defensible answer to RQ1 is: the effect observed on the corpus we built did not generalize to the three external corpora.
+
+\paragraph{Equivalence, as a secondary result.}
+It is tempting to strengthen ``not significant'' into ``equivalent to nothing''. These data support that only weakly. Against the pre-specified $\pm 0.05$ margin, the two one-sided tests give $p_{\text{TOST}} = 0.048$ on HIPAA, $0.152$ on CSF and $0.224$ on the Privacy Framework. Only HIPAA meets the margin, and it does so at $0.048$ against $\alpha = 0.05$, a decision that its four discordant requirements could reverse. We flag it as boundary-sensitive and headline none of it. An earlier version of this work reported CSF and the Privacy Framework as equivalent to no effect; those figures came from the repeated-holdout regime and they do not survive the move to a common protocol. No exact equivalence test is available at these sample sizes, and the exact sign tests we report validate the superiority results only.
+
+\paragraph{What this does not establish.}
+It does not establish why the split falls where it does. Our corpus differs from the external three in authorship, and also in size, construction procedure, subject breadth and provenance. With one corpus on that side of the comparison these cannot be separated. Section~\ref{sec:threats} returns to it.
+
+\subsection{How much of this depends on choices unrelated to reformulation?}
+\label{sec:results-lsi}
+
+Two things changed between the figures an earlier version of this work reported and the figures in Table~\ref{tab:multi}: the evaluation protocol, and the population the latent-semantic backend is fitted on. Neither is about reformulation. We separate them with a three-cell factorial, reported as an unplanned analysis written after the per-corpus effects were known.
+
+\begin{table}[t]
+\caption{Separating the evaluation protocol from the LSI fitting population. Cell~A is repeated holdouts with LSI fitted on controls only; cell~B is repeated holdouts with LSI fitted on controls plus the training and calibration requirements, which is what the earlier version of this work used; cell~C is the primary one-pass protocol with LSI fitted on controls only. A~vs.~B isolates the fitting population, A~vs.~C isolates the protocol. Unplanned analysis.}
+\label{tab:lsi}
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+& A & B & C & \multicolumn{2}{c}{attributable to} \\
+\cmidrule(l){5-6}
+Corpus & hold/ctrl & hold/train & 1-pass/ctrl & LSI fit & protocol \\
+\midrule
+Diagnostic  & $+.121$ & $+.141$ & $+.121$ & $+.020$ & $.000$ \\
+CSF~1.1     & $+.028$ & $+.009$ & $+.028$ & $-.020$ & $.000$ \\
+HIPAA       & $\pm.000$ & $+.008$ & $\pm.000$ & $+.008$ & $.000$ \\
+Privacy Fw. & $+.032$ & $+.003$ & $+.032$ & $-.029$ & $.000$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The protocol column is zero on every corpus, to four decimal places. That is close to an identity rather than a discovery. When LSI is fitted on control documents alone, nothing in the pipeline depends on which requirements land in the training split, so a requirement scores the same every time it is tested and the mean over splits equals the single-pass value. We report it because an earlier draft attributed part of the difference to the protocol, and it does not belong there.
+
+The fitting column does the work, and it has no consistent sign: $+0.020$, $-0.020$, $+0.008$, $-0.029$. Fitting LSI on the training and calibration requirements as well as the controls neither reliably inflates nor reliably deflates the estimate; it moves it by two or three points in whichever direction. A third fitting population, controls plus every requirement including the scored ones, gives $+0.121$, $0.000$, $-0.015$ and $+0.011$, so across the three regimes the CSF estimate spans $0.028$, the HIPAA estimate $0.023$ and the Privacy Framework estimate $0.029$.
+
+That span is as large as the effects themselves on the external corpora. Two things follow. The external estimates are not precise enough to support a claim about the sign of the reformulation effect, quite apart from its significance. And the diagnostic estimate stays between $+0.121$ and $+0.141$ across all three regimes, which we note without explaining: with nine discordant requirements, a point estimate holding still across three fits is weak evidence about anything, and we do not offer it as a property of the corpus.
+
+Cell~B reproduces the four figures the earlier version of this work reported, to four decimal places and including their $p$-values. That is our check that the reimplementation behind this factorial is faithful.
 
 \subsection{Does vocabulary gap identify beneficiaries within a corpus? (RQ2)}
 \label{sec:results-gap}
 
-A natural explanation for RQ1's result is that reformulation helps requirements whose vocabulary is distant from their controls, and that the engineered corpus simply contains more of them. The first half of that claim is testable here; the second is not, and we are explicit about which is which.
+A natural explanation for RQ1's result is that reformulation helps requirements whose vocabulary is distant from their controls, and that our corpus simply contains more of them. The first half of that claim is testable here; the second is not, and we are explicit about which is which.
 
-Our gap measure is defined in Section~\ref{sec:protocol} and computed with a frozen tokenizer from IDF fitted \emph{within each corpus}. That makes gap values comparable between requirements of the same corpus and \textbf{not} comparable between corpora: a gap of $0.8$ in HIPAA and a gap of $0.8$ in CSF are not the same quantity, because the IDF weighting behind them was fitted on different vocabularies. We accordingly standardize gap within corpus before pooling, and include corpus fixed effects, which removes between-corpus differences by construction.
+Our gap measure is computed with a frozen tokenizer from IDF fitted \emph{within each corpus}. That makes gap values comparable between requirements of the same corpus and \textbf{not} comparable between corpora: a gap of $0.8$ in HIPAA and a gap of $0.8$ in CSF are not the same quantity, because the IDF weighting behind them was fitted on different vocabularies. We accordingly standardize gap within corpus before pooling and include corpus fixed effects, which removes between-corpus differences by construction.
 
-The estimand is therefore \emph{within-corpus}: among requirements of the same corpus, do those with relatively larger gaps gain more from reformulation? Pooled over the three external corpora, the interaction between standardized gap and reformulation benefit is $+0.0137$, 95\% CI $[-0.0139, +0.0434]$, sign-flip permutation $p = 0.376$, $n = 268$.
+The estimand is therefore \emph{within-corpus}: among requirements of the same corpus, do those with relatively larger gaps gain more from reformulation? Fitted to the same one-pass differences as Table~\ref{tab:multi} and pooled over the three external corpora, the interaction between standardized gap and reformulation benefit is $+0.013$, 95\% CI $[-0.011, +0.038]$, sign-flip permutation $p = 0.311$, $n = 268$.
 
-The answer to RQ2 is no: requirement-level lexical gap does not consistently identify reformulation beneficiaries within the external corpora.
+The answer to RQ2 is no: requirement-level lexical gap does not identify reformulation beneficiaries within the external corpora.
 
-Adding the engineered corpus to the same model moves the coefficient to $+0.0236$, $p = 0.089$, $n = 326$. We report this because it is informative, and we do not test the difference between the two coefficients, so we say only that a within-corpus moderation signal is visible when the engineered corpus is included and not when it is excluded. We do not claim this demonstrates that moderation is carried by that corpus.
+Adding our own corpus to the same model moves the coefficient to $+0.021$, 95\% CI $[-0.000, +0.044]$, $p = 0.069$, $n = 326$. We report it because it is informative, and we do not test the difference between the two coefficients, so we say only that a within-corpus moderation signal is visible when our corpus is included and not when it is excluded. We do not claim this shows the moderation is carried by that corpus.
 
 Two further observations bound what the gap measure does. It predicts \emph{lexical failure} reliably: Spearman correlations between gap and TF-IDF correctness are $-.754$, $-.359$, $-.272$ and $-.475$ across the four corpora, all $p < .05$. It does not consistently predict \emph{semantic advantage}: the same correlation against the dual-encoder's margin over TF-IDF gives $+.335$, $-.082$, $-.143$ and $+.302$, significant on two corpora, indistinguishable from zero on two, and inconsistent in sign. A wide gap tells you term matching will struggle. It does not reliably tell you that a thesaurus will help.
 
-\subsection{What the two answers do and do not license}
+\subsection{What the three answers do and do not license}
+\label{sec:results-license}
 
-Taken together, RQ1 and RQ2 support a narrower claim than it is tempting to make.
+Taken together, RQ1, the sensitivity analysis and RQ2 support a narrower claim than it is tempting to make.
 
-They support this: the reformulation benefit demonstrated on our engineered corpus does not appear on three externally authored corpora, the difference between corpus types is statistically distinguishable, and within the external corpora a requirement-level lexical gap does not identify who benefits.
+They support this. Under one common protocol, the reformulation benefit we demonstrated on our own corpus does not appear on three externally authored corpora; each per-corpus estimate turns on fewer than ten requirements; the external estimates move by as much as their own magnitude when a fitting choice unrelated to reformulation is varied; and within the external corpora a requirement-level lexical gap does not identify who benefits.
 
-They do not support a claim that vocabulary-gap severity explains the between-corpus difference. Our design cannot address that question at all. Because IDF is corpus-relative, we have no common scale on which to say one corpus has a wider gap than another, and the corpus fixed effects remove exactly the between-corpus variation such a claim would need. Any statement of the form ``corpus A has a wider gap than corpus B'' is outside what this measure can support, and we make none.
+They do not support a claim that vocabulary-gap severity explains the difference between corpora. Our design cannot address that question at all. Because IDF is corpus-relative we have no common scale on which to say one corpus has a wider gap than another, and the corpus fixed effects remove exactly the between-corpus variation such a claim would need. Any statement of the form ``corpus A has a wider gap than corpus B'' is outside what this measure supports, and we make none.
 
-Nor do they identify authorship as the operative property. The observed split aligns with author-constructed versus NIST-derived corpora, but the design cannot distinguish benchmark authorship from other properties shared across the NIST ecosystem, and one corpus on the engineered side cannot separate authorship from size, subject breadth or construction procedure.
+Nor do they identify authorship as the operative property. The split aligns with our corpus against the NIST-derived ones, but the design cannot separate benchmark authorship from other properties shared across the NIST ecosystem, and one corpus on our side cannot separate authorship from size, subject breadth or construction procedure. The three external corpora are also correlated with one another, sharing a lineage and a target catalogue, so three nulls are weaker evidence than three independent nulls would be.
 
-What remains is uncomfortable and, we think, worth reporting. We wrote the thesaurus and we wrote the corpus on which the thesaurus succeeds. Whatever the operative property turns out to be, a benchmark constructed by the authors of the intervention it evaluates did not predict how that intervention behaves elsewhere.
+Nor, finally, is this a result about the thesaurus being poorly built. The mechanism does what it is meant to do on the corpus that rewards it. The point is narrower and less comfortable: we wrote the thesaurus and we wrote the corpus that demonstrates its value, and that corpus did not predict how the thesaurus behaves elsewhere.
 
-\subsection{What this does and does not license}
-
-We are deliberately careful about the causal claim available here. We have four corpora, one engineered and three external, and the three external ones share a NIST lineage and a common target catalogue. That supports the statement that the effect fails to replicate outside the corpus it was demonstrated on. It does not support a general quantitative claim that engineered benchmarks inflate gains by a particular factor, which would need engineered and external corpora sampled independently across several institutions.
-
-Nor is this a result about our thesaurus being poorly built. The mechanism is sound where the corpus rewards it. The point is narrower and more uncomfortable: we wrote the thesaurus and we wrote the corpus that demonstrates its value, and a benchmark constructed by the authors of the intervention it evaluates cannot settle whether that intervention transfers.
-
-This leaves the agent without a demonstrated case on accuracy, and we do not construct one from its other properties.
-Recording each step establishes where a mapping came from; it does not establish that the record is useful to an auditor, which would need a study with practitioners, and we did not measure execution determinism under pinned dependencies.
+This leaves the agent without a demonstrated case on accuracy, and we do not construct one from its other properties. Recording each step establishes where a mapping came from; it does not establish that the record is useful to an auditor, which would need a study with practitioners, and we did not measure execution determinism under pinned dependencies.
 
 \subsection{Open-world gap detection}
 \label{sec:results-openworld}
@@ -728,15 +782,19 @@ The trace shows the mechanism concretely.
 Single-shot BM25 (Step~1) happens to rank the correct control first, but fusion (Step~2) reorders a different control to the top with a near-zero relative top-2 margin, which trips the ambiguity test and triggers reformulation.
 Reformulation (Step~3) injects the implementation vocabulary---``privacy by design,'' ``data minimization''---and re-retrieval (Step~4) restores the correct control.
 The decision tools then operate without reordering: corroboration finds cross-framework support ($\rho=1.0$) and relaxes the confidence threshold by 15\%, verification confirms bidirectional consistency (the control's text recovers the requirement at reverse rank~1 of 58), and the agent accepts against the logged effective threshold of 0.045.
-This is the vocabulary-mismatch regime in which reformulation earns its cost; the NIST results show that when Steps~1--4 operate on same-institution text, the expansion does not change the outcome.
+This is the regime in which reformulation earns its cost. On the external corpora the same steps run and the expansion still reorders the ranking, but the reordering rarely moves a correct control into first place (Section~\ref{sec:results-multi}), so the trace looks the same and the outcome does not improve.
 
 \subsection{Sensitivity to heuristic constants}
 \label{sec:sensitivity}
 
 The workflow contains four hand-set constants: the relative top-2 margin $\tau_{\text{rel}}$ that triggers reformulation, the two corroboration relaxation factors, and the verification tightening factor.
 We check that our conclusions do not depend on their exact values.
-Varying $\tau_{\text{rel}}$ over $\{0.05, 0.10, 0.15, 0.20\}$ leaves the diagnostic +Reform ranking unchanged (Top-1 $0.658 \pm 0.042$ at every setting): on this benchmark the fused top-2 relative margins are consistently small, so reformulation fires for nearly every query regardless of the threshold, and its benefit comes from the expansion itself rather than from selective triggering.
-This is worth stating plainly: reformulation is effectively always-on here, not a selectively invoked repair.
+Varying $\tau_{\text{rel}}$ over $\{0.05, 0.10, 0.15, 0.20\}$ leaves the diagnostic +Reform ranking unchanged (Top-1 $0.658 \pm 0.042$ at every setting): on this benchmark the fused top-2 relative margins are consistently small, so the gate fires for nearly every query regardless of the threshold, and whatever benefit there is comes from the expansion itself rather than from selective triggering.
+It is worth separating three things the gate is easy to confuse, because an earlier version of this work reported only the first and described reformulation as ``always on'' on that basis.
+The gate fires on 58 of 58 diagnostic requirements and on 105/106, 68/68 and 93/94 of the external ones, so as a selection mechanism it is close to inert at $\tau_{\text{rel}} = 0.10$.
+An expansion is actually applied less often, on 52, 62, 48 and 78 requirements respectively, because a fired gate produces no expansion when no thesaurus pattern matches.
+And the expansion changes which control ranks first for fewer still: 15, 14, 10 and 18.
+Reformulation is therefore always \emph{invoked} and rarely \emph{decisive}, and the distinction matters because the first number says nothing about the second.
 The decision constants affect only the accept/abstain boundary, and because thresholds are recalibrated to the coverage target, their main measurable effect is on open-world gap detection; sweeping the verification-tightening factor over $\{0.05, 0.10, 0.20\}$ moves gap detection only within $0.25$--$0.31$ at essentially fixed coverage ($\approx 0.79$), so no setting lifts gap detection out of the weak regime reported in Section~\ref{sec:results-openworld}.
 
 
@@ -790,13 +848,13 @@ Diagnostic & 58 & .621 & .569 & $-.052$ & .48 \\
 \end{tabular}
 \end{table}
 
-A gain of $+0.085$ on CSF sits against a loss of $-0.088$ on HIPAA. A study evaluating this gate on either corpus alone would have reported a clear success or a clear harm, and the pooled figure is the average of the two. This is the paper's central claim reproduced inside a single frozen design rather than argued across separately published results.
+A gain of $+0.085$ on CSF sits against a loss of $-0.088$ on HIPAA. A study evaluating this gate on either corpus alone would have reported a clear success or a clear harm, and the pooled figure is the average of the two. That is the same cross-corpus spread as the reformulation result of Section~\ref{sec:results-multi}, reached here inside a single frozen design rather than assembled after the fact.
 
 The complementarity counts show the mechanism. On CSF the gate recovers 7 of the 11 requirements that lexical fusion uniquely solves while losing 3 of the 14 the dual-encoder uniquely solves. On HIPAA the trade reverses: 2 recovered against 8 lost. The gate is not behaving differently on the two corpora; the corpora differ in whether the lexical side has anything to contribute when the dual-encoder hesitates.
 
 Two features of the data qualify the design itself. The gate fires on 66\% to 85\% of queries, so a $0.10$ relative margin is not selective on this task and the gated arm sits close to the equal-weight fusion, most visibly on HIPAA where it fires on 85\% of queries and the two arms coincide. And the pre-declared hard-fallback variant, which hands gated queries to lexical fusion outright rather than fusing all four backends, is worse than the primary gate on every corpus. Declaring it secondary in advance is what prevents that from being presented as a design choice made on principle.
 
-A sensitivity arm replacing inductive LSI with the transductive fit used in the published protocol gives $+0.026$ against the primary's $+0.022$, so the conclusion does not depend on that fit.
+A sensitivity arm replacing inductive LSI with the transductive fit used in the earlier holdout protocol gives $+0.026$ against the primary's $+0.022$, so the conclusion does not depend on that fit.
 
 %% ================================================================
 \section{Discussion}
@@ -807,9 +865,11 @@ A sensitivity arm replacing inductive LSI with the transductive fit used in the 
 
 With two corpora we had a clean story: reformulation helps where the vocabulary gap is wide and is inert where it is narrow. The mechanism was plausible. Regulatory text is written at a policy abstraction level (``implement appropriate technical measures'') while controls describe specific implementations (``AES-256 with FIPS 140-2''), and a curated thesaurus should bridge that because the mapping between regulatory concepts and implementation terms is relatively stable within a domain.
 
-Two corpora cannot distinguish that explanation from several others. The engineered corpus differed from the NIST corpus in apparent gap severity, but it also differed in who wrote it, how large it was, and how it was constructed, and with a single corpus on each side these are perfectly confounded. Adding HIPAA and the Privacy Framework does not resolve the confound, but it does remove the gap explanation's most testable form. HIPAA is the one corpus here whose two sides come from different institutions, with statutory text on the requirement side, which is qualitatively where a regulation-to-implementation thesaurus should help most. Its effect is $+0.008$, sitting with the Privacy Framework's $+0.003$ and CSF's $+0.009$ rather than with the engineered corpus.
+Two corpora cannot distinguish that explanation from several others. Our corpus differed from the NIST corpus in apparent gap severity, but it also differed in who wrote it, how large it was, and how it was constructed, and with a single corpus on each side these are perfectly confounded. Adding HIPAA and the Privacy Framework does not resolve the confound, but it does remove the gap explanation's most testable form. HIPAA is the one corpus here whose two sides come from different institutions, with statutory text on the requirement side, which is qualitatively where a regulation-to-implementation thesaurus should help most. Its effect is $0.000$, and it sits with the Privacy Framework's $+0.032$ and CSF's $+0.028$ rather than with ours.
 
-We are careful about what follows. We cannot say that HIPAA has a wider measured gap than the others, because our gap measure is fitted per corpus and provides no common scale. We can say that the corpus with the strongest qualitative reason to benefit did not benefit.
+We are careful about what follows. We cannot say that HIPAA's measured gap is wider than any other corpus here, because our gap measure is fitted per corpus and provides no common scale. We can say that the corpus with the strongest qualitative reason to benefit did not benefit.
+
+A third corpus and a fourth also changed what a single number is worth. With two corpora the reformulation figure looked like a property of the method under two conditions. With four, and with the fitting sensitivity of Section~\ref{sec:results-lsi} measured, the external figures look like what they are: differences of four or five requirements, movable by roughly their own magnitude by a choice about how to fit a backend.
 
 The lesson we take is not about thesauri, and it is not a demonstration that authorship is the operative variable. It is that a conditional recommendation of the form ``invest in domain glossaries when the vocabulary gap is wide'' was available from two corpora, looked well supported, and does not survive two more. Whatever distinguishes our corpus from NIST's, it was invisible while we had one corpus of each kind.
 
@@ -830,7 +890,7 @@ We also disclose what registration did not fix. The hypothesis was generated fro
 
 A recurring theme in our results is the distinction between \emph{ranking quality} (how well are controls ordered?) and \emph{decision quality} (when should the system commit to a mapping, and when abstain?).
 Our first revision of this work inadvertently conflated the two by computing ranking metrics only over accepted queries, which let a coverage change masquerade as a ranking gain; the present results compute ranking from the full candidate list regardless of the decision, and report coverage, selective accuracy, and open-world gap detection as separate decision metrics.
-This separation is what makes the component analysis trustworthy, and it changes the conclusions: several apparent ranking gains dissolve once decoupled from coverage, and once we also apply query-level rather than seed-level inference (Section~\ref{sec:protocol}), the agent turns out to hold neither a ranking edge nor a decision-quality edge over the strongest baselines. What remains is a negative result about the components, not a qualitative advantage recovered in their place.
+This separation is what makes the component analysis trustworthy, and it changes the conclusions: several apparent ranking gains dissolve once decoupled from coverage, and once we also apply requirement-level rather than seed-level inference (Section~\ref{sec:protocol-stats}), the agent turns out to hold neither a ranking edge nor a decision-quality edge over the strongest baselines. What remains is a negative result about the components, not a qualitative advantage recovered in their place.
 
 The distinction is nonetheless underappreciated in the traceability literature, which focuses almost exclusively on ranking metrics.
 We argue that for deployment in compliance settings, decision quality is at least as important as ranking quality, because incorrect mappings in an accepted state carry real regulatory risk---and because, as Section~\ref{sec:results-openworld} shows, recognizing the \emph{absence} of a valid mapping is itself an unsolved problem.
@@ -838,7 +898,7 @@ The decision tools illustrate the point in both directions: corroboration and ve
 
 \subsection{Neural vs.\ symbolic: complementary, not competing}
 
-Once ranking is measured independently of the decision and compared with a query-level test, the picture is consistent: the deterministic agent does not out-rank neural retrieval on any corpus.
+Once ranking is measured independently of the decision and compared with a requirement-level test, the picture is consistent: the deterministic agent does not out-rank neural retrieval on any corpus.
 On the diagnostic corpus it is statistically indistinguishable from the dual-encoder (0.672 vs.\ 0.644 Top-1, $p\approx1.0$); on the external corpora no deterministic component improves ranking significantly.
 A two-stage cross-encoder pipeline scores higher on CSF (0.562 vs.\ 0.406), but it reranks a 20-candidate shortlist and is bounded by its Recall@20 of 0.906, so we report it in a separate protocol section rather than as a like-for-like win.
 
@@ -880,13 +940,20 @@ The comparison here is one engineered corpus against three correlated external o
 
 \paragraph{External validity: coverage and power.}
 The diagnostic benchmark covers 7 frameworks and the external corpora three framework pairs; real organizations may need to map across dozens of standards (e.g., FedRAMP, CMMC, DORA, NIS2), and the thesaurus would require extension for new domains.
-Corpus sizes (58, 106, 68 and 94 requirements) limit statistical power, and we do not claim that repeated seeds overcome this: the 30 stratified splits overlap heavily and are not independent replicates, so we base all inference on query-level paired tests over unique requirements (Section~\ref{sec:protocol}) rather than on across-seed variance, and we report the small open-world denominator (4.4 no-match queries per seed) explicitly.
+Corpus sizes (58, 106, 68 and 94 requirements) limit statistical power, and we do not claim that repeated seeds overcome this: the 30 stratified splits overlap heavily and are not independent replicates, so we base all inference on requirement-level paired tests (Section~\ref{sec:protocol-stats}) rather than on across-seed variance, and we report the small open-world denominator (4.4 no-match queries per seed) explicitly.
+Power is not the only limit here, and it may not be the binding one. Each per-corpus reformulation estimate is decided by fewer than ten requirements whose top-1 correctness changes at all (Table~\ref{tab:multi}), and each moves by up to $0.029$ when the latent-semantic backend is refitted on a different population (Table~\ref{tab:lsi}). On the external corpora that movement is comparable to the estimate itself. Readers should treat the external point estimates as locating a small effect rather than as measuring its size or fixing its sign.
 The registered hybrid test states its own power limit explicitly: at $n = 268$ the one-sided half-width is $0.048$ against a margin of $0.05$, so it can exclude a mean loss of five points or more but cannot resolve anything finer, and a failure to establish non-inferiority would have been consistent with a power limit rather than with harm.
 
 \paragraph{Statistical conclusion validity.}
-Two limitations of our own analysis should be read alongside the results.
-The reformulation contrasts in Section~\ref{sec:results-multi} are computed on per-requirement means over an uneven number of seeds, so per-requirement variances are unequal and the $t$ approximation underlying the equivalence tests is approximate.
-And a measure of vocabulary gap is fitted with corpus-relative IDF, so gap values are comparable within a corpus but not across corpora; all pooled analyses standardize within corpus before pooling for this reason, and we make no claim that any corpus has a larger absolute gap than another on a common scale.
+Four limitations of our own analysis should be read alongside the results.
+
+The equivalence tests are the weakest inference in the paper. Top-1 is binary per requirement, so the paired differences take three values and are far from normal, and the two one-sided $t$ tests behind $p_{\text{TOST}}$ are an approximation whose quality we have not established at these sample sizes. We report equivalence as a secondary result, flag any decision within $0.01$ of $\alpha$, and headline none of it. No exact equivalence test is available; the exact sign tests reported alongside address superiority only, and an earlier version of this work presented one of them in a way that implied otherwise.
+
+The gap measure is fitted with corpus-relative IDF, so gap values are comparable within a corpus but not across corpora. All pooled analyses standardize within corpus before pooling for that reason, and we make no claim that any corpus has a larger absolute gap than another on a common scale.
+
+Section~\ref{sec:results-lsi} and the engineered-versus-external contrast were written after the per-corpus effects were known. They are unplanned analyses, we label them as such wherever they appear, and only Section~\ref{sec:hybrid} carries a preregistration.
+
+The decision metrics come from repeated stratified holdouts and are computed on per-requirement means over an uneven number of splits, so per-requirement variances are unequal there. We report those metrics descriptively and rest no significance claim on them.
 
 
 %% ================================================================
@@ -894,22 +961,24 @@ And a measure of vocabulary gap is fitted with corpus-relative IDF, so gap value
 \label{sec:conclusion}
 %% ================================================================
 
-We evaluated one frozen set of retrieval methods on four corpora of regulatory traceability: an engineered diagnostic instrument we built, and three whose texts and links were authored by NIST.
-The study began as an attempt to characterize when a curated compliance thesaurus pays off. It ended as a study of what a benchmark can establish.
+We evaluated one frozen set of retrieval methods on four corpora of regulatory traceability: a diagnostic instrument we built, and three whose texts and links were authored by NIST.
+The study began as an attempt to characterize when a curated compliance thesaurus pays off. It ended as a study of what one benchmark can establish about a method.
 
-Three findings follow.
+Four findings follow.
 
-First, the reformulation benefit did not reproduce. It is $+0.140$ on the corpus we constructed ($p = 0.009$) and $+0.009$, $+0.008$ and $+0.003$ on the three external corpora, with two of those three statistically equivalent to no effect within a pre-specified $\pm 0.05$ margin and the third inconclusive. An earlier version of this work, with only the engineered corpus and one external corpus, concluded that the benefit was real but conditional on vocabulary-gap width. Two further corpora do not support that reading.
+First, the reformulation benefit did not generalize. Under one common protocol it is $+0.121$ on the corpus we built ($p = 0.039$) and $+0.028$, $0.000$ and $+0.032$ on the three external corpora, none of them distinguishable from zero. An earlier version of this work, with our corpus and one external corpus, concluded that the benefit was real but conditional on vocabulary-gap width. Two further corpora do not support that reading.
 
-Second, requirement-level vocabulary distance does not identify who benefits within a corpus. Pooled over the external corpora the interaction between standardized gap and reformulation benefit is $+0.014$ (95\% CI $[-0.014, +0.043]$, $p = 0.38$). Gap predicts lexical failure reliably and semantic advantage inconsistently. We cannot go further and say that gap explains the difference \emph{between} corpora: the measure is fitted per corpus and so provides no common scale, and with one engineered corpus the design cannot separate authorship from size, construction or subject breadth. What we can say is that we wrote both the thesaurus and the corpus on which the thesaurus succeeds, and that this corpus did not predict how the thesaurus behaves elsewhere.
+Second, the estimates are less solid than four decimal places suggest. Each turns on fewer than ten requirements whose top-1 correctness changes at all, and each moves by up to $0.029$ when the latent-semantic backend is refitted on a different population, a choice with nothing to do with reformulation. On the external corpora that movement is the size of the effect. The evaluation protocol, which we had previously suspected, contributes nothing at all: repeated holdouts and a single full-population pass agree exactly, because with a controls-only fit nothing in the pipeline depends on the split.
 
-Third, a preregistered test of a gated lexical-semantic hybrid rules out a mean loss of five Top-1 points or more against semantic retrieval alone ($p = 0.003$) and finds no evidence of superiority ($p = 0.48$), while producing $+0.085$ on one corpus against $-0.088$ on another. A cost of two or three points remains consistent with those data. The design was frozen, hashed and publicly registered before it ran, which constrains outcome-dependent analysis and lets a result of this shape be reported as evidence rather than set aside.
+Third, requirement-level vocabulary distance does not identify who benefits within a corpus. Pooled over the external corpora the interaction between standardized gap and reformulation benefit is $+0.013$ (95\% CI $[-0.011, +0.038]$, $p = 0.31$). Gap predicts lexical failure reliably and semantic advantage inconsistently. We cannot go further and say that gap explains the difference \emph{between} corpora: the measure is fitted per corpus and so provides no common scale, and with one corpus of our own the design cannot separate authorship from size, construction or subject breadth. What we can say is that we wrote both the thesaurus and the corpus on which the thesaurus succeeds, and that this corpus did not predict how the thesaurus behaves elsewhere.
+
+Fourth, a preregistered test of a gated lexical-semantic hybrid rules out a mean loss of five Top-1 points or more against semantic retrieval alone ($p = 0.003$) and finds no evidence of superiority ($p = 0.48$), while producing $+0.085$ on one corpus against $-0.088$ on another. A cost of two or three points remains consistent with those data. The design was frozen, hashed and publicly registered before it ran, which constrains outcome-dependent analysis and lets a result of this shape be reported as evidence rather than set aside.
 
 The negative results about our own system stand: no deterministic component significantly improves ranking on any external corpus, the agent holds no coverage or selective-accuracy advantage, and its calibrated abstention detects only a minority of genuine no-match gaps, so it is not ready for gap discovery. We do not substitute an untested claim about auditability for the missing metric case.
 
 The most valuable extension is the one this study cannot perform on itself. Our three external corpora share a NIST lineage and a common target catalogue, so they are correlated replications, and distinguishing external authorship from the properties of one institution's document ecosystem requires corpora from different institutions with a different control catalogue. Beyond that: designing a dedicated no-match signal to make open-world gap detection reliable; admitting domain-adapted encoders such as Legal-BERT~\citep{Chalkidis2020} or SecureBERT~\citep{Aghaei2022} as backends; and investigating temporal drift, where regulations and controls evolve and previously valid mappings become stale~\citep{Gama2014}.
 
-A closing methodological point. The reversal reported here was possible only because the same frozen methods were run on more than one externally authored corpus. Had we stopped at two corpora, we would have published a plausible conditional recommendation that our own later data contradicts. In a subfield where public collections are scarce and authors routinely build their own, we suggest that a single benchmark, however carefully constructed, is not sufficient evidence that a method transfers.
+A closing methodological point. The reversal reported here was possible only because the same frozen methods were run on more than one externally authored corpus, and because we then checked how much the surviving numbers depended on choices we had not thought of as choices. Had we stopped at two corpora, we would have submitted a plausible conditional recommendation that our own later data contradicts. In a subfield where public collections are scarce and authors routinely build their own, a single benchmark, however carefully constructed, is not sufficient evidence that a method transfers, and a point estimate is worth little without the count of decisions behind it.
 
 
 %% ================================================================
@@ -925,7 +994,7 @@ The authors declare that they have no known competing financial interests or per
 During the preparation of this work, the authors used generative AI and AI-assisted tools to help with manuscript organization and language review, and to assist with code review and reproducibility checking of the evaluation harness. The authors independently verified all analyses, statistics, citations, code, and results, reviewed and edited any AI-assisted output, and take full responsibility for the content of the publication.
 
 \section*{Data availability}
-Both evaluation corpora are provided as supplementary material: the diagnostic benchmark (58 requirements, 110 controls, 86 links) and the real-world NIST benchmark (106 CSF subcategories, 300 SP~800-53r5 controls, 495 links), together with the scripts that regenerate the latter from NIST's published OSCAL catalog and crosswalk spreadsheet.
+All four evaluation corpora are provided as supplementary material: the diagnostic benchmark (58 requirements, 110 controls, 86 links), and the CSF~1.1 (106 subcategories, 495 links), HIPAA Security Rule (68 requirements, 274 links) and Privacy Framework (94 subcategories, 456 links) corpora, which share one 300-control corpus drawn from SP~800-53r5. The scripts that regenerate the three NIST corpora from NIST's published OSCAL catalog and crosswalk spreadsheets are included.
 The complete evaluation framework, all baselines, the agent implementation, the domain thesaurus and concept patterns, the ablation and open-world harness, and the trace-export utility that generated Table~\ref{tab:trace} are available at \url{https://github.com/sumanshusohal/RAA-Compliance-Mapping}.
 All experiments are deterministic given a seed; the exact 30-seed logs underlying every table are included with the release.
 
