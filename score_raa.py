@@ -287,6 +287,13 @@ def main():
     print("Full RAA on the shared population. Ranking metrics only;")
     print("decision metrics need calibration splits and are not produced.\n")
 
+    # Sample the working-tree state BEFORE writing any output. Called after
+    # the CSV is written, git_state() sees this script's own product and
+    # reports dirty:true, which reads as "produced from uncommitted code"
+    # when the code was in fact clean. The flag has to describe the tree that
+    # produced the numbers, not the tree after they landed.
+    git_at_start = git_state()
+
     keys = [args.corpus] if args.corpus else list(CORPORA)
     frames, all_counters = [], {}
     for key in keys:
@@ -328,7 +335,7 @@ def main():
         "rel_gap_retry_threshold": 0.10,
         "thresholds": "conf_thr=gap_thr=0.0; ranking is independent of them",
         "timestamp_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
-        "argv": sys.argv, "git": git_state(),
+        "argv": sys.argv, "git": git_at_start,
         "spec_hashes": {"score_raa.py": sha256(os.path.abspath(__file__)),
                         "raa_agent.py": sha256(os.path.join(HERE, "raa_agent.py"))},
         "environment": {"python": sys.version.split()[0],
