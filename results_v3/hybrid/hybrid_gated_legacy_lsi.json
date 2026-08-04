@@ -11,8 +11,8 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "5e8947a928daba1faa55121ac2bade3b617a4a3a",
-    "dirty": true
+    "commit": "8e7c1da71f7489bc9b2bf72baa1203cae412149f",
+    "dirty": false
   },
   "input_manifest_sha256": "93259026e5cc90998a2ab182a21b95660c36b67f20907a3c38cece128913fa0c",
   "is_sensitivity_arm": true,
@@ -153,5 +153,5 @@
   },
   "status": "exploratory",
   "status_reason": "design frozen before outcome, but the gate was motivated by complementarity already observed in these corpora; hybrid_equal was observed before registration",
-  "timestamp_utc": "2026-08-02T01:40:06.109528+00:00"
+  "timestamp_utc": "2026-08-04T02:34:40.014356+00:00"
 }
