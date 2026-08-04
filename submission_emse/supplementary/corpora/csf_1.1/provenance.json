@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-08-01T19:49:15.446614+00:00",
+  "sources": [
+    {
+      "artifact": "SP 800-53 control catalog (OSCAL)",
+      "url": "https://raw.githubusercontent.com/usnistgov/oscal-content/v1.5.0/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+      "release_tag": "v1.5.0",
+      "catalog_version": "5.2.0",
+      "sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062"
+    },
+    {
+      "artifact": "NIST CSF 1.1 to SP 800-53r5 crosswalk",
+      "url": "https://csrc.nist.gov/files/pubs/sp/800/53/r5/upd1/final/docs/csf-pf-to-sp800-53r5-mappings.xlsx",
+      "sheet": "CSF to SP 800-53r5",
+      "sha256": "8b09e8c5bd11dcfa494d2f5beec2d32d98df934285c0214712d020abefc162f1"
+    }
+  ],
+  "notes": {
+    "role": "exploratory",
+    "subcategories_seen": 108,
+    "dropped_no_link": 2,
+    "unresolved_control_references": 0,
+    "csf_version_note": "CSF 1.1 is used deliberately. CPRT documents a near 1:1 derivation of CSF 2.0 subcategories from CSF 1.1, so CSF 2.0 cannot serve as an independent confirmatory corpus, and rebuilding the exploratory corpus on it would discard the basis on which the vocabulary-gap hypothesis was actually formed."
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-08-01T22:44:58.329305+00:00",
+  "sources": [
+    {
+      "artifact": "SP 800-53 control catalog (OSCAL)",
+      "url": "https://raw.githubusercontent.com/usnistgov/oscal-content/v1.5.0/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+      "release_tag": "v1.5.0",
+      "catalog_version": "5.2.0",
+      "sha256": "01f37cf90ea99d92242c936cbfbdebcc338eef1f71454e2acac36cc56e9bc062"
+    },
+    {
+      "artifact": "HIPAA Security Rule requirements and 800-53 mapping",
+      "source": "NIST CPRT",
+      "framework_version": "SP800_66_2_0_0",
+      "olir": "SP-800-66-Rev-2-to-SP-800-53-Rev-5.1.1",
+      "endpoint": "json/nudp/framework/version/{v}/element/{id}/graph",
+      "snapshots": [
+        [
+          "json_nudp_framework_version_SP800_66_2_0_0_element_164.308_graph.json",
+          "ee85870a30d8405f6fa700eace79f22845092e43a6d2119cf247c3ddbc6d7b94"
+        ],
+        [
+          "json_nudp_framework_version_SP800_66_2_0_0_element_164.310_graph.json",
+          "d3a0d84e3f36185f05955a6d251c4f307a4a37af383369e86265ee3074dd2d92"
+        ],
+        [
+          "json_nudp_framework_version_SP800_66_2_0_0_element_164.312_graph.json",
+          "4dfe4273588c33158ebca66560a11239d0843e06f3440d21da2a41dbad59ceef"
+        ],
+        [
+          "json_nudp_framework_version_SP800_66_2_0_0_element_164.314_graph.json",
+          "f1addf5f12725c0fcab842c4e705de2a3c9e96b636b993841f3b3552b475bb1b"
+        ],
+        [
+          "json_nudp_framework_version_SP800_66_2_0_0_element_164.316_graph.json",
+          "41fc9df74282a952778012295f05e53304d44c266e96108d5859f015e998e96e"
+        ],
+        [
+          "json_nudp_framework_version_SP800_66_2_0_0_graph.json",
+          "7a29897699f5f1f5d9405e2e64bab3dc012837e70ecbcb7ec10fb72a69347a38"
+        ]
+      ]
+    }
+  ],
+  "notes": {
+    "requirement_types": [
+      "standard",
+      "imp_spec"
+    ],
+    "requirements_seen": 75,
+    "requirements_dropped_no_link": 7,
+    "unresolved_control_references": 0,
+    "enhancement_handling": "collapsed to base control",
+    "catalog_release_note": "The OLIR targets 800-53 Rev 5.1.1 while the catalog is 5.2.0. The releases differ by one control (SA-24) and every ground-truth link resolves in both, so the shared 5.2.0 catalog is used for cross-corpus comparability."
+  }
+}
