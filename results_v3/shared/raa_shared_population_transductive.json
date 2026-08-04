@@ -11,7 +11,7 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "0a01e4fbea10dc173554ed0fa1b573e16a2400a0",
+    "commit": "cc8405ba31127e98713f5ebb659871e9c5ad0461",
     "dirty": false
   },
   "lsi_fit": "transductive",
@@ -198,12 +198,12 @@
   },
   "rel_gap_retry_threshold": 0.1,
   "spec_hashes": {
-    "raa_agent.py": "f81828c860752602721234d712e016e695eed1778c3691a67586e9625535e062",
+    "raa_agent.py": "354c0ae1bc3290f04e19f0fc4a78f8d8677c57cfbabbafa33656701435303c54",
     "score_raa.py": "6fb12f7ed47065bdd0602753807b18e40e98b487a7b3e393160929b8dc5bed65"
   },
   "status": "exploratory",
   "thresholds": "conf_thr=gap_thr=0.0; ranking is independent of them",
-  "timestamp_utc": "2026-08-04T15:45:26.625899+00:00",
+  "timestamp_utc": "2026-08-04T23:21:48.030147+00:00",
   "top1": {
     "csf": {
       "decomp": 0.4056603773584906,
