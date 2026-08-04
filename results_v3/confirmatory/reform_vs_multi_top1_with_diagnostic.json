@@ -23,7 +23,8 @@
       "n": 58,
       "n_baseline_rows": 58,
       "n_treatment_rows": 58,
-      "n_with_gap": 58
+      "n_with_gap": 58,
+      "source": "holdout"
     },
     "hipaa": {
       "inputs": {
@@ -39,7 +40,8 @@
       "n": 68,
       "n_baseline_rows": 68,
       "n_treatment_rows": 68,
-      "n_with_gap": 68
+      "n_with_gap": 68,
+      "source": "holdout"
     },
     "nist": {
       "inputs": {
@@ -55,7 +57,8 @@
       "n": 106,
       "n_baseline_rows": 106,
       "n_treatment_rows": 106,
-      "n_with_gap": 106
+      "n_with_gap": 106,
+      "source": "holdout"
     },
     "pf": {
       "inputs": {
@@ -71,7 +74,8 @@
       "n": 94,
       "n_baseline_rows": 94,
       "n_treatment_rows": 94,
-      "n_with_gap": 94
+      "n_with_gap": 94,
+      "source": "holdout"
     }
   },
   "delta": 0.05,
@@ -195,15 +199,16 @@
     }
   },
   "git": {
-    "commit": "05093dac044129105cfc51b7f0ebbd1fda827422",
+    "commit": "51ed97b12a83da9380ab629e532d798ed7c1b78c",
     "dirty": false
   },
   "metric": "top1",
   "moderation_pooled": {
-    "ci_high": 0.05082346463552204,
-    "ci_low": -0.0023652583721216047,
-    "coefficient": 0.02364886244201967,
-    "interpretation": "benefit grows with gap",
+    "ci_high": 0.05082346463552214,
+    "ci_low": -0.0023652583721215886,
+    "coefficient": 0.02364886244201969,
+    "interpretation": "no direction identified; interval includes zero",
+    "interpretation_note": "direction reported only when the bootstrap interval excludes zero; see run_confirmatory.py, not confirmatory_stats.py",
     "n": 326,
     "n_permutations": 100000,
     "p_method": "sign_flip_permutation",
@@ -215,10 +220,12 @@
     "permutation": 20260801,
     "permutation_n": 100000
   },
+  "source": "holdout",
+  "source_note": "repeated stratified holdouts collapsed to one value per requirement, LSI fitted on controls plus train and calibration requirements",
   "spec_hashes": {
     "confirmatory_stats.py": "79ec294a77c12c79baf0df6187315affa521d8585f520b273050b67f27e11040",
     "gap_metrics.py": "278cf58e1c376ec389e3466c221a2a9c8173afecd9f242d38faa8299be6474eb",
-    "run_confirmatory.py": "58d4e42c0163b296a6072b914052e780e2695da3330d1d3a54313c25e1aeb2db"
+    "run_confirmatory.py": "2f84c2c828fc02e243f39cf66bc85eae5bf39fb408fadf0cd227786d16e1fe89"
   },
   "status": "exploratory",
   "status_reason": "analysis spec not timestamped before the reform-vs-multi contrast was computed",
@@ -264,5 +271,5 @@
       "p_value": 0.953380466195338
     }
   },
-  "timestamp_utc": "2026-08-01T23:20:44.599348+00:00"
+  "timestamp_utc": "2026-08-04T02:34:38.116621+00:00"
 }
