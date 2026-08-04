@@ -13,9 +13,13 @@ WHAT IT REPORTS
     permutation p-value;
   * TOST equivalence at the pre-specified margin, flagged when its decision
     sits near alpha, which happens when only a handful of requirements are
-    discordant. NO exact equivalence test is provided; the exact sign test
-    below validates the superiority result only, so boundary-sensitive
-    equivalence results are reported as approximate and never headlined;
+    discordant. The two one-sided t tests are an approximation: the paired
+    differences are supported on {-1, 0, +1}, so normality does not hold at
+    these sample sizes. Exact equivalence procedures for paired binary data
+    DO exist and we have not implemented one, which is a limitation of this
+    script rather than of the literature. The exact sign test below is not
+    a substitute: it tests superiority. Boundary-sensitive equivalence
+    results are therefore reported as approximate and never headlined;
   * the engineered-versus-external contrast, with a bootstrap interval that is
     explicitly conditional on these four corpora and no test, for the
     cluster-level reasons documented in heterogeneity_test.py;
@@ -79,7 +83,9 @@ ALPHA = 0.05
 N_BOOT = 10000
 SEED = 20260801
 
-# The published repeated-holdout figures, for the protocol comparison.
+# The repeated-holdout figures reported in the earlier version of this
+# work (submitted and rejected, never published). Cell B of
+# holdout_lsi_factorial.py reproduces all four to four decimals.
 HOLDOUT = {"nist": 0.0088, "hipaa": 0.0078, "pf": 0.0027, "diagnostic": 0.1405}
 
 
@@ -108,9 +114,11 @@ def exact_sign_test(diffs):
 
     An earlier version of this script placed it beside the TOST boundary flag
     in a way that implied it provided an exact sensitivity check for the
-    equivalence decision. It does not, and no exact equivalence test is
-    reported here. Boundary-sensitive TOST results are therefore reported as
-    approximate secondary results and are not headlined.
+    equivalence decision. It does not. No exact equivalence test is reported
+    here, and that is a gap in this implementation, not an impossibility:
+    exact procedures for equivalence on paired binary outcomes exist.
+    Boundary-sensitive TOST results are therefore reported as approximate
+    secondary results and are not headlined.
     """
     wins = int((diffs > 0).sum())
     losses = int((diffs < 0).sum())
@@ -202,16 +210,29 @@ def main():
               f" (conditional, not a test)")
         print()
 
-    print("Isolating the LSI fit from the evaluation protocol:")
-    print(f"{'corpus':11s} {'holdout':>9s} {'1pass/trans':>12s} {'1pass/induc':>12s}")
+    print("Three fitting populations, protocol held at one pass except where")
+    print("noted. These are NOT a factorial and must not be read as one:")
+    print(f"{'corpus':11s} {'holdout/tr+cal':>15s} {'1pass/all-reqs':>15s} "
+          f"{'1pass/ctrl-only':>16s}")
     for k in ("diagnostic", "nist", "hipaa", "pf"):
-        print(f"{k:11s} {HOLDOUT[k]:+9.4f} "
-              f"{results['transductive'][k]['mean_difference']:+12.4f} "
-              f"{results['inductive'][k]['mean_difference']:+12.4f}")
-    print("\nHolding the protocol fixed at one-pass, changing only the LSI fit")
-    print("moves the external estimates by more than changing the protocol at")
-    print("a fixed transductive fit does. The published estimates were")
-    print("sensitive to the LSI fitting regime, not mainly to the protocol.")
+        print(f"{k:11s} {HOLDOUT[k]:+15.4f} "
+              f"{results['transductive'][k]['mean_difference']:+15.4f} "
+              f"{results['inductive'][k]['mean_difference']:+16.4f}")
+    print()
+    print("The first column varies BOTH the protocol and the fitting")
+    print("population against the other two, so no difference between it and")
+    print("them attributes to either cause on its own. An earlier version of")
+    print("this script read the middle column as a fixed-fit comparison")
+    print("against the first; it is not, because the holdout regime fits on")
+    print("controls plus train and calibration requirements while the middle")
+    print("column fits on controls plus EVERY requirement including the")
+    print("scored ones.")
+    print()
+    print("The clean separation is holdout_lsi_factorial.py, which supplies")
+    print("the missing cell (repeated holdout + controls-only fit). Its")
+    print("result: the evaluation protocol contributes 0.0000 on all four")
+    print("corpora under a controls-only fit, and the fitting population")
+    print("accounts for the rest. Cite that record, not this table.")
 
     record = {
         "status": "exploratory",
@@ -225,7 +246,7 @@ def main():
                        "permutation": cs.PERMUTATION_N,
                        "contrast_bootstrap": N_BOOT},
         "results_by_lsi_fit": results,
-        "published_repeated_holdout": HOLDOUT,
+        "earlier_repeated_holdout": HOLDOUT,
         "timestamp_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "argv": sys.argv, "git": git_state(),
         "spec_hashes": {

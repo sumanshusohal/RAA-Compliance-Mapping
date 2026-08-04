@@ -169,7 +169,11 @@ def score_corpus(key, directory, prefix, variants, lsi_fit):
     for name, cfg in variants.items():
         agent = ComplianceAgent(tools=tools, conf_thr=0.0, gap_thr=0.0,
                                 rel_gap_retry_threshold=0.10, **cfg)
-        counts = {"gate_fired": 0, "expanded": 0, "top1_changed": 0}
+        # top1_changed and ranking_changed are contrasts between two arms, so
+        # they cannot be counted inside a single arm's loop. They are computed
+        # below. An earlier version carried a per-arm top1_changed here that
+        # was initialised to zero and never incremented.
+        counts = {"gate_fired": 0, "expanded": 0}
         for rid in sorted(regs):
             if rid not in gold:
                 continue
@@ -185,7 +189,8 @@ def score_corpus(key, directory, prefix, variants, lsi_fit):
                 expanded = tools.reformulate(regs[rid].text)
                 if expanded != regs[rid].text:
                     counts["expanded"] += 1
-            stats[name].setdefault(rid, {})["top1"] = m["predicted_top1"]
+            stats[name].setdefault(rid, {}).update(
+                {"top1": m["predicted_top1"], "order": tuple(order)})
         n = sum(1 for r in regs if r in gold)
         counters[name] = dict(counts, n=n)
         mean = np.mean([r["top1"] for r in rows if r["method"] == name])
@@ -195,14 +200,43 @@ def score_corpus(key, directory, prefix, variants, lsi_fit):
 
     # How many requirements did reformulation actually move? Gate invocation
     # and expansion both overcount this: an expansion can leave the ranking,
-    # or at least the top-1, unchanged.
+    # or at least the top-1, unchanged. ranking_changed is the widest of the
+    # four counts and top1_changed the narrowest, and neither is the number
+    # that drives Top-1: that is the count of requirements whose top-1
+    # CORRECTNESS flips, which is smaller again and lives in the W/L/T
+    # columns of the statistical records.
+    def contrast(a, b):
+        shared = sorted(set(stats[a]) & set(stats[b]))
+        return {
+            "n": len(shared),
+            "top1_changed": sum(1 for r in shared
+                                if stats[a][r]["top1"] != stats[b][r]["top1"]),
+            "ranking_changed": sum(1 for r in shared
+                                   if stats[a][r]["order"] != stats[b][r]["order"]),
+            "differing_rids": [r for r in shared
+                               if stats[a][r]["order"] != stats[b][r]["order"]],
+        }
+
     if "multi" in stats and "reform" in stats:
-        shared = set(stats["multi"]) & set(stats["reform"])
-        changed = sum(1 for r in shared
-                      if stats["multi"][r]["top1"] != stats["reform"][r]["top1"])
-        counters["top1_changed_reform_vs_multi"] = {"changed": changed,
-                                                    "n": len(shared)}
-        print(f"    {'top-1 moved':16s} {changed:3d}/{len(shared)}", flush=True)
+        c = contrast("multi", "reform")
+        counters["reform_vs_multi"] = {k: v for k, v in c.items()
+                                       if k != "differing_rids"}
+        # Kept under the old key so existing records and readers do not break.
+        counters["top1_changed_reform_vs_multi"] = {
+            "changed": c["top1_changed"], "n": c["n"]}
+        print(f"    {'top-1 moved':16s} {c['top1_changed']:3d}/{c['n']}"
+              f"   ranking moved {c['ranking_changed']:3d}/{c['n']}", flush=True)
+
+    # The manuscript states that corroboration and verification are
+    # decision-only and never reorder candidates. That is what the
+    # architecture intends, so it is worth checking rather than asserting:
+    # on HIPAA the two arms select different controls for one requirement.
+    if "reform" in stats and "raa_full" in stats:
+        c = contrast("reform", "raa_full")
+        counters["raa_full_vs_reform"] = c
+        print(f"    {'decision-only':16s} ranking moved "
+              f"{c['ranking_changed']:3d}/{c['n']}"
+              f"  rids={c['differing_rids']}", flush=True)
     return pd.DataFrame(rows), counters
 
 

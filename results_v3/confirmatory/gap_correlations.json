@@ -1,0 +1,108 @@
+{
+  "argv": [
+    "gap_correlations.py"
+  ],
+  "environment": {
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.2",
+    "scipy": "1.15.3"
+  },
+  "families": {
+    "gap_vs_lexical_failure": {
+      "diagnostic": {
+        "n": 58,
+        "p_holm": 3.999960000399996e-05,
+        "p_raw": 9.99990000099999e-06,
+        "rho": -0.7541405315235579,
+        "significant_holm": true,
+        "significant_raw": true
+      },
+      "hipaa": {
+        "n": 68,
+        "p_holm": 0.024319756802431976,
+        "p_raw": 0.024319756802431976,
+        "rho": -0.2720362115315104,
+        "significant_holm": true,
+        "significant_raw": true
+      },
+      "nist": {
+        "n": 106,
+        "p_holm": 0.0002999970000299997,
+        "p_raw": 0.00014999850001499985,
+        "rho": -0.35909177348407817,
+        "significant_holm": true,
+        "significant_raw": true
+      },
+      "pf": {
+        "n": 94,
+        "p_holm": 3.999960000399996e-05,
+        "p_raw": 9.99990000099999e-06,
+        "rho": -0.474725097901422,
+        "significant_holm": true,
+        "significant_raw": true
+      }
+    },
+    "gap_vs_semantic_advantage": {
+      "diagnostic": {
+        "n": 58,
+        "p_holm": 0.02885971140288597,
+        "p_raw": 0.00961990380096199,
+        "rho": 0.33487914249151,
+        "significant_holm": true,
+        "significant_raw": true
+      },
+      "hipaa": {
+        "n": 68,
+        "p_holm": 0.4908950910490895,
+        "p_raw": 0.24544754552454476,
+        "rho": -0.1431250438117744,
+        "significant_holm": false,
+        "significant_raw": false
+      },
+      "nist": {
+        "n": 106,
+        "p_holm": 0.4908950910490895,
+        "p_raw": 0.4063159368406316,
+        "rho": -0.0816300396746484,
+        "significant_holm": false,
+        "significant_raw": false
+      },
+      "pf": {
+        "n": 94,
+        "p_holm": 0.012399876001239988,
+        "p_raw": 0.003099969000309997,
+        "rho": 0.30207240787958434,
+        "significant_holm": true,
+        "significant_raw": true
+      }
+    }
+  },
+  "git": {
+    "commit": "c84980952ecb1b62b3d7e2ad7814e7524ca8184e",
+    "dirty": true
+  },
+  "input_hashes": {
+    "shared_ranking_scores.csv": "fe8a6689092c9283bb4e0dabeaff58934fa9c232c46a14194ed5be7fbbc8d12b"
+  },
+  "multiplicity": {
+    "method": "Holm-Bonferroni within each family of four",
+    "n_tests_total": 8,
+    "note": "both raw and adjusted p-values are recorded; no manuscript claim depends on a test that survives raw but not adjusted"
+  },
+  "p_value_method": {
+    "method": "permutation of the gap vector against a fixed outcome",
+    "n_permutations": 100000,
+    "seed": 20260801,
+    "why": "the outcome is binary or ternary, so the asymptotic Spearman p-value, which assumes untied data, is not reliable here; permuting preserves the tie structure"
+  },
+  "scope_limit": "gap is fitted with corpus-relative IDF, so these coefficients describe within-corpus association only and no corpus can be called wider-gapped than another",
+  "spec_hashes": {
+    "gap_correlations.py": "da8378c2130235c2f8e93edbf13337330113d2a602bb624792ef3d2952b1abae",
+    "gap_metrics.py": "278cf58e1c376ec389e3466c221a2a9c8173afecd9f242d38faa8299be6474eb"
+  },
+  "status": "exploratory",
+  "status_reason": "secondary descriptive correlations, not preregistered",
+  "timestamp_utc": "2026-08-04T02:23:35.755579+00:00"
+}
