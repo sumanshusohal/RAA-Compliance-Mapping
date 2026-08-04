@@ -1250,7 +1250,20 @@ class ComplianceAgent:
         self.verify_tighten = verify_tighten
 
     def _ambiguous(self, conf: float, gap: float) -> bool:
-        rel_gap = gap / max(conf, 1e-9)
+        """Is the top-2 margin small relative to the scores' own scale?
+
+        The denominator is the magnitude of the top score, not the top score
+        itself. Cosine similarity is signed, and an earlier version divided by
+        max(conf, 1e-9): when the best semantic score was negative that
+        collapsed to 1e-9, making rel_gap enormous and the query never
+        ambiguous, so reformulation could not fire on exactly the queries
+        where the encoder was least sure.
+
+        On non-negative scores the two forms agree exactly, so every BM25 and
+        RRF result in the paper is unaffected. This matches the definition
+        registered in hybrid_spec.rel_margin.
+        """
+        rel_gap = gap / max(abs(conf), 1e-9)
         return rel_gap < self.rel_gap_retry_threshold
 
     def solve(self, reg: Regulation, primary_backend: str = "bm25") -> AgentTrace:

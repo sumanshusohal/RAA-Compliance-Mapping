@@ -464,12 +464,44 @@ The open-world evaluation of Section~\ref{sec:results-openworld} additionally ho
 \label{sec:results}
 %% ================================================================
 
-\subsection{Baselines and component ablations}
-\label{sec:results-synth}
+\subsection{All methods on one protocol}
+\label{sec:results-unified}
 
-This subsection reports the descriptive holdout tables for the two corpora that carry the full ablation, before Section~\ref{sec:results-multi} puts all four on a common protocol.
+Table~\ref{tab:unified} is the study's single like-for-like comparison. Every method is scored once per requirement over the full control corpus, with LSI fitted on controls only, so the four columns and the seven rows are all on the same footing.
+
+\begin{table}[t]
+\caption{Top-1 accuracy for every method on all four corpora under the primary protocol: one scoring pass per requirement over the full control corpus, LSI fitted on controls only. The lower block reranks the dual-encoder's top 20 rather than the corpus, so it is bounded by that shortlist; its ceiling is given beneath it.}
+\label{tab:unified}
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Method & Diagnostic & CSF~1.1 & HIPAA & Privacy Fw. \\
+\midrule
+TF-IDF & .500 & .377 & .221 & .372 \\
+BM25 & .466 & .358 & .221 & .372 \\
+LSI & .448 & .368 & .221 & .362 \\
+Lexical RRF & .466 & .377 & .309 & .340 \\
+Full RAA & .586 & .406 & .309 & .372 \\
+Dual-encoder & .621 & .406 & .456 & .372 \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Candidate-constrained: reranks the dual-encoder top-20}} \\
+Cross-encoder & .586 & .547 & .412 & .457 \\
+\quad Recall@20 ceiling & .983 & .906 & .882 & .840 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three things follow, and they replace claims that were previously assembled across separate tables.
+
+The deterministic agent never out-ranks the dual-encoder. Paired at the requirement level, full RAA minus dual-encoder is $-0.034$ on the diagnostic corpus ($p = 0.82$), $0.000$ on CSF, $-0.147$ on HIPAA ($p = 0.064$) and $0.000$ on the Privacy Framework. Two of those are exact aggregate ties, and they are not agreement: on CSF the two methods disagree on 22 requirements, 11 each way, and on the Privacy Framework on 28, 14 each way. Equal means conceal complementary errors, which is the observation that motivated the gated hybrid of Section~\ref{sec:hybrid}.
+
+The two-stage cross-encoder pipeline is not uniformly better either, which a single-corpus reading would have missed. It is well ahead on CSF ($.547$ against $.406$) and the Privacy Framework ($.457$ against $.372$), and behind the dual-encoder alone on the diagnostic corpus ($.586$ against $.621$) and on HIPAA ($.412$ against $.456$). As complete systems these are fair comparisons and we report them as such. As a comparison between reranking methods the lower block is bounded by its shortlist, which is why the ceiling sits beneath it.
+
+And the lexical methods cluster tightly on three of the four corpora. On the Privacy Framework TF-IDF, BM25 and the dual-encoder all score exactly $.372$, which is the tie discussed in Section~\ref{sec:hybrid}.
 
 \paragraph{Diagnostic benchmark.}
+The remaining tables in this subsection are the repeated-holdout ablations. They carry the coverage and selective-accuracy columns, which need a calibrated threshold and therefore cannot come from the one-pass protocol. Their Top-1 columns are descriptive.
 
 Table~\ref{tab:baselines} presents the lexical and neural baseline results on the diagnostic benchmark.
 

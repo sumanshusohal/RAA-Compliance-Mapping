@@ -217,7 +217,37 @@ def main():
     failing = sum(not ok for _, ok in checks)
 
     if args.check:
-        print("\n%d checks, %d failing (nothing written)" % (len(checks), failing))
+        # The structural checks above only inspect what convert() just
+        # produced. They say nothing about whether the committed EMSE file
+        # still matches it, which is the drift this script exists to prevent:
+        # an edit to the source, or to this converter, leaves the committed
+        # output stale and --check passed anyway.
+        if not os.path.exists(DST):
+            print("FAIL committed EMSE file missing; run without --check")
+            failing += 1
+        else:
+            committed = io.open(DST, encoding="utf-8").read()
+            if committed == out:
+                print("ok   committed file matches the converter output")
+            else:
+                print("FAIL committed file is stale; regenerate with "
+                      "`python make_emse.py`")
+                cl, ol = committed.split("\n"), out.split("\n")
+                shown = 0
+                for i in range(max(len(cl), len(ol))):
+                    c = cl[i] if i < len(cl) else "<missing>"
+                    o = ol[i] if i < len(ol) else "<missing>"
+                    if c != o:
+                        print("       line %d" % (i + 1))
+                        print("         committed: %s" % c[:90])
+                        print("         generated: %s" % o[:90])
+                        shown += 1
+                        if shown == 3:
+                            print("       ...")
+                            break
+                failing += 1
+        print("\n%d checks, %d failing (nothing written)"
+              % (len(checks) + 1, failing))
         return 1 if failing else 0
 
     io.open(DST, "w", encoding="utf-8", newline="\n").write(out)

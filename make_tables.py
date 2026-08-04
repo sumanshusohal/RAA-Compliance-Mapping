@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
-"""Generate the manuscript's result tables from the committed records.
+"""Generate the manuscript's quantitative result tables from the records.
 
-Three tables carry the paper's quantitative claims and were previously typed
-by hand from console output. That is how the manuscript came to state a
-reformulation effect of +0.140 while the records said +0.121, and how a count
-of 9 requirements appeared in the abstract and the body disagreed.
+These tables were previously typed by hand from console output. That is how
+the manuscript came to state a reformulation effect of +0.140 while the
+records said +0.121, and how two figures reached the page double-rounded.
 
-This emits the table bodies from the JSON records and, with --check, verifies
-that what is in the manuscript matches. --check exits non-zero on a mismatch,
-so it can gate a push alongside audit_records.py.
+This emits the table bodies from the committed records and, with --check,
+verifies that what is in the manuscript matches. --check exits non-zero on a
+mismatch, so it can gate a push alongside audit_records.py.
 
-    tab:multi   reformulation across four corpora, primary one-pass protocol
-    tab:lsi     the three-cell protocol/fitting factorial
-    tab:hybrid  the preregistered gated hybrid
+COVERAGE. Four of the manuscript's eleven tables are generated here:
+
+    tab:unified  every method on the primary one-pass protocol
+    tab:multi    reformulation across four corpora, same protocol
+    tab:lsi      the three-cell protocol/fitting factorial
+    tab:hybrid   the preregistered gated hybrid
+
+The rest are NOT checked and are still maintained by hand: the repeated-
+holdout ablations and baselines (tab:baselines, tab:ablation, tab:real,
+tab:legacy), open-world gap detection, the example trace, the corpus summary
+and the thesaurus. Those come from per-seed CSVs rather than from JSON
+records. Do not read a passing --check as covering the whole paper.
 
 Usage:
     python make_tables.py                 # print the generated bodies
     python make_tables.py --check         # compare against the manuscript
-    python make_tables.py --write         # splice them into the manuscript
 """
 import argparse
 import io
@@ -108,6 +115,50 @@ def table_hybrid():
     return rows
 
 
+UNIFIED_ROWS = [
+    ("tfidf", "TF-IDF", "ranking"),
+    ("bm25", "BM25", "ranking"),
+    ("lsi_inductive", "LSI", "ranking"),
+    ("rrf_lexical_inductive", "Lexical RRF", "ranking"),
+    ("raa_full", "Full RAA", "raa"),
+    ("semantic", "Dual-encoder", "ranking"),
+]
+CEILING = {"diagnostic": ".983", "nist": ".906", "hipaa": ".882", "pf": ".840"}
+BENCH = {"diagnostic": "diagnostic_benchmark", "nist": "csf_benchmark",
+         "hipaa": "hipaa_benchmark", "pf": "pf_benchmark"}
+
+
+def _means():
+    import pandas as pd
+    rank = pd.read_csv(os.path.join(HERE, "shared_ranking_scores.csv"))
+    raa = pd.read_csv(os.path.join(HERE, "shared_raa_scores.csv"))
+    out = {}
+    for key, bench in BENCH.items():
+        p = rank[rank.corpus == bench].pivot_table(
+            index="rid", columns="method", values="top1").mean()
+        q = raa[raa.corpus == bench].pivot_table(
+            index="rid", columns="method", values="top1").mean()
+        out[key] = {"ranking": p, "raa": q}
+    return out
+
+
+def table_unified():
+    """Every method on one protocol: one pass, full corpus, inductive LSI."""
+    m = _means()
+    rows = []
+    for method, label, src in UNIFIED_ROWS:
+        cells = [plain(m[k][src][method]) for k, _ in ORDER]
+        rows.append("%s & %s \\\\" % (label, " & ".join(cells)))
+    rows.append("\\midrule")
+    rows.append("\\multicolumn{5}{@{}l}{\\emph{Candidate-constrained: reranks "
+                "the dual-encoder top-20}} \\\\")
+    rows.append("Cross-encoder & %s \\\\" % " & ".join(
+        plain(m[k]["ranking"]["reranker"]) for k, _ in ORDER))
+    rows.append("\\quad Recall@20 ceiling & %s \\\\" % " & ".join(
+        CEILING[k] for k, _ in ORDER))
+    return rows
+
+
 def body_in_manuscript(tex, label):
     """Return the data rows of the tabular carrying \\label{label}.
 
@@ -154,7 +205,8 @@ def main():
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
 
-    generated = {"tab:multi": table_multi(), "tab:lsi": table_lsi()}
+    generated = {"tab:unified": table_unified(),
+                 "tab:multi": table_multi(), "tab:lsi": table_lsi()}
     hybrid = table_hybrid()
     if hybrid:
         generated["tab:hybrid"] = hybrid
