@@ -228,12 +228,23 @@ def score_corpus(key, directory, prefix, variants, lsi_fit):
               f"   ranking moved {c['ranking_changed']:3d}/{c['n']}", flush=True)
 
     # The manuscript states that corroboration and verification are
-    # decision-only and never reorder candidates. That is what the
-    # architecture intends, so it is worth checking rather than asserting:
-    # on HIPAA the two arms select different controls for one requirement.
-    if "reform" in stats and "raa_full" in stats:
-        c = contrast("reform", "raa_full")
-        counters["raa_full_vs_reform"] = c
+    # decision-only and never reorder candidates. Checking that needs the
+    # decomposition step isolated first, because it is a ranking tool and
+    # sits between the two arms.
+    #
+    #   reform -> decomp     turns on decomposition alone
+    #   decomp -> raa_full   turns on corroboration and verification alone
+    #
+    # Only the second contrast bears on the decision-only claim.
+    if "reform" in stats and "decomp" in stats:
+        c = contrast("reform", "decomp")
+        counters["decomp_vs_reform"] = c
+        print(f"    {'decomposition':16s} ranking moved "
+              f"{c['ranking_changed']:3d}/{c['n']}"
+              f"  rids={c['differing_rids']}", flush=True)
+    if "decomp" in stats and "raa_full" in stats:
+        c = contrast("decomp", "raa_full")
+        counters["raa_full_vs_decomp"] = c
         print(f"    {'decision-only':16s} ranking moved "
               f"{c['ranking_changed']:3d}/{c['n']}"
               f"  rids={c['differing_rids']}", flush=True)
@@ -278,6 +289,15 @@ def main():
                       enable_verify=False),
         "reform": dict(enable_multi=True, enable_reform=True,
                        enable_decompose=False, enable_crossref=False,
+                       enable_verify=False),
+        # +Decomp exists so that raa_full vs reform can be decomposed. Without
+        # it, that contrast switches on decomposition, corroboration and
+        # verification together, and decomposition is a RANKING tool. An
+        # earlier version used the two-arm contrast to claim it had checked
+        # whether the decision-only tools reorder. It had not: any reordering
+        # it found is attributable to decomposition first.
+        "decomp": dict(enable_multi=True, enable_reform=True,
+                       enable_decompose=True, enable_crossref=False,
                        enable_verify=False),
         "raa_full": dict(enable_multi=True, enable_reform=True,
                          enable_decompose=True, enable_crossref=True,
