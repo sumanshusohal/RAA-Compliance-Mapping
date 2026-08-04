@@ -98,7 +98,7 @@ Registered primary: +0.022, p_NI=0.003, p_sup=0.48, n=268. Per corpus
 - "The gap metric is validated, 5.8x separation" — face validity against
   author-assigned labels on the author-built corpus only.
 - "Engineered benchmarks inflate gains ~7x" — causal overreach; the three
-  external corpora are correlated replications, all NIST, all to SP 800-53.
+  external corpora are correlated evidence, all NIST, all to SP 800-53.
 - "RRF never beats its own best component" — false, it does on CSF and HIPAA.
 - "PF is degenerate" — disproven; the equal means conceal different successes.
 - "Poor accuracy supports the qualitative-value conclusion" — it refutes an

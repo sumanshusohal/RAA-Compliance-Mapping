@@ -86,7 +86,7 @@ First, when a single-shot retrieval returns a low-confidence result, no mechanis
 Second, in high-stakes domains, the system should be able to \emph{abstain} rather than commit to a potentially incorrect mapping---a capability absent from standard retrieval pipelines.
 
 In this paper, we introduce the \emph{Regulatory Alignment Agent} (RAA), a multi-step retrieval system that addresses these limitations through a deterministic, tool-augmented multi-stage workflow.
-The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving reasoning-like observations with tool actions, but---unlike an open-ended language-model ReAct loop---RAA executes a fixed conditional sequence of deterministic tools and emits structured (templated) trace steps: it retrieves candidate controls, evaluates confidence, reformulates queries using domain knowledge when the top-2 margin is ambiguous, corroborates candidates across related regulatory frameworks, and makes an auditable accept-or-abstain decision. We use the term ``agent'' in this restricted, deterministic sense throughout.
+The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving reasoning-like observations with tool actions, but---unlike an open-ended language-model ReAct loop---RAA executes a fixed conditional sequence of deterministic tools and emits structured (templated) trace steps: it retrieves candidate controls, evaluates confidence, reformulates queries using domain knowledge when the top-2 margin is ambiguous, corroborates candidates across related regulatory frameworks, and makes an accept-or-abstain decision recorded together with the scores and thresholds behind it. We use the term ``agent'' in this restricted, deterministic sense throughout.
 
 \noindent\textbf{Research questions.}
 The study is organized around three questions, stated here so the reader can check the results against them.
@@ -212,7 +212,7 @@ A constructed collection is a legitimate diagnostic instrument, but its authors 
 We therefore evaluate the same frozen methods on one engineered corpus and three externally authored ones, whose source texts and mappings were not written by us, and report the contrast between them as the result rather than reporting the best number.
 
 The three external corpora are independent of us but not of each other.
-All three come from the NIST ecosystem and map to the same SP~800-53 control catalogue, so they are correlated replications rather than independent samples of regulatory text, and we treat them as such throughout.
+All three come from the NIST ecosystem and map to the same SP~800-53 control catalogue, so they are correlated evaluation corpora rather than independent samples of regulatory text, and we treat them as such throughout.
 We are not aware of prior work in regulatory traceability that compares conclusions drawn from an engineered corpus against externally authored ones, though we make this claim from familiarity with the literature rather than from a structured search.
 Section~\ref{sec:results} shows the contrast is large enough to reverse a conclusion drawn from the engineered corpus alone.
 
@@ -348,7 +348,7 @@ Privacy Fw. & NIST crosswalk & 94 & 300 & 456 & .840 \\
 
 Two properties of this design need stating before the results.
 
-The three external corpora are independent of us but not of each other. All are NIST products mapping into one catalogue, so they are correlated replications rather than independent samples of regulatory text, and a result that holds across all three is weaker evidence than three unrelated corpora would provide. We treat this as a limitation throughout and return to it in Section~\ref{sec:threats}.
+The three external corpora are independent of us but not of each other. All are NIST products mapping into one catalogue, so they are correlated evaluation corpora rather than independent samples of regulatory text, and a result that holds across all three is weaker evidence than three unrelated corpora would provide. We treat this as a limitation throughout and return to it in Section~\ref{sec:threats}.
 
 NIST describes these mappings as concept relationship mappings rather than assertions of implementation, and marks the HIPAA OLIR ``Comprehensive: No''~\citep{NISTIR8477}. They are therefore a silver standard. A predicted link that the crosswalk does not list is not automatically wrong, and we say ``addresses'' rather than ``implements'' throughout.
 
@@ -941,7 +941,7 @@ The smaller effects on those corpora are therefore not an artifact of tuning aga
 \noindent\textbf{External validity: the three external corpora are not independent of one another.}
 This is the most important limitation of the study and it bears directly on the central claim.
 CSF~1.1, HIPAA and the Privacy Framework are all NIST products, all mapped into the same 300-control corpus drawn from SP~800-53, and two of the three crosswalks were authored by the same programme.
-They are correlated replications, not independent samples of regulatory text.
+They are correlated evaluation corpora, not independent samples of regulatory text.
 A null that holds across all three is therefore weaker evidence than a null across three unrelated corpora would be, and we cannot exclude that some shared property of the NIST ecosystem, rather than external authorship as such, is what distinguishes them from the corpus we built.
 Testing that requires externally authored corpora from different institutions, ideally with a different target catalogue, and it is the single most valuable extension of this work.
 
@@ -987,7 +987,7 @@ Fourth, a preregistered test of a gated lexical-semantic hybrid rules out a mean
 
 The negative results about our own system stand: no deterministic component significantly improves ranking on any external corpus, the agent holds no coverage or selective-accuracy advantage, and its calibrated abstention detects only a minority of genuine no-match gaps, so it is not ready for gap discovery. We do not substitute an untested claim about auditability for the missing metric case.
 
-The most valuable extension is the one this study cannot perform on itself. Our three external corpora share a NIST lineage and a common target catalogue, so they are correlated replications, and distinguishing external authorship from the properties of one institution's document ecosystem requires corpora from different institutions with a different control catalogue. Beyond that: designing a dedicated no-match signal to make open-world gap detection reliable; admitting domain-adapted encoders such as Legal-BERT~\citep{Chalkidis2020} or SecureBERT~\citep{Aghaei2022} as backends; and investigating temporal drift, where regulations and controls evolve and previously valid mappings become stale~\citep{Gama2014}.
+The most valuable extension is the one this study cannot perform on itself. Our three external corpora share a NIST lineage and a common target catalogue, so they are correlated evidence rather than three independent attempts, and distinguishing external authorship from the properties of one institution's document ecosystem requires corpora from different institutions with a different control catalogue. Beyond that: designing a dedicated no-match signal to make open-world gap detection reliable; admitting domain-adapted encoders such as Legal-BERT~\citep{Chalkidis2020} or SecureBERT~\citep{Aghaei2022} as backends; and investigating temporal drift, where regulations and controls evolve and previously valid mappings become stale~\citep{Gama2014}.
 
 A closing methodological point. The reversal reported here was possible only because the same frozen methods were run on more than one externally authored corpus, and because we then checked how much the surviving numbers depended on choices we had not thought of as choices. Had we stopped at two corpora, we would have submitted a plausible conditional recommendation that our own later data contradicts. In a subfield where public collections are scarce and authors routinely build their own, a single benchmark, however carefully constructed, is not sufficient evidence that a method transfers, and a point estimate is worth little without the count of decisions behind it.
 
