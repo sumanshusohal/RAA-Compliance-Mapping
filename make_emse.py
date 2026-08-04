@@ -80,11 +80,11 @@ of Domain-Aware Query Reformulation for Regulatory Traceability}
 
 \affil[2]{\orgname{Independent Researcher}}
 
-\affil[3]{\orgdiv{Independent Network Architect and Senior Researcher}}
+\affil[3]{\orgname{Independent Researcher}, \orgaddress{\country{USA}}}
 """
 
 DECLARATIONS = r"""
-\section*{Declarations}
+\section*{Statements and Declarations}
 
 \subsection*{Funding}
 The authors received no funding for this work.
@@ -187,6 +187,14 @@ def convert(src):
                 r"\def\textpagefraction{.001}"):
         out = out.replace(cmd, "")
 
+    # EMSE asks for at most three heading levels. \paragraph is LaTeX's
+    # fourth, and there are nineteen of them. Promoting each to a
+    # \subsubsection would satisfy the rule while adding nineteen numbered
+    # headings to a paper already criticised for heading density, so they
+    # become bold run-in leads instead: the same signposting, not a heading.
+    out = re.sub(r"\\paragraph\{([^}]*)\}[ \t]*\n",
+                 lambda m: "\\noindent\\textbf{%s}\n" % m.group(1), out)
+
     out = re.sub(r"\n{4,}", "\n\n\n", out)
     return out
 
@@ -208,9 +216,12 @@ def main():
         ("keywords macro", r"\keywords{" in out),
         ("no \\sep", r"\sep" not in out),
         ("highlights removed", r"\begin{highlights}" not in out),
-        ("declarations present", r"\section*{Declarations}" in out),
+        ("declarations present", r"\subsection*{Data availability}" in out),
         ("no printcredits", r"\printcredits" not in out),
         ("bibliography kept", r"\begin{thebibliography}" in out),
+        ("statements heading", r"\section*{Statements and Declarations}" in out),
+        ("no 4th-level headings", r"\paragraph{" not in out),
+        ("affiliation is an org", r"\orgname{Independent Researcher}," in out),
     ]
     for name, ok in checks:
         print("%s %s" % ("ok  " if ok else "FAIL", name))

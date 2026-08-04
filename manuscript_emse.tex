@@ -37,16 +37,16 @@ of Domain-Aware Query Reformulation for Regulatory Traceability}
 
 \affil[2]{\orgname{Independent Researcher}}
 
-\affil[3]{\orgdiv{Independent Network Architect and Senior Researcher}}
+\affil[3]{\orgname{Independent Researcher}, \orgaddress{\country{USA}}}
 
 
 \abstract{\textbf{Context.} Compliance mapping links regulatory requirements to the controls that address them. Public collections are scarce, so methods are usually measured on benchmarks their own authors build.
 
 \textbf{Objective.} We ask how far one such measurement carries.
 
-\textbf{Method.} We evaluate a frozen set of retrieval methods on four corpora under one ranking protocol, scoring every requirement once over the full control corpus. One corpus is a diagnostic instrument we built to isolate vocabulary mismatch. The other three take their texts and links from NIST: Cybersecurity Framework 1.1, the HIPAA Security Rule and the Privacy Framework, all mapping into a single 300-control corpus from SP 800-53, so they are externally authored but not independent.
+\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora. One is a diagnostic instrument we built to isolate vocabulary mismatch. The other three take their texts and links from NIST and map into a single 300-control corpus from SP 800-53, so they are externally authored but not independent.
 
-\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation, externally as large as the effect itself. We found no evidence that within-corpus vocabulary distance moderates the effect ($+0.013$, 95\% CI $[-0.011, +0.038]$, $p = 0.31$, $n = 268$), an inconclusive interval rather than a demonstrated null. A preregistered gated hybrid shows the same spread: non-inferiority established ($p = 0.003$), no superiority ($p = 0.48$), $+0.085$ on one corpus against $-0.088$ on another.
+\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that within-corpus vocabulary distance moderates the effect ($p = 0.31$, $n = 268$), an inconclusive interval rather than a demonstrated null. A preregistered gated hybrid shows the same spread: non-inferiority established ($p = 0.003$), no superiority ($p = 0.48$), $+0.085$ on one corpus against $-0.088$ on another.
 
 \textbf{Conclusion.} A benchmark built by the authors of the intervention it evaluates did not predict how that intervention behaves elsewhere. Corpora, specification, harness and implementation are public; the preregistration is at doi:10.17605/OSF.IO/NZXRV.}
 
@@ -83,7 +83,7 @@ Second, in high-stakes domains, the system should be able to \emph{abstain} rath
 In this paper, we introduce the \emph{Regulatory Alignment Agent} (RAA), a multi-step retrieval system that addresses these limitations through a deterministic, tool-augmented multi-stage workflow.
 The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving reasoning-like observations with tool actions, but---unlike an open-ended language-model ReAct loop---RAA executes a fixed conditional sequence of deterministic tools and emits structured (templated) trace steps: it retrieves candidate controls, evaluates confidence, reformulates queries using domain knowledge when the top-2 margin is ambiguous, corroborates candidates across related regulatory frameworks, and makes an auditable accept-or-abstain decision. We use the term ``agent'' in this restricted, deterministic sense throughout.
 
-\paragraph{Research questions.}
+\noindent\textbf{Research questions.}
 The study is organized around three questions, stated here so the reader can check the results against them.
 
 \begin{description}
@@ -94,7 +94,7 @@ The study is organized around three questions, stated here so the reader can che
 
 RQ1 asks about generalization across corpora, not about corpus types as populations. We have four corpora, one of them ours, so the design can show whether an effect reappears elsewhere. It cannot attribute the difference to any single property of the corpus we built.
 
-\paragraph{Contributions.}
+\noindent\textbf{Contributions.}
 This paper makes four contributions.
 
 First, a cross-corpus evaluation of regulatory traceability (Section~\ref{sec:dataset}) that puts one corpus we built alongside three with NIST-authored ground truth, all sharing a single 300-control target catalogue, and scores every method once per requirement over the full corpus so that all ranking comparisons share one estimand.
@@ -228,7 +228,7 @@ A \emph{compliance mapping system} is a function $f: \mathcal{R} \rightarrow \ma
 
 We evaluate two orthogonal aspects of system quality:
 
-\paragraph{Ranking quality.}
+\noindent\textbf{Ranking quality.}
 For each requirement $r_i$ with ground-truth controls $\mathcal{G}_i = \{c : (r_i, c) \in \mathcal{G}\}$, we measure the quality of the ranked list using standard IR metrics: Top-1 accuracy (whether the highest-ranked control is correct), Mean Reciprocal Rank at $k$ (MRR@$k$), normalized Discounted Cumulative Gain at $k$ (nDCG@$k$), Mean Average Precision at $k$ (MAP@$k$), Recall@$k$, and Precision@$k$.
 
 To ensure methodological continuity with the traceability literature, we additionally report \emph{legacy micro-precision and micro-recall}~\citep{MarcusMaletic2003}, computed by aggregating true positives, false positives, and false negatives across all queries:
@@ -238,7 +238,7 @@ To ensure methodological continuity with the traceability literature, we additio
 \end{equation}
 where $\hat{\mathcal{G}}_i$ denotes the set of controls retrieved for requirement $r_i$ at a given cut point.
 
-\paragraph{Decision quality.}
+\noindent\textbf{Decision quality.}
 For the selective prediction component, we report \emph{coverage} $\phi = |\{r : f(r).\text{decision} = \texttt{accept}\}| / |\mathcal{R}|$ and \emph{selective accuracy} $\text{SelAcc} = \text{Top-1 among accepted}$, following \citet{Geifman2017}.
 The key design question is the precision--coverage trade-off: higher coverage is desirable (fewer escalations), but only if the accepted mappings are reliable.
 
@@ -372,7 +372,7 @@ The three externally authored corpora below are what breaks that circle.
 
 The remaining three corpora take both their texts and their links from NIST, and all three map into one 300-control corpus drawn from SP~800-53r5. They are externally authored but not independent of one another, which Section~\ref{sec:threats} treats as the study's most important limitation.
 
-\paragraph{NIST CSF 1.1 to SP 800-53r5.}
+\noindent\textbf{NIST CSF 1.1 to SP 800-53r5.}
 
 The second corpus is derived from three artifacts published by NIST.
 The requirement side consists of the 108 subcategories of the NIST Cybersecurity Framework version~1.1, each a single outcome-oriented statement (e.g., ``ID.AM-3: Organizational communication and data flows are mapped'').
@@ -388,7 +388,7 @@ One caveat bounds the interpretation of this corpus: NIST characterizes its cros
 Accordingly, we treat this benchmark as a test of reference-link recovery between framework artifacts, not of implemented-compliance verification, and we scope our claims to that task.
 The extraction scripts and the generated CSV files are included in the supplementary material for exact reproducibility.
 
-\paragraph{HIPAA Security Rule to SP 800-53.}
+\noindent\textbf{HIPAA Security Rule to SP 800-53.}
 \label{sec:dataset-hipaa}
 
 The third corpus maps requirements of the HIPAA Security Rule to SP~800-53 controls through NIST's OLIR crosswalk published with SP~800-66 Revision~2. It contains 68 requirements and 274 links.
@@ -399,7 +399,7 @@ The builder fetches and hashes each of the six raw responses from NIST's Cyberse
 
 One version caveat. The OLIR targets SP~800-53 Revision~5.1.1 while our control corpus is drawn from 5.2.0. The two differ by a single control, SA-24, and all 1{,}241 links in the source crosswalk resolve in both, so we use 5.2.0 for consistency with the other corpora and note the substitution.
 
-\paragraph{NIST Privacy Framework to SP 800-53.}
+\noindent\textbf{NIST Privacy Framework to SP 800-53.}
 \label{sec:dataset-pf}
 
 The fourth corpus maps subcategories of the NIST Privacy Framework to the same control corpus, 94 requirements and 456 links, through the crosswalk NIST publishes alongside SP~800-53.
@@ -446,6 +446,8 @@ Equivalence against a pre-specified $\pm 0.05$ margin is reported as a secondary
 
 The open-world evaluation of Section~\ref{sec:results-openworld} additionally holds out a random 50\% of controls per seed to manufacture genuine no-match queries.
 
+\medskip\noindent\textbf{Use of AI tools in this study.} No component of the system under evaluation is a language model, and no result reported here was produced by one. The agent is deterministic throughout: lexical backends, a hand-written thesaurus and regular-expression patterns, and two pre-trained sentence encoders used as fixed feature extractors. Generative AI assistants were used during the conduct of the work in two roles, both of which we state so that a reader can judge them. They were used to review and refactor the evaluation harness and the analysis scripts, including the provenance tooling described above, and to review and edit the prose of this manuscript. Every statistical procedure, number, table and citation was independently verified by the authors against the committed records, and the authors take full responsibility for the content.
+
 
 %% ================================================================
 \section{Results}
@@ -488,7 +490,8 @@ The two-stage cross-encoder pipeline is not uniformly better either, which a sin
 
 And the lexical methods cluster tightly on three of the four corpora. On the Privacy Framework TF-IDF, BM25 and the dual-encoder all score exactly $.372$, which is the tie discussed in Section~\ref{sec:hybrid}.
 
-\paragraph{Diagnostic benchmark.}
+\noindent\textbf{Diagnostic benchmark.}
+\label{sec:results-synth}
 The remaining tables in this subsection are the repeated-holdout ablations. They carry the coverage and selective-accuracy columns, which need a calibrated threshold and therefore cannot come from the one-pass protocol. Their Top-1 columns are descriptive.
 
 Table~\ref{tab:baselines} presents the lexical and neural baseline results on the diagnostic benchmark.
@@ -575,7 +578,7 @@ Even under the legacy protocol, and with ranking now measured independently of t
 This is notable because LSI was specifically designed to capture latent semantic relationships~\citep{MarcusMaletic2003}; the agent's reformulation mechanism provides a more targeted form of semantic bridging on this vocabulary-mismatched corpus.
 
 
-\paragraph{The CSF 1.1 corpus.}
+\noindent\textbf{The CSF 1.1 corpus.}
 \label{sec:results-real}
 
 Table~\ref{tab:real} reports the same protocol applied to the NIST CSF to SP~800-53r5 corpus.
@@ -663,10 +666,10 @@ We stop short of calling that a test of a corpus-type effect. Corpus type is a p
 
 The defensible answer to RQ1 is: the effect observed on the corpus we built did not generalize to the three external corpora.
 
-\paragraph{Equivalence, as a secondary result.}
+\noindent\textbf{Equivalence, as a secondary result.}
 It is tempting to strengthen ``not significant'' into ``equivalent to nothing''. These data support that only weakly. Against the pre-specified $\pm 0.05$ margin, the two one-sided tests give $p_{\text{TOST}} = 0.048$ on HIPAA, $0.152$ on CSF and $0.224$ on the Privacy Framework. Only HIPAA meets the margin, and it does so at $0.048$ against $\alpha = 0.05$, a decision that its four discordant requirements could reverse. We flag it as boundary-sensitive and headline none of it. An earlier version of this work reported CSF and the Privacy Framework as equivalent to no effect; those figures came from the repeated-holdout regime and they do not survive the move to a common protocol. We did not implement an exact equivalence procedure. Exact methods for equivalence on paired binary outcomes exist and would be preferable at these sample sizes; their absence here is a limitation of our analysis, not of the available statistics. The exact sign tests we do report validate the superiority results only.
 
-\paragraph{What this does not establish.}
+\noindent\textbf{What this does not establish.}
 It does not establish why the split falls where it does. Our corpus differs from the external three in authorship, and also in size, construction procedure, subject breadth and provenance. With one corpus on that side of the comparison these cannot be separated. Section~\ref{sec:threats} returns to it.
 
 \subsection{How much of this depends on choices unrelated to reformulation?}
@@ -766,7 +769,7 @@ We conclude that abstention calibrated for coverage on answerable queries does n
 \subsection{Traces and sensitivity to the hand-set constants}
 \label{sec:sensitivity}
 
-\paragraph{An example trace.}
+\noindent\textbf{An example trace.}
 
 Each agent decision is accompanied by a reasoning trace, exported verbatim by the evaluation harness and recording, at the decision step, the effective (post-adjustment) thresholds actually applied.
 Table~\ref{tab:trace} reproduces one such trace directly from the exported log (diagnostic benchmark, seed~42), for a GDPR requirement exhibiting vocabulary mismatch.
@@ -797,7 +800,7 @@ Reformulation (Step~3) injects the implementation vocabulary---``privacy by desi
 The decision tools then operate without reordering: corroboration finds cross-framework support ($\rho=1.0$) and relaxes the confidence threshold by 15\%, verification confirms bidirectional consistency (the control's text recovers the requirement at reverse rank~1 of 58), and the agent accepts against the logged effective threshold of 0.045.
 This is the regime in which reformulation earns its cost. On the external corpora the same steps run and the expansion still reorders the ranking, but the reordering rarely moves a correct control into first place (Section~\ref{sec:results-multi}), so the trace looks the same and the outcome does not improve.
 
-\paragraph{The constants.}
+\noindent\textbf{The constants.}
 The workflow contains four hand-set constants: the relative top-2 margin $\tau_{\text{rel}}$ that triggers reformulation, the two corroboration relaxation factors, and the verification tightening factor.
 We check that our conclusions do not depend on their exact values.
 Varying $\tau_{\text{rel}}$ over $\{0.05, 0.10, 0.15, 0.20\}$ leaves the diagnostic +Reform ranking unchanged (Top-1 $0.658 \pm 0.042$ at every setting): on this benchmark the fused top-2 relative margins are consistently small, so the gate fires for nearly every query regardless of the threshold, and whatever benefit there is comes from the expansion itself rather than from selective triggering.
@@ -819,12 +822,12 @@ That suggestion came from looking at these corpora, which is exactly why the tes
 
 We state the limits of that registration plainly. Because the hypothesis was generated from the same corpora that test it, the result is preregistered but still exploratory, and a genuinely confirmatory replication would need a corpus that did not exist when the specification was written. One declared secondary arm, the equal-weight fusion, was computed during method development before registration and is therefore reported as an observed result rather than a preregistered one.
 
-\paragraph{Design.}
+\noindent\textbf{Design.}
 The gated arm ranks the full control corpus with the dual-encoder. Only when the dual-encoder's own top-2 relative margin falls below $0.10$ is the lexical side consulted, and the query is then re-ranked by reciprocal rank fusion over TF-IDF, BM25, inductive LSI and the dual-encoder. The gate reads only the dual-encoder scores, so routing is decided before any label is touched. Neither constant is new: $0.10$ is the margin the agent already uses to trigger reformulation (Section~\ref{sec:architecture}), and the five-point margin below was fixed for an earlier, unrelated contrast.
 
 The primary estimand is the mean paired Top-1 difference over the 268 concatenated requirements of the three NIST corpora, requirement-weighted, with intervals from a bootstrap resampled within corpus. Non-inferiority is tested first at a margin of $0.05$; superiority is tested only if non-inferiority is established, which fixes the multiplicity without a correction.
 
-\paragraph{Result.}
+\noindent\textbf{Result.}
 Non-inferiority is established ($p = 0.003$) and superiority is not ($p = 0.48$). The mean difference is $+0.022$, 90\% interval $[-0.022, +0.067]$.
 
 Stated precisely: the analysis rules out mean losses of five Top-1 points or more under the registered model, and provides no evidence of superiority. It does not establish that gating is free. A cost of two or three points is entirely consistent with these data, as the interval shows, and the precision statement registered in advance says as much: at $n = 268$ this design can exclude a five-point loss but cannot resolve anything finer.
@@ -917,20 +920,20 @@ The natural next step, combining lexical and semantic retrieval, is the one we r
 \label{sec:threats}
 %% ================================================================
 
-\paragraph{Construct validity.}
+\noindent\textbf{Construct validity.}
 The diagnostic benchmark is synthetic, and its vocabulary-mismatched controls, though authored to share no content words with their requirements, may not represent the full diversity of real regulatory--implementation gaps.
 The three external corpora mitigate this threat for the texts and ground truth themselves, but they capture one family of mapping regimes. All three map into a single NIST control catalogue, and on CSF and the Privacy Framework both sides are NIST products. We do not claim their vocabulary gap is narrow; our measure is corpus-relative and cannot support a statement of that form. What we can say is that, as noted in Section~\ref{sec:dataset-real}, the crosswalks encode NIST's concept-level judgment of correspondence~\citep{NISTIR8477} rather than evidence that an organization has implemented a control satisfying a requirement.
 Our claims on those corpora are therefore about reference-link recovery, not implemented-compliance verification.
 No corpus here reflects ambiguous multi-clause requirements, implicit dependencies between controls, or organizational context.
 Finally, the open-world evaluation manufactures no-match queries by holding out controls; genuine compliance gaps may differ systematically from queries whose gold controls happen to be removed, so the gap-detection figures should be read as a controlled stress test rather than a field estimate or a bound in either direction.
 
-\paragraph{Internal validity.}
+\noindent\textbf{Internal validity.}
 The domain thesaurus and concept patterns are hand-crafted by the authors, who are practicing cybersecurity specialists, creating a risk of overfitting the thesaurus to the diagnostic benchmark.
 We mitigated this by separating thesaurus design (general domain knowledge) from benchmark design (specific regulatory texts) and by reporting over 30 random splits with a calibration split disjoint from test.
 The external corpora provide the stronger safeguard: the thesaurus was frozen before any of them was assembled, and neither their texts nor their links were authored by us.
 The smaller effects on those corpora are therefore not an artifact of tuning against them. They are not a bound on transfer either. Each rests on four or five discordant requirements and moves by roughly its own magnitude under a change of LSI fitting population, so they establish that the diagnostic result did not recur rather than measuring how much of it survives.
 
-\paragraph{External validity: the three external corpora are not independent of one another.}
+\noindent\textbf{External validity: the three external corpora are not independent of one another.}
 This is the most important limitation of the study and it bears directly on the central claim.
 CSF~1.1, HIPAA and the Privacy Framework are all NIST products, all mapped into the same 300-control corpus drawn from SP~800-53, and two of the three crosswalks were authored by the same programme.
 They are correlated replications, not independent samples of regulatory text.
@@ -945,7 +948,7 @@ Corpus sizes (58, 106, 68 and 94 requirements) limit statistical power, and we d
 Power is not the only limit here, and it may not be the binding one. Each per-corpus reformulation estimate is decided by fewer than ten requirements whose top-1 correctness changes at all (Table~\ref{tab:multi}), and each moves by up to $0.029$ when the latent-semantic backend is refitted on a different population (Table~\ref{tab:lsi}). On the external corpora that movement is comparable to the estimate itself. Readers should treat the external point estimates as locating a small effect rather than as measuring its size or fixing its sign.
 The registered hybrid test states its own power limit explicitly: at $n = 268$ the one-sided half-width is $0.048$ against a margin of $0.05$, so it can exclude a mean loss of five points or more but cannot resolve anything finer, and a failure to establish non-inferiority would have been consistent with a power limit rather than with harm.
 
-\paragraph{Statistical conclusion validity.}
+\noindent\textbf{Statistical conclusion validity.}
 Four limitations of our own analysis should be read alongside the results.
 
 The equivalence tests are the weakest inference in the paper. Top-1 is binary per requirement, so the paired differences take three values and are far from normal, and the two one-sided $t$ tests behind $p_{\text{TOST}}$ are an approximation whose quality we have not established at these sample sizes. We report equivalence as a secondary result, flag any decision within $0.01$ of $\alpha$, and headline none of it. No exact equivalence test is available; the exact sign tests reported alongside address superiority only, and an earlier version of this work presented one of them in a way that implied otherwise.
@@ -987,7 +990,7 @@ A closing methodological point. The reversal reported here was possible only bec
 %% ================================================================
 
 
-\section*{Declarations}
+\section*{Statements and Declarations}
 
 \subsection*{Funding}
 The authors received no funding for this work.
