@@ -11,7 +11,7 @@
     "python": "3.10.2"
   },
   "git": {
-    "commit": "a24d2d1648beea585819ab38d6594a552ba602c8",
+    "commit": "353015e16a24bfaf2afc4f618e392f5265b92636",
     "dirty": false
   },
   "lsi_fit": "transductive",
@@ -22,6 +22,17 @@
   "ranking_only": true,
   "reformulation_counters": {
     "diagnostic": {
+      "decomp": {
+        "expanded": 52,
+        "gate_fired": 58,
+        "n": 58
+      },
+      "decomp_vs_reform": {
+        "differing_rids": [],
+        "n": 58,
+        "ranking_changed": 0,
+        "top1_changed": 0
+      },
       "multi": {
         "expanded": 0,
         "gate_fired": 0,
@@ -32,7 +43,7 @@
         "gate_fired": 58,
         "n": 58
       },
-      "raa_full_vs_reform": {
+      "raa_full_vs_decomp": {
         "differing_rids": [],
         "n": 58,
         "ranking_changed": 0,
@@ -54,6 +65,19 @@
       }
     },
     "hipaa": {
+      "decomp": {
+        "expanded": 48,
+        "gate_fired": 68,
+        "n": 68
+      },
+      "decomp_vs_reform": {
+        "differing_rids": [
+          58
+        ],
+        "n": 68,
+        "ranking_changed": 1,
+        "top1_changed": 0
+      },
       "multi": {
         "expanded": 0,
         "gate_fired": 0,
@@ -64,12 +88,10 @@
         "gate_fired": 68,
         "n": 68
       },
-      "raa_full_vs_reform": {
-        "differing_rids": [
-          58
-        ],
+      "raa_full_vs_decomp": {
+        "differing_rids": [],
         "n": 68,
-        "ranking_changed": 1,
+        "ranking_changed": 0,
         "top1_changed": 0
       },
       "reform": {
@@ -88,6 +110,17 @@
       }
     },
     "nist": {
+      "decomp": {
+        "expanded": 63,
+        "gate_fired": 106,
+        "n": 106
+      },
+      "decomp_vs_reform": {
+        "differing_rids": [],
+        "n": 106,
+        "ranking_changed": 0,
+        "top1_changed": 0
+      },
       "multi": {
         "expanded": 0,
         "gate_fired": 0,
@@ -98,7 +131,7 @@
         "gate_fired": 106,
         "n": 106
       },
-      "raa_full_vs_reform": {
+      "raa_full_vs_decomp": {
         "differing_rids": [],
         "n": 106,
         "ranking_changed": 0,
@@ -120,6 +153,17 @@
       }
     },
     "pf": {
+      "decomp": {
+        "expanded": 79,
+        "gate_fired": 94,
+        "n": 94
+      },
+      "decomp_vs_reform": {
+        "differing_rids": [],
+        "n": 94,
+        "ranking_changed": 0,
+        "top1_changed": 0
+      },
       "multi": {
         "expanded": 0,
         "gate_fired": 0,
@@ -130,7 +174,7 @@
         "gate_fired": 94,
         "n": 94
       },
-      "raa_full_vs_reform": {
+      "raa_full_vs_decomp": {
         "differing_rids": [],
         "n": 94,
         "ranking_changed": 0,
@@ -155,28 +199,32 @@
   "rel_gap_retry_threshold": 0.1,
   "spec_hashes": {
     "raa_agent.py": "80c41afbd6b101e749bc12cf0c22ee9a67662d825bcdc08dc98ff0fd0aef19f2",
-    "score_raa.py": "6d2ef50696c66e6bbeb691f6d62bedef85e8c6157a86806c751a6d270b85d7c0"
+    "score_raa.py": "6fb12f7ed47065bdd0602753807b18e40e98b487a7b3e393160929b8dc5bed65"
   },
   "status": "exploratory",
   "thresholds": "conf_thr=gap_thr=0.0; ranking is independent of them",
-  "timestamp_utc": "2026-08-04T02:35:47.571557+00:00",
+  "timestamp_utc": "2026-08-04T15:12:23.068459+00:00",
   "top1": {
     "csf": {
+      "decomp": 0.4056603773584906,
       "multi": 0.4056603773584906,
       "raa_full": 0.4056603773584906,
       "reform": 0.4056603773584906
     },
     "diagnostic": {
+      "decomp": 0.603448275862069,
       "multi": 0.4827586206896552,
       "raa_full": 0.603448275862069,
       "reform": 0.603448275862069
     },
     "hipaa": {
+      "decomp": 0.2647058823529412,
       "multi": 0.27941176470588236,
       "raa_full": 0.2647058823529412,
       "reform": 0.2647058823529412
     },
     "pf": {
+      "decomp": 0.3829787234042553,
       "multi": 0.3723404255319149,
       "raa_full": 0.3829787234042553,
       "reform": 0.3829787234042553
