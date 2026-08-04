@@ -1,0 +1,117 @@
+name: integrity
+
+# The gates that have actually caught errors in this project: records
+# produced from dirty trees or pointing at commits that predate their code,
+# manuscript tables drifting from the records they came from, a stale
+# generated EMSE file, and credentials in the tree.
+#
+# These run without the neural dependencies. Anything needing torch or
+# sentence-transformers (score_all, score_raa, freeze_backends, the LLM arm)
+# is deliberately out of scope: those regenerate inputs rather than check
+# them, and their outputs are committed.
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # audit_records reads blobs at recorded commits
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install analysis dependencies
+        run: pip install numpy pandas scipy
+
+      - name: Byte-compile every module
+        run: python -m compileall -q .
+
+      - name: Result provenance
+        run: python audit_records.py
+
+      - name: Manuscript tables match the records
+        run: python make_tables.py --check
+
+      - name: Generated EMSE version is current
+        run: python make_emse.py --check
+
+      - name: Frozen hybrid specification
+        run: python test_hybrid_spec.py
+
+      - name: Secret scan
+        run: python scan_secrets.py
+
+      - name: Corpora parse and match their recorded shapes
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          EXPECT = {
+              "diagnostic_benchmark": ("diag_", 58, 110, 86),
+              "csf_benchmark":        ("csf_", 106, 300, 495),
+              "hipaa_benchmark":      ("",      68, 300, 274),
+              "pf_benchmark":         ("",      94, 300, 456),
+          }
+          bad = 0
+          for d, (p, nr, nc, nl) in EXPECT.items():
+              r = pd.read_csv(f"{d}/{p}regs.csv")
+              c = pd.read_csv(f"{d}/{p}controls.csv")
+              m = pd.read_csv(f"{d}/{p}mappings.csv")
+              got = (len(r), len(c), len(m))
+              ok = got == (nr, nc, nl)
+              bad += not ok
+              print(("ok   " if ok else "FAIL"), d, got, "expected", (nr, nc, nl))
+              missing = set(m.control_id) - set(c.id)
+              if missing:
+                  bad += 1
+                  print("     FAIL unresolved control references:", len(missing))
+          raise SystemExit(1 if bad else 0)
+          PY
+
+      - name: End-to-end lexical smoke test
+        run: |
+          python - <<'PY'
+          # Smallest honest end-to-end check: the deterministic lexical path
+          # ranks a tiny fixture correctly and is reproducible across runs.
+          import os
+          os.environ["USE_TF"] = "0"
+          from raa_agent import (AgentTools, ComplianceAgent, Control,
+                                 Regulation, build_bm25_scorer,
+                                 build_tfidf_scorer)
+
+          texts = [
+              "AES-256 encryption at rest with FIPS 140-2 validated modules",
+              "Annual security awareness training for all staff",
+              "Quarterly vulnerability scanning of external interfaces",
+          ]
+          controls = [Control(control_id=i, text=t, regulation_id=-1,
+                              quality=1.0, match_type="NA", family="NA")
+                      for i, t in enumerate(texts)]
+          regs = [Regulation(regulation_id=0,
+                             text="Encrypt personal data held in storage",
+                             framework="TEST")]
+          scorers = {"tfidf": build_tfidf_scorer(texts),
+                     "bm25": build_bm25_scorer(texts)}
+          tools = AgentTools(scorers, controls, regs, {0: [0]})
+
+          seen = set()
+          for _ in range(3):
+              agent = ComplianceAgent(tools=tools, conf_thr=0.0, gap_thr=0.0,
+                                      enable_multi=True, enable_reform=True,
+                                      enable_decompose=False,
+                                      enable_crossref=False,
+                                      enable_verify=False)
+              trace = agent.solve(regs[0], primary_backend="bm25")
+              seen.add(tuple(c.control_id for c in trace.decision.ranked))
+          assert len(seen) == 1, f"not reproducible across runs: {seen}"
+          top = next(iter(seen))[0]
+          assert top == 0, f"expected the encryption control first, got {top}"
+          print("ok   end-to-end lexical path: reproducible, ranks correctly")
+          PY
