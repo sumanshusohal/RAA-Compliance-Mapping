@@ -1,0 +1,207 @@
+{
+  "argv": [
+    "sensitivity_sweep.py"
+  ],
+  "constant": "rel_gap_retry_threshold (tau_rel), the relative top-2 margin below which reformulation is invoked",
+  "effect_range_across_taus": {
+    "diagnostic": 0.0,
+    "hipaa": 0.0,
+    "nist": 0.0,
+    "pf": 0.0
+  },
+  "environment": {
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.10.2"
+  },
+  "git": {
+    "commit": "259579fa57fc1125ea17f54692da93a1567059d6",
+    "dirty": false
+  },
+  "protocol": "one scoring pass per requirement over the full control corpus, LSI fitted on control documents only",
+  "results": {
+    "diagnostic": [
+      {
+        "difference": 0.1207,
+        "expanded": 52,
+        "gate_fired": 58,
+        "multi_top1": 0.4655,
+        "n": 58,
+        "reform_top1": 0.5862,
+        "tau_rel": 0.05,
+        "top1_identity_changed": 15
+      },
+      {
+        "difference": 0.1207,
+        "expanded": 52,
+        "gate_fired": 58,
+        "multi_top1": 0.4655,
+        "n": 58,
+        "reform_top1": 0.5862,
+        "tau_rel": 0.1,
+        "top1_identity_changed": 15
+      },
+      {
+        "difference": 0.1207,
+        "expanded": 52,
+        "gate_fired": 58,
+        "multi_top1": 0.4655,
+        "n": 58,
+        "reform_top1": 0.5862,
+        "tau_rel": 0.15,
+        "top1_identity_changed": 15
+      },
+      {
+        "difference": 0.1207,
+        "expanded": 52,
+        "gate_fired": 58,
+        "multi_top1": 0.4655,
+        "n": 58,
+        "reform_top1": 0.5862,
+        "tau_rel": 0.2,
+        "top1_identity_changed": 15
+      }
+    ],
+    "hipaa": [
+      {
+        "difference": 0.0,
+        "expanded": 42,
+        "gate_fired": 60,
+        "multi_top1": 0.3088,
+        "n": 68,
+        "reform_top1": 0.3088,
+        "tau_rel": 0.05,
+        "top1_identity_changed": 10
+      },
+      {
+        "difference": 0.0,
+        "expanded": 48,
+        "gate_fired": 68,
+        "multi_top1": 0.3088,
+        "n": 68,
+        "reform_top1": 0.3088,
+        "tau_rel": 0.1,
+        "top1_identity_changed": 10
+      },
+      {
+        "difference": 0.0,
+        "expanded": 48,
+        "gate_fired": 68,
+        "multi_top1": 0.3088,
+        "n": 68,
+        "reform_top1": 0.3088,
+        "tau_rel": 0.15,
+        "top1_identity_changed": 10
+      },
+      {
+        "difference": 0.0,
+        "expanded": 48,
+        "gate_fired": 68,
+        "multi_top1": 0.3088,
+        "n": 68,
+        "reform_top1": 0.3088,
+        "tau_rel": 0.2,
+        "top1_identity_changed": 10
+      }
+    ],
+    "nist": [
+      {
+        "difference": 0.0283,
+        "expanded": 57,
+        "gate_fired": 100,
+        "multi_top1": 0.3774,
+        "n": 106,
+        "reform_top1": 0.4057,
+        "tau_rel": 0.05,
+        "top1_identity_changed": 14
+      },
+      {
+        "difference": 0.0283,
+        "expanded": 62,
+        "gate_fired": 105,
+        "multi_top1": 0.3774,
+        "n": 106,
+        "reform_top1": 0.4057,
+        "tau_rel": 0.1,
+        "top1_identity_changed": 14
+      },
+      {
+        "difference": 0.0283,
+        "expanded": 63,
+        "gate_fired": 106,
+        "multi_top1": 0.3774,
+        "n": 106,
+        "reform_top1": 0.4057,
+        "tau_rel": 0.15,
+        "top1_identity_changed": 14
+      },
+      {
+        "difference": 0.0283,
+        "expanded": 63,
+        "gate_fired": 106,
+        "multi_top1": 0.3774,
+        "n": 106,
+        "reform_top1": 0.4057,
+        "tau_rel": 0.2,
+        "top1_identity_changed": 14
+      }
+    ],
+    "pf": [
+      {
+        "difference": 0.0319,
+        "expanded": 71,
+        "gate_fired": 86,
+        "multi_top1": 0.3404,
+        "n": 94,
+        "reform_top1": 0.3723,
+        "tau_rel": 0.05,
+        "top1_identity_changed": 17
+      },
+      {
+        "difference": 0.0319,
+        "expanded": 78,
+        "gate_fired": 93,
+        "multi_top1": 0.3404,
+        "n": 94,
+        "reform_top1": 0.3723,
+        "tau_rel": 0.1,
+        "top1_identity_changed": 18
+      },
+      {
+        "difference": 0.0319,
+        "expanded": 79,
+        "gate_fired": 94,
+        "multi_top1": 0.3404,
+        "n": 94,
+        "reform_top1": 0.3723,
+        "tau_rel": 0.15,
+        "top1_identity_changed": 18
+      },
+      {
+        "difference": 0.0319,
+        "expanded": 79,
+        "gate_fired": 94,
+        "multi_top1": 0.3404,
+        "n": 94,
+        "reform_top1": 0.3723,
+        "tau_rel": 0.2,
+        "top1_identity_changed": 18
+      }
+    ]
+  },
+  "spec_hashes": {
+    "raa_agent.py": "354c0ae1bc3290f04e19f0fc4a78f8d8677c57cfbabbafa33656701435303c54",
+    "sensitivity_sweep.py": "fb9d8ffd5a8bb93d1eb8bf7814b8463fe8832503c48f430181963cb5218c78d2"
+  },
+  "status": "exploratory",
+  "status_reason": "unplanned sensitivity sweep; not preregistered",
+  "supersedes": "results_v3/sensitivity/sensitivity.csv, which no committed script produces and whose absolute level could not be reconciled with the ablation table",
+  "taus": [
+    0.05,
+    0.1,
+    0.15,
+    0.2
+  ],
+  "timestamp_utc": "2026-08-05T15:38:03.744368+00:00"
+}
