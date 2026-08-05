@@ -96,6 +96,30 @@ this archive and flattens it; per-corpus folders would collide.
   LICENSE         MIT, covering the software in the code repository
   LICENSE-DATA    CC BY 4.0, covering these corpora
 
+WHERE THESE FILES SIT IN THE CODE REPOSITORY
+
+REPRODUCE.md refers to repository paths, not to the names used here. The
+files are identical; only the names differ, so that they stay unique once
+this archive is extracted. To run anything in REPRODUCE.md, clone the
+repository rather than working from this archive.
+
+  diagnostic_regs.csv             diagnostic_benchmark/diag_regs.csv
+  diagnostic_controls.csv         diagnostic_benchmark/diag_controls.csv
+  diagnostic_mappings.csv         diagnostic_benchmark/diag_mappings.csv
+  csf_1.1_regs.csv                csf_benchmark/csf_regs.csv
+  csf_1.1_mappings.csv            csf_benchmark/csf_mappings.csv
+  csf_1.1_provenance.json         csf_benchmark/provenance.json
+  hipaa_regs.csv                  hipaa_benchmark/regs.csv
+  hipaa_mappings.csv              hipaa_benchmark/mappings.csv
+  hipaa_provenance.json           hipaa_benchmark/provenance.json
+  privacy_framework_regs.csv      pf_benchmark/regs.csv
+  privacy_framework_mappings.csv  pf_benchmark/mappings.csv
+  privacy_framework_provenance.json  pf_benchmark/provenance.json
+  sp800-53r5_controls.csv         csf_benchmark/csf_controls.csv, and
+                                  byte-identical copies at
+                                  hipaa_benchmark/controls.csv and
+                                  pf_benchmark/controls.csv
+
 The three external corpora are externally authored but not independent of one
 another, which the article treats as its main limitation.
 
