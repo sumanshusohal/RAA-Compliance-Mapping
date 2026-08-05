@@ -62,7 +62,7 @@
 \end{highlights}
 
 \begin{keywords}
-Regulatory compliance \sep Requirements traceability \sep Information retrieval \sep Query reformulation \sep Benchmark validity \sep Replication
+Regulatory compliance \sep Requirements traceability \sep Information retrieval \sep Query reformulation \sep Benchmark validity \sep Cross-corpus evaluation
 \end{keywords}
 
 \maketitle
@@ -146,7 +146,7 @@ Our work shares this framing but differs in three respects: we map regulations t
 
 More recently, NLP has been applied to compliance analysis at scale, notably by the requirements engineering group at the University of Luxembourg: automated extraction of semantic legal metadata~\citep{Sleimi2018}, question answering over compliance documents~\citep{Abualhaija2022}, completeness checking of privacy policies against GDPR~\citep{Amaral2022}, and compliance checking of data processing agreements~\citep{Cejas2023}.
 Closest in task to ours, \citet{Etezadi2026} compare a similarity-based classifier with LLM prompting for tracing requirements to GDPR provisions, concluding that generic traceability techniques transfer poorly to legal artifacts---a conclusion our cross-benchmark results reinforce from the retrieval side.
-Unlike these approaches, which rely on learned models, our agent is deliberately built from deterministic components so that every mapping decision can be audited step by step.
+Unlike these approaches, which rely on learned models, our agent is deliberately built from deterministic components, so every mapping decision is accompanied by a decision-provenance record listing the steps, scores and thresholds that produced it.
 
 Compliance mapping is also a form of traceability recovery, and that literature is older still.
 The application of information retrieval to software traceability has a two-decade history.
@@ -263,7 +263,7 @@ The key design question is the precision--coverage trade-off: higher coverage is
 The RAA processes each regulatory requirement $r$ through a fixed multi-stage sequence (Algorithm~\ref{alg:agent}).
 The sequence is parameterized by a set of \emph{tools}---stateless, deterministic functions invoked in a fixed order, gated by scale-invariant confidence tests rather than by open-ended planning.
 Each invocation produces an \texttt{AgentStep} record $(s, a, \text{input}, o)$ consisting of a reasoning statement $s$, an action $a$, its input, and the resulting observation $o$.
-The complete sequence of steps forms an \texttt{AgentTrace}, providing a full audit trail for each mapping decision.
+The complete sequence of steps forms an \texttt{AgentTrace}, the decision-provenance record for that mapping. Whether such a record is useful to an auditor is untested here.
 
 \begin{algorithm}[t]
 \caption{RAA Reasoning Loop}
@@ -400,7 +400,7 @@ It also differs in character: CSF subcategories and SP~800-53 controls are writt
 An earlier version of this work had only this corpus and the diagnostic one, and concluded from the contrast between them that gap severity determines how much reformulation contributes. Sections~\ref{sec:results-multi} and \ref{sec:results-gap} test that conclusion against two further corpora and do not support it.
 One caveat bounds the interpretation of this corpus: NIST characterizes its crosswalks as \emph{concept relationship} mappings between documentary standards---indicating that a control's outcomes support, in whole or in part, a CSF subcategory---rather than as evidence that any organization has implemented a control satisfying a requirement~\citep{NISTIR8477}.
 Accordingly, we treat this benchmark as a test of reference-link recovery between framework artifacts, not of implemented-compliance verification, and we scope our claims to that task.
-The extraction scripts and the generated CSV files are included in the supplementary material for exact reproducibility.
+The generated CSV files are in Online Resource~1 and the extraction scripts are in the code repository, so the corpus can be rebuilt from the NIST sources.
 
 \paragraph{HIPAA Security Rule to SP 800-53.}
 \label{sec:dataset-hipaa}
@@ -1034,7 +1034,7 @@ The authors declare that they have no known competing financial interests or per
 During the preparation of this work, the authors used generative AI and AI-assisted tools to help with manuscript organization and language review, and to assist with code review and reproducibility checking of the evaluation harness. The authors independently verified all analyses, statistics, citations, code, and results, reviewed and edited any AI-assisted output, and take full responsibility for the content of the publication.
 
 \section*{Data availability}
-All four evaluation corpora are provided as supplementary material: the diagnostic benchmark (58 requirements, 110 controls, 86 links), and the CSF~1.1 (106 subcategories, 495 links), HIPAA Security Rule (68 requirements, 274 links) and Privacy Framework (94 subcategories, 456 links) corpora, which share one 300-control corpus drawn from SP~800-53r5. The scripts that regenerate the three NIST corpora from NIST's published OSCAL catalog and crosswalk spreadsheets are included.
+All four evaluation corpora accompany this article as Online Resource~1: the diagnostic benchmark (58 requirements, 110 controls, 86 links), and the CSF~1.1 (106 subcategories, 495 links), HIPAA Security Rule (68 requirements, 274 links) and Privacy Framework (94 subcategories, 456 links) corpora, which share one 300-control corpus drawn from SP~800-53r5. Online Resource~1 also carries the provenance record written by each corpus builder, the reproduction guide and the source manifest. The scripts that regenerate the three NIST corpora from NIST's published OSCAL catalog and crosswalk spreadsheets are in the code repository below.
 The complete evaluation framework, all baselines, the agent implementation, the domain thesaurus and concept patterns, the ablation and open-world harness, and the trace-export utility that generated Table~\ref{tab:trace} are available at \url{https://github.com/sumanshusohal/RAA-Compliance-Mapping}.
 Experiments use recorded inputs, fixed seeds and fixed inference settings, with Hugging Face model revisions pinned in every path that loads one. Exact execution stability across hardware and software environments was not evaluated, so we claim repeatability of our own runs rather than bitwise reproducibility on arbitrary machines.
 The 30-seed logs underlying the holdout tables are included with the release; the one-pass, factorial and preregistered hybrid results are not seed logs, and each is backed by a JSON record carrying its arguments, git commit, library versions and SHA-256 hashes of every analysis module and input it used.
@@ -1083,7 +1083,8 @@ impact assessment & DPIA, PIA, privacy impact, risk evaluation, data protection 
 \end{table}
 
 \section*{Acknowledgements}
-This research received no external funding.
+We thank the reviewers of the earlier version of this work, whose criticism
+prompted the multi-corpus design reported here.
 
 
 %% ================================================================
@@ -1095,61 +1096,61 @@ This research received no external funding.
 \begin{thebibliography}{99}
 
 \bibitem[Abualhaija et~al.(2022)]{Abualhaija2022}
-Abualhaija, S., Arora, C., Briand, L.C., 2022. COREQQA: a COmpliance REQuirements understanding using question answering tool. In: Proc.\ ESEC/FSE (Tool Demonstrations). pp.\ 1682--1686.
+Abualhaija, S., Arora, C., Briand, L.C., 2022. COREQQA: a COmpliance REQuirements understanding using question answering tool. In: Proc.\ ESEC/FSE (Tool Demonstrations). pp.\ 1682--1686. \url{https://doi.org/10.1145/3540250.3558926}
 
 \bibitem[Aghaei et~al.(2022)]{Aghaei2022}
-Aghaei, E., Niu, X., Shadid, W., Al-Shaer, E., 2022. SecureBERT: A domain-specific language model for cybersecurity. In: Proc.\ SecureComm. arXiv:2204.02685.
+Aghaei, E., Niu, X., Shadid, W., Al-Shaer, E., 2022. SecureBERT: A domain-specific language model for cybersecurity. In: Proc.\ SecureComm. arXiv:2204.02685. \url{https://doi.org/10.1007/978-3-031-25538-0_3}
 
 \bibitem[Akhigbe et~al.(2019)]{Akhigbe2019}
-Akhigbe, O., Amyot, D., Richards, G., 2019. A systematic literature mapping of goal and non-goal modelling methods for legal and regulatory compliance. Requir.\ Eng.\ 24~(4), 459--481.
+Akhigbe, O., Amyot, D., Richards, G., 2019. A systematic literature mapping of goal and non-goal modelling methods for legal and regulatory compliance. Requir.\ Eng.\ 24~(4), 459--481. \url{https://doi.org/10.1007/s00766-018-0294-1}
 
 \bibitem[Ali et~al.(2013)]{Ali2013}
-Ali, N., Gueheneuc, Y.-G., Antoniol, G., 2013. Trustrace: Mining software repositories to improve the accuracy of requirement traceability links. IEEE Trans.\ Softw.\ Eng.\ 39~(5), 725--741.
+Ali, N., Gueheneuc, Y.-G., Antoniol, G., 2013. Trustrace: Mining software repositories to improve the accuracy of requirement traceability links. IEEE Trans.\ Softw.\ Eng.\ 39~(5), 725--741. \url{https://doi.org/10.1109/tse.2012.71}
 
 \bibitem[Amaral et~al.(2022)]{Amaral2022}
-Amaral, O., Abualhaija, S., Torre, D., Sabetzadeh, M., Briand, L.C., 2022. AI-enabled automation for completeness checking of privacy policies. IEEE Trans.\ Softw.\ Eng.\ 48~(11), 4647--4674.
+Amaral, O., Abualhaija, S., Torre, D., Sabetzadeh, M., Briand, L.C., 2022. AI-enabled automation for completeness checking of privacy policies. IEEE Trans.\ Softw.\ Eng.\ 48~(11), 4647--4674. \url{https://doi.org/10.1109/tse.2021.3124332}
 
 \bibitem[Amaral Cejas et~al.(2023)]{Cejas2023}
 Amaral Cejas, O., Azeem, M.I., Abualhaija, S., Briand, L.C., 2023. NLP-based automated compliance checking of data processing agreements against GDPR. IEEE Trans.\ Softw.\ Eng.\ 49~(9), 4282--4303.
 
 \bibitem[Antoniol et~al.(2002)]{Antoniol2002}
-Antoniol, G., Canfora, G., Casazza, G., De~Lucia, A., Merlo, E., 2002. Recovering traceability links between code and documentation. IEEE Trans.\ Softw.\ Eng.\ 28~(10), 970--983.
+Antoniol, G., Canfora, G., Casazza, G., De~Lucia, A., Merlo, E., 2002. Recovering traceability links between code and documentation. IEEE Trans.\ Softw.\ Eng.\ 28~(10), 970--983. \url{https://doi.org/10.1109/tse.2002.1041053}
 
 \bibitem[Armstrong et~al.(2009)]{Armstrong2009}
 Armstrong, T.G., Moffat, A., Webber, W., Zobel, J., 2009. Improvements that don't add up: ad-hoc retrieval results since 1998. In: Proc.\ 18th ACM Conf.\ on Information and Knowledge Management (CIKM). pp.\ 601--610.
 
 \bibitem[Aronson and Lang(2010)]{Aronson2010}
-Aronson, A.R., Lang, F.-M., 2010. An overview of MetaMap: historical perspective and recent advances. J.\ Am.\ Med.\ Inform.\ Assoc.\ 17~(3), 229--236.
+Aronson, A.R., Lang, F.-M., 2010. An overview of MetaMap: historical perspective and recent advances. J.\ Am.\ Med.\ Inform.\ Assoc.\ 17~(3), 229--236. \url{https://doi.org/10.1136/jamia.2009.002733}
 
 \bibitem[Borg et~al.(2014)]{Borg2014}
-Borg, M., Runeson, P., Ard\"o, A., 2014. Recovering from a decade: a systematic mapping of information retrieval approaches to software traceability. Empir.\ Softw.\ Eng.\ 19~(6), 1565--1616.
+Borg, M., Runeson, P., Ard\"o, A., 2014. Recovering from a decade: a systematic mapping of information retrieval approaches to software traceability. Empir.\ Softw.\ Eng.\ 19~(6), 1565--1616. \url{https://doi.org/10.1007/s10664-013-9255-y}
 
 \bibitem[Bowman and Dahl(2021)]{BowmanDahl2021}
-Bowman, S.R., Dahl, G., 2021. What will it take to fix benchmarking in natural language understanding? In: Proc.\ NAACL-HLT. pp.\ 4843--4855.
+Bowman, S.R., Dahl, G., 2021. What will it take to fix benchmarking in natural language understanding? In: Proc.\ NAACL-HLT. pp.\ 4843--4855. \url{https://doi.org/10.18653/v1/2021.naacl-main.385}
 
 \bibitem[Bran et~al.(2024)]{Bran2024}
-Bran, A.M., Cox, S., Schilter, O., Baldassari, C., White, A.D., Schwaller, P., 2024. Augmenting large language models with chemistry tools. Nat.\ Mach.\ Intell.\ 6, 525--535.
+Bran, A.M., Cox, S., Schilter, O., Baldassari, C., White, A.D., Schwaller, P., 2024. Augmenting large language models with chemistry tools. Nat.\ Mach.\ Intell.\ 6, 525--535. \url{https://doi.org/10.1038/s42256-024-00832-8}
 
 \bibitem[Breaux and Ant\'on(2008)]{Breaux2008}
-Breaux, T.D., Ant\'on, A.I., 2008. Analyzing regulatory rules for privacy and security requirements. IEEE Trans.\ Softw.\ Eng.\ 34~(1), 5--20.
+Breaux, T.D., Ant\'on, A.I., 2008. Analyzing regulatory rules for privacy and security requirements. IEEE Trans.\ Softw.\ Eng.\ 34~(1), 5--20. \url{https://doi.org/10.1109/tse.2007.70746}
 
 \bibitem[Carpineto and Romano(2012)]{Carpineto2012}
-Carpineto, C., Romano, G., 2012. A survey of automatic query expansion in information retrieval. ACM Comput.\ Surv.\ 44~(1), 1:1--1:50.
+Carpineto, C., Romano, G., 2012. A survey of automatic query expansion in information retrieval. ACM Comput.\ Surv.\ 44~(1), 1:1--1:50. \url{https://doi.org/10.1145/2071389.2071390}
 
 \bibitem[Chalkidis et~al.(2020)]{Chalkidis2020}
-Chalkidis, I., Fergadiotis, M., Malakasiotis, P., Aletras, N., Androutsopoulos, I., 2020. LEGAL-BERT: The Muppets straight out of Law School. In: Findings of EMNLP. pp.\ 2898--2904.
+Chalkidis, I., Fergadiotis, M., Malakasiotis, P., Aletras, N., Androutsopoulos, I., 2020. LEGAL-BERT: The Muppets straight out of Law School. In: Findings of EMNLP. pp.\ 2898--2904. \url{https://doi.org/10.18653/v1/2020.findings-emnlp.261}
 
 \bibitem[Cleland-Huang et~al.(2014)]{Cleland-Huang2014}
-Cleland-Huang, J., Gotel, O.C.Z., Huffman~Hayes, J., Mader, P., Zisman, A., 2014. Software traceability: trends and future directions. In: Proc.\ Future of Software Engineering (FOSE). pp.\ 55--69.
+Cleland-Huang, J., Gotel, O.C.Z., Huffman~Hayes, J., Mader, P., Zisman, A., 2014. Software traceability: trends and future directions. In: Proc.\ Future of Software Engineering (FOSE). pp.\ 55--69. \url{https://doi.org/10.1145/2593882.2593891}
 
 \bibitem[Cleland-Huang et~al.(2010)]{ClelandHuang2010}
-Cleland-Huang, J., Czauderna, A., Gibiec, M., Emenecker, J., 2010. A machine learning approach for tracing regulatory codes to product specific requirements. In: Proc.\ 32nd ACM/IEEE ICSE. pp.\ 155--164.
+Cleland-Huang, J., Czauderna, A., Gibiec, M., Emenecker, J., 2010. A machine learning approach for tracing regulatory codes to product specific requirements. In: Proc.\ 32nd ACM/IEEE ICSE. pp.\ 155--164. \url{https://doi.org/10.1145/1806799.1806825}
 
 \bibitem[Cormack et~al.(2009)]{Cormack2009}
-Cormack, G.V., Clarke, C.L.A., Buettcher, S., 2009. Reciprocal rank fusion outperforms condorcet and individual rank learning methods. In: Proc.\ 32nd ACM SIGIR. pp.\ 758--759.
+Cormack, G.V., Clarke, C.L.A., Buettcher, S., 2009. Reciprocal rank fusion outperforms condorcet and individual rank learning methods. In: Proc.\ 32nd ACM SIGIR. pp.\ 758--759. \url{https://doi.org/10.1145/1571941.1572114}
 
 \bibitem[Cuddeback et~al.(2010)]{Cuddeback2010}
-Cuddeback, D., Dekhtyar, A., Huffman~Hayes, J., 2010. Automated requirements traceability: the study of human analysts. In: Proc.\ 18th IEEE RE. pp.\ 231--240.
+Cuddeback, D., Dekhtyar, A., Huffman~Hayes, J., 2010. Automated requirements traceability: the study of human analysts. In: Proc.\ 18th IEEE RE. pp.\ 231--240. \url{https://doi.org/10.1109/re.2010.35}
 
 \bibitem[Devlin et~al.(2019)]{Devlin2019}
 Devlin, J., Chang, M.-W., Lee, K., Toutanova, K., 2019. BERT: Pre-training of deep bidirectional transformers for language understanding. In: Proc.\ NAACL-HLT. pp.\ 4171--4186.
@@ -1158,13 +1159,13 @@ Devlin, J., Chang, M.-W., Lee, K., Toutanova, K., 2019. BERT: Pre-training of de
 El-Yaniv, R., Wiener, Y., 2010. On the foundations of noise-free selective classification. J.\ Mach.\ Learn.\ Res.\ 11, 1605--1641.
 
 \bibitem[Etezadi et~al.(2026)]{Etezadi2026}
-Etezadi, R., Abualhaija, S., Arora, C., Briand, L.C., 2026. Classifier or prompt: a case study on legal requirements traceability. Empir.\ Softw.\ Eng.\ 31, 85.
+Etezadi, R., Abualhaija, S., Arora, C., Briand, L.C., 2026. Classifier or prompt: a case study on legal requirements traceability. Empir.\ Softw.\ Eng.\ 31, 85. \url{https://doi.org/10.1007/s10664-026-10827-1}
 
 \bibitem[Fox and Shaw(1994)]{Fox1994}
-Fox, E.A., Shaw, J.A., 1994. Combination of multiple searches. In: Proc.\ 2nd TREC. pp.\ 243--252.
+Fox, E.A., Shaw, J.A., 1994. Combination of multiple searches. In: Proc.\ 2nd TREC. pp.\ 243--252. \url{https://doi.org/10.6028/nist.sp.500-215.vt}
 
 \bibitem[Gama et~al.(2014)]{Gama2014}
-Gama, J., \v{Z}liobait\.{e}, I., Bifet, A., Pechenizkiy, M., Bouchachia, A., 2014. A survey on concept drift adaptation. ACM Comput.\ Surv.\ 46~(4), 44:1--44:37.
+Gama, J., \v{Z}liobait\.{e}, I., Bifet, A., Pechenizkiy, M., Bouchachia, A., 2014. A survey on concept drift adaptation. ACM Comput.\ Surv.\ 46~(4), 44:1--44:37. \url{https://doi.org/10.1145/2523813}
 
 \bibitem[Geifman and El-Yaniv(2017)]{Geifman2017}
 Geifman, Y., El-Yaniv, R., 2017. Selective classification for deep neural networks. In: Proc.\ NeurIPS. pp.\ 4878--4887.
@@ -1173,19 +1174,19 @@ Geifman, Y., El-Yaniv, R., 2017. Selective classification for deep neural networ
 Geifman, Y., El-Yaniv, R., 2019. SelectiveNet: A deep neural network with an integrated reject option. In: Proc.\ ICML. pp.\ 2151--2159.
 
 \bibitem[Ghanavati et~al.(2014)]{Ghanavati2014}
-Ghanavati, S., Amyot, D., Rifaut, A., 2014. Legal goal-oriented requirement language (Legal GRL) for modeling regulations. In: Proc.\ 6th Int.\ Workshop on Modeling in Software Engineering (MiSE). pp.\ 1--6.
+Ghanavati, S., Amyot, D., Rifaut, A., 2014. Legal goal-oriented requirement language (Legal GRL) for modeling regulations. In: Proc.\ 6th Int.\ Workshop on Modeling in Software Engineering (MiSE). pp.\ 1--6. \url{https://doi.org/10.1145/2593770.2593780}
 
 \bibitem[Guo et~al.(2017)]{Guo2017}
-Guo, J., Cheng, J., Cleland-Huang, J., 2017. Semantically enhanced software traceability using deep learning techniques. In: Proc.\ 39th ICSE. pp.\ 3--14.
+Guo, J., Cheng, J., Cleland-Huang, J., 2017. Semantically enhanced software traceability using deep learning techniques. In: Proc.\ 39th ICSE. pp.\ 3--14. \url{https://doi.org/10.1109/icse.2017.9}
 
 \bibitem[Hashmi et~al.(2018)]{Hashmi2018}
-Hashmi, M., Governatori, G., Lam, H.-P., Wynn, M.T., 2018. Are we done with business process compliance: state of the art and challenges ahead. Knowl.\ Inf.\ Syst.\ 57~(1), 79--133.
+Hashmi, M., Governatori, G., Lam, H.-P., Wynn, M.T., 2018. Are we done with business process compliance: state of the art and challenges ahead. Knowl.\ Inf.\ Syst.\ 57~(1), 79--133. \url{https://doi.org/10.1007/s10115-017-1142-1}
 
 \bibitem[Ingolfo et~al.(2011)]{Ingolfo2011}
-Ingolfo, S., Siena, A., Mylopoulos, J., 2011. Establishing regulatory compliance for software requirements. In: Proc.\ 30th Int.\ Conf.\ on Conceptual Modeling (ER). pp.\ 47--61.
+Ingolfo, S., Siena, A., Mylopoulos, J., 2011. Establishing regulatory compliance for software requirements. In: Proc.\ 30th Int.\ Conf.\ on Conceptual Modeling (ER). pp.\ 47--61. \url{https://doi.org/10.1007/978-3-642-24606-7_5}
 
 \bibitem[Kamath et~al.(2020)]{Kamath2020}
-Kamath, A., Jia, R., Liang, P., 2020. Selective question answering under domain shift. In: Proc.\ ACL. pp.\ 5684--5696.
+Kamath, A., Jia, R., Liang, P., 2020. Selective question answering under domain shift. In: Proc.\ ACL. pp.\ 5684--5696. \url{https://doi.org/10.18653/v1/2020.acl-main.503}
 
 \bibitem[Lample et~al.(2018)]{Lample2018}
 Lample, G., Conneau, A., Denoyer, L., Ranzato, M., 2018. Unsupervised machine translation using monolingual corpora only. In: Proc.\ ICLR. arXiv:1711.00043.
@@ -1194,13 +1195,13 @@ Lample, G., Conneau, A., Denoyer, L., Ranzato, M., 2018. Unsupervised machine tr
 Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., K\"uttler, H., Lewis, M., Yih, W., Rockt\"aschel, T., Riedel, S., Kiela, D., 2020. Retrieval-augmented generation for knowledge-intensive NLP tasks. In: Proc.\ NeurIPS. pp.\ 9459--9474.
 
 \bibitem[Marcus and Maletic(2003)]{MarcusMaletic2003}
-Marcus, A., Maletic, J.I., 2003. Recovering documentation-to-source-code traceability links using latent semantic indexing. In: Proc.\ 25th ICSE. pp.\ 349--357.
+Marcus, A., Maletic, J.I., 2003. Recovering documentation-to-source-code traceability links using latent semantic indexing. In: Proc.\ 25th ICSE. pp.\ 349--357. \url{https://doi.org/10.1109/icse.2003.1201194}
 
 \bibitem[Massey et~al.(2010)]{Massey2010}
-Massey, A.K., Otto, P.N., Hayward, L.J., Ant\'on, A.I., 2010. Evaluating existing security and privacy requirements for legal compliance. Requir.\ Eng.\ 15~(1), 119--137.
+Massey, A.K., Otto, P.N., Hayward, L.J., Ant\'on, A.I., 2010. Evaluating existing security and privacy requirements for legal compliance. Requir.\ Eng.\ 15~(1), 119--137. \url{https://doi.org/10.1007/s00766-009-0089-5}
 
 \bibitem[McMillan et~al.(2009)]{McMillan2009}
-McMillan, C., Poshyvanyk, D., Revelle, M., 2009. Combining textual and structural analysis of software artifacts for traceability link recovery. In: Proc.\ TEFSE Workshop. pp.\ 41--48.
+McMillan, C., Poshyvanyk, D., Revelle, M., 2009. Combining textual and structural analysis of software artifacts for traceability link recovery. In: Proc.\ TEFSE Workshop. pp.\ 41--48. \url{https://doi.org/10.1109/tefse.2009.5069582}
 
 \bibitem[NIST(2024)]{NISTIR8477}
 National Institute of Standards and Technology, 2024. Mapping relationships between documentary standards, regulations, frameworks, and guidelines: developing cybersecurity and privacy concept mappings. NIST Internal Report (IR) 8477.
@@ -1209,19 +1210,19 @@ National Institute of Standards and Technology, 2024. Mapping relationships betw
 Nogueira, R., Cho, K., 2019. Passage re-ranking with BERT. arXiv:1901.04085.
 
 \bibitem[Oliveto et~al.(2010)]{Oliveto2010}
-Oliveto, R., Gethers, M., Poshyvanyk, D., De~Lucia, A., 2010. On the equivalence of information retrieval methods for automated traceability link recovery. In: Proc.\ 18th IEEE ICPC. pp.\ 68--71.
+Oliveto, R., Gethers, M., Poshyvanyk, D., De~Lucia, A., 2010. On the equivalence of information retrieval methods for automated traceability link recovery. In: Proc.\ 18th IEEE ICPC. pp.\ 68--71. \url{https://doi.org/10.1109/icpc.2010.20}
 
 \bibitem[Otto and Ant\'on(2007)]{OttoAnton2007}
-Otto, P.N., Ant\'on, A.I., 2007. Addressing legal requirements in requirements engineering. In: Proc.\ 15th IEEE Int.\ Requirements Engineering Conf.\ (RE). pp.\ 5--14.
+Otto, P.N., Ant\'on, A.I., 2007. Addressing legal requirements in requirements engineering. In: Proc.\ 15th IEEE Int.\ Requirements Engineering Conf.\ (RE). pp.\ 5--14. \url{https://doi.org/10.1109/re.2007.65}
 
 \bibitem[Recht et~al.(2019)]{Recht2019}
 Recht, B., Roelofs, R., Schmidt, L., Shankar, V., 2019. Do ImageNet classifiers generalize to ImageNet? In: Proc.\ 36th Int.\ Conf.\ on Machine Learning (ICML). PMLR~97, pp.\ 5389--5400.
 
 \bibitem[Reimers and Gurevych(2019)]{Reimers2019}
-Reimers, N., Gurevych, I., 2019. Sentence-BERT: Sentence embeddings using Siamese BERT-networks. In: Proc.\ EMNLP. pp.\ 3982--3992.
+Reimers, N., Gurevych, I., 2019. Sentence-BERT: Sentence embeddings using Siamese BERT-networks. In: Proc.\ EMNLP. pp.\ 3982--3992. \url{https://doi.org/10.18653/v1/d19-1410}
 
 \bibitem[Robertson and Zaragoza(2009)]{Robertson2009}
-Robertson, S., Zaragoza, H., 2009. The probabilistic relevance framework: BM25 and beyond. Found.\ Trends Inf.\ Retr.\ 3~(4), 333--389.
+Robertson, S., Zaragoza, H., 2009. The probabilistic relevance framework: BM25 and beyond. Found.\ Trends Inf.\ Retr.\ 3~(4), 333--389. \url{https://doi.org/10.1561/1500000019}
 
 \bibitem[Rocchio(1971)]{Rocchio1971}
 Rocchio, J.J., 1971. Relevance feedback in information retrieval. In: Salton, G.\ (Ed.), The SMART Retrieval System: Experiments in Automatic Document Processing. Prentice Hall, pp.\ 313--323.
@@ -1230,31 +1231,31 @@ Rocchio, J.J., 1971. Relevance feedback in information retrieval. In: Salton, G.
 Schafer, B., Maxwell, T., 2008. Concept and context in legal information retrieval. In: Proc.\ JURIX (Legal Knowledge and Information Systems). IOS Press, pp.\ 63--72.
 
 \bibitem[Shao et~al.(2024)]{Shao2024}
-Shao, Z., Gong, Y., Shen, Y., Huang, M., Duan, N., Chen, W., 2024. Assisting in writing Wikipedia-like articles from scratch with large language models. In: Proc.\ NAACL. pp.\ 6252--6278.
+Shao, Z., Gong, Y., Shen, Y., Huang, M., Duan, N., Chen, W., 2024. Assisting in writing Wikipedia-like articles from scratch with large language models. In: Proc.\ NAACL. pp.\ 6252--6278. \url{https://doi.org/10.18653/v1/2024.naacl-long.347}
 
 \bibitem[Sim et~al.(2003)]{Sim2003}
-Sim, S.E., Easterbrook, S., Holt, R.C., 2003. Using benchmarking to advance research: a challenge to software engineering. In: Proc.\ 25th Int.\ Conf.\ on Software Engineering (ICSE). pp.\ 74--83.
+Sim, S.E., Easterbrook, S., Holt, R.C., 2003. Using benchmarking to advance research: a challenge to software engineering. In: Proc.\ 25th Int.\ Conf.\ on Software Engineering (ICSE). pp.\ 74--83. \url{https://doi.org/10.1109/icse.2003.1201189}
 
 \bibitem[Sleimi et~al.(2018)]{Sleimi2018}
-Sleimi, A., Sannier, N., Sabetzadeh, M., Briand, L., Dann, J., 2018. Automated extraction of semantic legal metadata using natural language processing. In: Proc.\ 26th IEEE Int.\ Requirements Engineering Conf.\ (RE). pp.\ 124--135.
+Sleimi, A., Sannier, N., Sabetzadeh, M., Briand, L., Dann, J., 2018. Automated extraction of semantic legal metadata using natural language processing. In: Proc.\ 26th IEEE Int.\ Requirements Engineering Conf.\ (RE). pp.\ 124--135. \url{https://doi.org/10.1109/re.2018.00022}
 
 \bibitem[Sun et~al.(2023)]{Sun2023}
-Sun, W., Yan, L., Ma, X., Wang, S., Ren, P., Chen, Z., Yin, D., Ren, Z., 2023. Is ChatGPT good at search? Investigating large language models as re-ranking agents. In: Proc.\ EMNLP. pp.\ 14918--14937.
+Sun, W., Yan, L., Ma, X., Wang, S., Ren, P., Chen, Z., Yin, D., Ren, Z., 2023. Is ChatGPT good at search? Investigating large language models as re-ranking agents. In: Proc.\ EMNLP. pp.\ 14918--14937. \url{https://doi.org/10.18653/v1/2023.emnlp-main.923}
 
 \bibitem[Thakur et~al.(2021)]{Thakur2021}
 Thakur, N., Reimers, N., R\"uckl\'e, A., Srivastava, A., Gurevych, I., 2021. BEIR: A heterogeneous benchmark for zero-shot evaluation of information retrieval models. In: Proc.\ NeurIPS Datasets and Benchmarks Track. arXiv:2104.08663.
 
 \bibitem[Voorhees(1994)]{Voorhees1994}
-Voorhees, E.M., 1994. Query expansion using lexical-semantic relations. In: Proc.\ 17th ACM SIGIR. pp.\ 61--69.
+Voorhees, E.M., 1994. Query expansion using lexical-semantic relations. In: Proc.\ 17th ACM SIGIR. pp.\ 61--69. \url{https://doi.org/10.1007/978-1-4471-2099-5_7}
 
 \bibitem[Voorhees(2000)]{Voorhees2000}
-Voorhees, E.M., 2000. Variations in relevance judgments and the measurement of retrieval effectiveness. Inf.\ Process.\ Manage.\ 36~(5), 697--716.
+Voorhees, E.M., 2000. Variations in relevance judgments and the measurement of retrieval effectiveness. Inf.\ Process.\ Manage.\ 36~(5), 697--716. \url{https://doi.org/10.1016/s0306-4573(00)00010-8}
 
 \bibitem[Yang et~al.(2019)]{Yang2019}
 Yang, W., Lu, K., Yang, P., Lin, J., 2019. Critically examining the ``neural hype'': weak baselines and the additivity of effectiveness gains from neural ranking models. In: Proc.\ 42nd ACM SIGIR. pp.\ 1129--1132.
 
 \bibitem[Yang et~al.(2024)]{Yang2024}
-Yang, J., Jimenez, C.E., Wettig, A., Liber, K., Narasimhan, K., Press, O., 2024. SWE-agent: Agent-computer interfaces enable automated software engineering. arXiv:2405.15793.
+Yang, J., Jimenez, C.E., Wettig, A., Liber, K., Narasimhan, K., Press, O., 2024. SWE-agent: Agent-computer interfaces enable automated software engineering. arXiv:2405.15793. \url{https://doi.org/10.52202/079017-1601}
 
 \bibitem[Yao et~al.(2023)]{Yao2023}
 Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., Cao, Y., 2023. ReAct: Synergizing reasoning and acting in language models. In: Proc.\ ICLR. arXiv:2210.03629.

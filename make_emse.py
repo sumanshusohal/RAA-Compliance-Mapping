@@ -89,7 +89,7 @@ PREAMBLE = r"""%% Empirical Software Engineering (Springer) -- SVJour3.
 Regulatory Traceability}
 \titlerunning{Cross-corpus evaluation of query reformulation}
 
-\author{Sumanshu Sohal \and Darshankumar Prajapati}
+\author{Sumanshu~Sohal \and Darshankumar~Prajapati}
 \authorrunning{S. Sohal and D. Prajapati}
 
 \institute{S. Sohal \at
@@ -133,13 +133,15 @@ animals.
 Not applicable.
 
 \subsection*{Data availability}
-All four evaluation corpora are provided as supplementary material: the
+All four evaluation corpora accompany this article as Online Resource~1: the
 diagnostic benchmark (58 requirements, 110 controls, 86 links), and the
 CSF~1.1 (106 subcategories, 495 links), HIPAA Security Rule (68 requirements,
 274 links) and Privacy Framework (94 subcategories, 456 links) corpora, which
-share one 300-control corpus drawn from SP~800-53r5. The scripts that
-regenerate the three NIST corpora from NIST's published OSCAL catalog and
-crosswalk spreadsheets are included. The corpora are licensed CC BY 4.0; the
+share one 300-control corpus drawn from SP~800-53r5. Online Resource~1 also
+carries the provenance record written by each corpus builder, the
+reproduction guide and the source manifest. The scripts that regenerate the
+three NIST corpora from NIST's published OSCAL catalog and crosswalk
+spreadsheets are in the code repository below. The corpora are licensed CC BY 4.0; the
 underlying NIST artifacts are United States Government works in the public
 domain.
 

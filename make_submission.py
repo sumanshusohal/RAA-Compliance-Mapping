@@ -53,6 +53,51 @@ def git_commit():
         return "unknown"
 
 
+def esm_readme():
+    return """Online Resource 1
+
+Article : Cross-Corpus Evaluation of Domain-Aware Query Reformulation for
+          Regulatory Traceability
+Journal : Empirical Software Engineering
+Authors : Sumanshu Sohal (corresponding), University of the Cumberlands,
+          Williamsburg, KY, USA, and Independent Researcher, Washington, DC,
+          USA. sumanshu.95s@outlook.com
+          Darshankumar Prajapati, Independent Researcher, Old Bridge, NJ, USA.
+
+CONTENTS
+
+  corpora/diagnostic/            58 requirements, 110 controls, 86 links.
+                                 Author-constructed to isolate vocabulary
+                                 mismatch.
+  corpora/csf_1.1/               106 subcategories, 300 controls, 495 links.
+  corpora/hipaa/                 68 requirements, 300 controls, 274 links.
+  corpora/privacy_framework/     94 subcategories, 300 controls, 456 links.
+
+  Each corpus directory holds regs.csv, controls.csv and mappings.csv. The
+  three NIST corpora also carry provenance.json, written by the builder that
+  generated them, recording every source artifact with its SHA-256.
+
+  REPRODUCE.md    how to regenerate every number in the article
+  SOURCES.md      provenance and SHA-256 of every NIST source artifact
+  LICENSE         MIT, covering the software in the code repository
+  LICENSE-DATA    CC BY 4.0, covering these corpora
+
+The three NIST corpora share one 300-control corpus drawn from SP 800-53r5,
+so their controls.csv files are byte-identical. They are externally authored
+but not independent of one another, which the article treats as its main
+limitation.
+
+The underlying NIST artifacts are United States Government works in the
+public domain. Our contribution is the extraction and encoding, not the text
+or the mappings.
+
+Code, including the evaluation harness and the analysis scripts, is at
+https://github.com/sumanshusohal/RAA-Compliance-Mapping
+The preregistration of the gated hybrid analysis is at
+https://doi.org/10.17605/OSF.IO/NZXRV
+"""
+
+
 def build(out):
     if os.path.isdir(out):
         shutil.rmtree(out)
@@ -60,11 +105,16 @@ def build(out):
     os.makedirs(overleaf)
     os.makedirs(os.path.join(out, "supplementary", "corpora"))
 
-    # Everything the PDF build needs lives in overleaf/. The manuscript has
-    # no figures and its bibliography is an inline thebibliography, so the
-    # only thing missing is the class file, which Overleaf supplies.
-    shutil.copy(os.path.join(HERE, "manuscript_emse.tex"),
-                os.path.join(overleaf, "main.tex"))
+    # overleaf/ belongs to make_emse.py: it writes main.tex and copies the
+    # vendored class files. Calling it here rather than copying its output
+    # keeps one source of truth. An earlier version of this script wrote its
+    # own main.tex and README into overleaf/, which silently reverted the
+    # class files and restored a stale README describing the wrong class.
+    rc = subprocess.run([sys.executable, os.path.join(HERE, "make_emse.py")],
+                        cwd=HERE, capture_output=True, text=True)
+    if rc.returncode != 0:
+        print(rc.stdout)
+        raise SystemExit("make_emse.py failed; package not built")
     with open(os.path.join(overleaf, "README.md"), "w", newline="\n",
               encoding="utf-8") as f:
         f.write(overleaf_readme())
@@ -88,6 +138,21 @@ def build(out):
         if os.path.exists(src):
             shutil.copy(src, os.path.join(out, "supplementary", name))
 
+    supp = os.path.join(out, "supplementary")
+    with open(os.path.join(supp, "README.txt"), "w", newline="\n",
+              encoding="utf-8") as f:
+        f.write(esm_readme())
+
+    # Springer wants the supplement as a single archive. Built here so it
+    # cannot drift from the corpora it is supposed to contain.
+    import zipfile
+    esm = os.path.join(out, "ESM_1.zip")
+    with zipfile.ZipFile(esm, "w", zipfile.ZIP_DEFLATED) as z:
+        for dp, _, fs in os.walk(supp):
+            for f in sorted(fs):
+                full = os.path.join(dp, f)
+                z.write(full, os.path.relpath(full, supp))
+
     with open(os.path.join(out, "README.md"), "w", newline="\n",
               encoding="utf-8") as f:
         f.write(package_readme())
@@ -97,43 +162,53 @@ def build(out):
 def overleaf_readme():
     return """# Overleaf build folder
 
-Everything needed to produce the submission PDF, except the Springer class
-file, which Overleaf provides.
+Upload this whole folder to Overleaf and compile `main.tex` with **pdfLaTeX**.
+Nothing else is needed; the class files are here.
 
-| file | notes |
+| file | why it is here |
 |---|---|
-| `main.tex` | the manuscript, Springer `sn-jnl` with the `sn-basic` option |
+| `main.tex` | the manuscript, `svjour3` with the `smallextended` and `natbib` options |
+| `svjour3.cls` | Springer's journal class, required |
+| `svglov3.clo` | the class's global option file, loaded by `svjour3.cls` |
+| `spbasic.bst` | Springer author-year BibTeX style. **Not used**, see below |
 
 No figure files: the paper has no figures, only `tabular` environments.
-No `.bib` or `.bst`: the bibliography is an inline `thebibliography`
-environment, so BibTeX never runs.
 
-## How to build
+`spbasic.bst` is included only for completeness. The bibliography is an inline
+`thebibliography` environment with all 56 entries written out, so BibTeX never
+runs.
 
-1. On Overleaf, start a new project from the **Springer Nature LaTeX
-   template** (the December 2024 authoring template). That project already
-   contains `sn-jnl.cls` and its supporting files.
-2. Replace the template's `main.tex` with the `main.tex` here.
-3. Compile with **pdfLaTeX**. Springer asks authors to fix all compilation
-   errors locally before uploading, so do not submit until this is clean.
+When uploading to Editorial Manager, upload these files **flat**. EMSE asks
+that the LaTeX source bundle not use subfolders.
+
+## What the header follows
+
+Checked against `usrguid3.pdf`, the SVJour3 user's guide v3.2: the format
+option first in `\\documentclass` with `natbib` added for author-year
+citation; `\\author` entries separated by `\\and`; `\\institute` repeating each
+author name with `\\at` before their address; `\\titlerunning` and
+`\\authorrunning` before `\\maketitle`; `\\keywords` at the end of but inside
+the `abstract`; `\\subclass`, `\\PACS` and `\\CRclass` omitted;
+acknowledgements as an environment, closing before the bibliography.
+
+`\\date{Received: date / Accepted: date}` is left as the template supplies it.
+The template notes that the editor enters the real dates.
 
 ## What to look at in the PDF
 
-This source has never been compiled. Check, in rough order of risk:
-
-- the eleven tables, especially the seven-column unified comparison and the
+- the twelve tables, especially the seven-column unified comparison and the
   factorial, which has a `\\cmidrule`-spanned header;
-- the `algorithm` float, and whether it lands sensibly;
+- the `algorithm` float;
 - page breaks around the wider tables;
-- reference wrapping in the 56-entry bibliography;
-- the author block and both affiliations.
+- that `\\citep` renders as author-year rather than question marks, which
+  would mean `natbib` is not active;
+- the author block and all three affiliation footnotes on page 1.
 
-## Before you build
+## Do not edit this copy
 
-`main.tex` still contains `CITY` and `COUNTRY` placeholders on the two
-independent-researcher affiliations. Fill them in the repository source, not
-here: edit `make_emse.py`, then run `python make_emse.py` followed by
-`python make_submission.py`. Editing this copy is lost on the next rebuild.
+`main.tex` is generated from `manuscript3_revised.tex` by `make_emse.py` in
+the code repository. Edit the source and regenerate; edits made here are lost
+on the next build.
 """
 
 
@@ -151,35 +226,27 @@ Submission goes through Editorial Manager:
 
 | path | notes |
 |---|---|
-| `overleaf/main.tex` | the manuscript, Springer `sn-jnl`; see `overleaf/README.md` |
+| `overleaf/` | `main.tex` plus the SVJour3 class files; upload flat and compile with pdfLaTeX |
+| `ESM_1.zip` | Online Resource 1, the supplement the article cites |
 | `cover_letter.tex` | addressed to the EMSE editors |
-| `supplementary/corpora/` | the four evaluation corpora as CSV, with each builder's `provenance.json` |
-| `supplementary/REPRODUCE.md` | how to regenerate every number in the paper |
-| `supplementary/SOURCES.md` | provenance and SHA-256 of every NIST source artifact |
-| `supplementary/LICENSE` | MIT, for the software |
-| `supplementary/LICENSE-DATA` | CC BY 4.0, for the corpora |
+| `supplementary/` | the unzipped contents of ESM_1.zip, for inspection |
 
 ## Before you upload
 
-Run `python make_submission.py --check` and clear what it reports. The rest
-it cannot check for you:
+Run `python make_submission.py --check` and clear what it reports.
 
-1. **Compile and read the PDF.** See `overleaf/README.md`. Springer states
-   that files which do not compile will most likely fail to submit.
-2. **Put the compiled PDF in this folder** before zipping.
-3. **Fill both affiliation placeholders.** `overleaf/main.tex` carries
-   `CITY`/`COUNTRY` for the two independent-researcher affiliations. They are
-   placeholders on purpose, not guesses.
-4. **Archive the artifact and cite its DOI.** Tag a release, deposit it on
-   Zenodo or a new OSF component, and put that DOI in the data availability
+1. **Compile and read the PDF**, then put it in this folder. See
+   `overleaf/README.md`. Springer states that files which do not compile will
+   most likely fail to submit.
+2. **Upload `ESM_1.zip` as Online Resource 1.** The article's data
+   availability statement cites it by that name, so it has to be there.
+3. **Archive the artifact and cite its DOI.** Tag a release, deposit it on
+   Zenodo or a new OSF component, and add that DOI to the data availability
    statement. This is separate from the preregistration
-   (doi:10.17605/OSF.IO/NZXRV), which is immutable and covers only the gated
-   hybrid analysis.
-5. **Confirm the supplementary claim is accurate.** The data availability
-   statement says the corpora are provided as supplementary material. Either
-   upload `supplementary/` or reword it to point at the archived release.
-6. **DOIs on the references.** Springer asks for them; 56 entries need
-   individual lookup.
+   (doi:10.17605/OSF.IO/NZXRV), which is immutable and covers one analysis.
+4. **DOIs on the references.** 40 of 56 carry one. The remainder are mostly
+   NeurIPS, ICLR and arXiv items that have no Crossref DOI; `add_dois.py`
+   lists them.
 
 ## What the paper is
 
@@ -206,9 +273,12 @@ def check(out):
     if "CITY" in text or "COUNTRY" in text:
         problems.append("affiliation placeholders CITY/COUNTRY are unfilled")
 
-    if not [f for f in os.listdir(out) if f.lower().endswith(".pdf")]:
-        problems.append("no compiled PDF in the package; Springer expects one "
-                        "you have compiled and checked yourself")
+    pdfs = [os.path.join(dp, f)
+            for dp, _, fs in os.walk(out)
+            for f in fs if f.lower().endswith(".pdf")]
+    if not pdfs:
+        problems.append("no compiled PDF anywhere in the package; Springer "
+                        "expects one you have compiled and checked yourself")
 
     for stray in ("cas-model2-names", "cas-sc", "\\bibliographystyle"):
         if stray in text:
@@ -221,6 +291,11 @@ def check(out):
 
     if not os.path.isdir(os.path.join(out, "supplementary", "corpora")):
         problems.append("supplementary/corpora is missing")
+    if not os.path.exists(os.path.join(out, "ESM_1.zip")):
+        problems.append("ESM_1.zip is missing; the article cites Online "
+                        "Resource 1")
+    if "Online Resource" not in text:
+        notes.append("the manuscript does not mention Online Resource 1")
 
     n_bib = len(re.findall(r"\\bibitem", text))
     n_doi = len(re.findall(r"doi\.org|\\doi\{", text, re.I))
