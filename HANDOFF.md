@@ -77,11 +77,15 @@ p < 0.05. Gap vs dual-encoder advantage over TF-IDF: +0.335, −0.082, −0.143,
 lexical components on CSF and HIPAA, so fusion is not failing; it is fusing
 only weak representations.
 
-**Aggregate ties conceal complementary errors.** On PF five methods each
-score exactly 35/94 while lexical fusion and the dual-encoder each uniquely
-solve 15 requirements the other misses. Oracle union of lexical RRF and the
-cross-encoder reaches 53/94. This motivates a **gated** hybrid, not an
-equal-weight one.
+**Aggregate ties conceal complementary errors.** On PF, from
+`results_v3/hybrid/hybrid_gated.json`: lexical fusion solves 32/94 and the
+dual-encoder 35/94, each uniquely solving requirements the other misses, 14
+and 17, so their oracle union is 49/94. This motivates a **gated** hybrid,
+not an equal-weight one.
+
+An earlier version of this file, and of the manuscript, said "five methods
+score exactly 35/94", "15 requirements" each way and a union of 50/94 or
+53/94. None of those match the record. Cite the record.
 
 **The gated hybrid is non-inferior with no evidence of superiority.**
 Registered primary: +0.022, p_NI=0.003, p_sup=0.48, n=268. Per corpus
