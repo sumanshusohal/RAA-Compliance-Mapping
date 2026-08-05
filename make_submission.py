@@ -284,10 +284,30 @@ def check(out):
         if stray in text:
             problems.append(f"Elsevier leftover in main.tex: {stray}")
 
-    src = open(os.path.join(HERE, "manuscript_emse.tex"), encoding="utf-8").read()
-    if src != text:
-        problems.append("overleaf/main.tex is stale; rebuild with "
-                        "python make_submission.py")
+    # overleaf/main.tex is the file that gets uploaded and becomes the paper,
+    # so it has to match the SOURCE, not merely match manuscript_emse.tex.
+    # Comparing the two generated files was no guarantee: if make_emse.py was
+    # not rerun after an edit to manuscript3_revised.tex, both go stale
+    # together and the comparison still passes. Convert the source here and
+    # compare against that.
+    try:
+        import make_emse
+        fresh = make_emse.convert(
+            open(os.path.join(HERE, "manuscript3_revised.tex"),
+                 encoding="utf-8").read())
+    except Exception as exc:
+        problems.append(f"could not re-derive main.tex from the source: {exc}")
+        fresh = None
+    if fresh is not None and fresh != text:
+        a = fresh.split("\n")
+        b = text.split("\n")
+        where = next((i + 1 for i in range(max(len(a), len(b)))
+                      if (a[i] if i < len(a) else None)
+                      != (b[i] if i < len(b) else None)), 0)
+        problems.append(
+            "overleaf/main.tex does not match manuscript3_revised.tex "
+            f"(first difference at line {where}); this is the file that gets "
+            "uploaded, so rebuild with python make_submission.py")
 
     if not os.path.isdir(os.path.join(out, "supplementary", "corpora")):
         problems.append("supplementary/corpora is missing")
