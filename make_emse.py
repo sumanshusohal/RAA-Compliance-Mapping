@@ -175,12 +175,11 @@ original draft, visualization. \textbf{Darshankumar Prajapati}: methodology,
 investigation, validation, writing -- review and editing.
 
 \subsection*{Use of generative AI}
-During the preparation of this work, the authors used generative AI and
-AI-assisted tools to help with manuscript organization and language review,
-and to assist with code review and reproducibility checking of the evaluation
-harness. The authors independently verified all analyses, statistics,
-citations, code and results, reviewed and edited any AI-assisted output, and
-take full responsibility for the content of the publication.
+The authors' use of generative AI and AI-assisted tools is documented in
+Section~\ref{sec:protocol}, as the journal requires. The authors
+independently verified all analyses, statistics, citations, code and results,
+reviewed and edited any AI-assisted output, and take full responsibility for
+the content of the publication.
 """
 
 

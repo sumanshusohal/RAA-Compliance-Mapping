@@ -74,22 +74,27 @@ CONTENTS
   corpora/privacy_framework/     94 subcategories, 300 controls, 456 links.
 
   Each corpus directory holds regs.csv, controls.csv and mappings.csv. The
-  three NIST corpora also carry provenance.json, written by the builder that
-  generated them, recording every source artifact with its SHA-256.
+  three external corpora also carry provenance.json, written by the builder
+  that generated them, recording every source artifact with its SHA-256.
 
   REPRODUCE.md    how to regenerate every number in the article
   SOURCES.md      provenance and SHA-256 of every NIST source artifact
   LICENSE         MIT, covering the software in the code repository
   LICENSE-DATA    CC BY 4.0, covering these corpora
 
-The three NIST corpora share one 300-control corpus drawn from SP 800-53r5,
-so their controls.csv files are byte-identical. They are externally authored
-but not independent of one another, which the article treats as its main
-limitation.
+The three external corpora share one 300-control corpus drawn from
+SP 800-53r5, so their controls.csv files are byte-identical. They are
+externally authored but not independent of one another, which the article
+treats as its main limitation.
 
-The underlying NIST artifacts are United States Government works in the
-public domain. Our contribution is the extraction and encoding, not the text
-or the mappings.
+Requirement text differs in origin. CSF 1.1 and the Privacy Framework are
+NIST publications. The HIPAA Security Rule is statutory text issued by the
+U.S. Department of Health and Human Services. NIST supplies the common target
+catalogue, SP 800-53r5, and the crosswalks that link all three.
+
+The underlying published federal source artifacts are United States
+Government works in the public domain. Our contribution is the extraction and
+encoding, not the text or the mappings.
 
 Code, including the evaluation harness and the analysis scripts, is at
 https://github.com/sumanshusohal/RAA-Compliance-Mapping
