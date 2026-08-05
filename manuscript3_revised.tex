@@ -46,11 +46,11 @@
 
 \textbf{Objective.} We ask how far one such measurement carries.
 
-\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora: one we built to isolate vocabulary mismatch, and three that take their texts and links from NIST and share a single 300-control target corpus, so they are externally authored but not independent.
+\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora: one we built to isolate vocabulary mismatch, and three taking their texts and links from NIST, which share a 300-control target corpus and so are externally authored but not independent.
 
-\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, nominal $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that vocabulary distance moderates the effect within a corpus ($p = 0.31$), an inconclusive interval rather than a null. A preregistered gated hybrid shows the same spread, $+0.085$ on one corpus against $-0.088$ on another.
+\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, nominal $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that vocabulary distance moderates the effect within a corpus ($p = 0.31$). A preregistered gated hybrid shows the same spread, $+0.085$ on one corpus against $-0.088$ on another.
 
-\textbf{Conclusion.} Measuring a method only on a benchmark its own authors built can overstate how far that method transfers. When effects are this small, the number of decisions behind an estimate, and its movement under fitting choices unrelated to the intervention, are more informative than the estimate alone. All corpora, code and the preregistration are public.
+\textbf{Conclusion.} Measuring a method only on a benchmark its own authors built can overstate how far it transfers. At this effect size, the number of decisions behind an estimate, and its movement under unrelated fitting choices, are more informative than the estimate alone. Corpora, code and the preregistration are public.
 \end{abstract}
 
 \begin{highlights}
