@@ -133,8 +133,8 @@ def build(out):
               encoding="utf-8") as f:
         f.write(overleaf_readme())
 
-    shutil.copy(os.path.join(HERE, "cover_letter.tex"),
-                os.path.join(out, "cover_letter.tex"))
+    for name in ("cover_letter.tex", "title_page.tex"):
+        shutil.copy(os.path.join(HERE, name), os.path.join(out, name))
 
     for label, directory, prefix in CORPORA:
         dst = os.path.join(out, "supplementary", "corpora", label)
@@ -331,6 +331,11 @@ def check(out):
 
     if not os.path.isdir(os.path.join(out, "supplementary", "corpora")):
         problems.append("supplementary/corpora is missing")
+    if not any(f.lower().startswith("title") and f.lower().endswith(".pdf")
+               for f in os.listdir(out)):
+        problems.append("no compiled title page; Editorial Manager lists a "
+                        "title page with full author contact details as a "
+                        "required item, separate from the manuscript")
     if not os.path.exists(os.path.join(out, "ESM_1.zip")):
         problems.append("ESM_1.zip is missing; the article cites Online "
                         "Resource 1")
