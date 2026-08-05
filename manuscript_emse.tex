@@ -73,9 +73,9 @@ Regulatory Traceability}
 
 \textbf{Objective.} We test whether the measured benefit of domain-aware query reformulation generalizes from an author-constructed benchmark to three externally authored corpora.
 
-\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora: one we built to isolate vocabulary mismatch, and three taking their texts and links from NIST, which share a 300-control target corpus and so are externally authored but not independent.
+\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora: one we built to isolate vocabulary mismatch, and three using externally authored framework or statutory texts linked through NIST crosswalks, sharing one 300-control target catalogue and so not independent of one another.
 
-\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, nominal $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that vocabulary distance moderates the effect within a corpus ($p = 0.31$). A preregistered gated hybrid shows the same spread, $+0.085$ on one corpus against $-0.088$ on another.
+\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, nominal $p = 0.039$). That estimate did not recur: the external corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that vocabulary distance moderates the effect within a corpus ($p = 0.31$). A preregistered gated hybrid shows the same spread, $+0.085$ on one corpus against $-0.088$ on another.
 
 \textbf{Conclusion.} Measuring a method only on a benchmark its own authors built can overstate how far it transfers. At this effect size, the number of decisions behind an estimate, and its movement under unrelated fitting choices, are more informative than the estimate alone. Corpora, code and the preregistration are public.
 \keywords{Regulatory compliance \and Requirements traceability \and Information retrieval \and Query reformulation \and Benchmark validity \and Cross-corpus evaluation}
@@ -88,7 +88,7 @@ Regulatory Traceability}
 %% ================================================================
 
 Regulatory compliance is a first-order concern for organizations operating in regulated industries.
-Standards such as GDPR, HIPAA, PCI~DSS, NIST~CSF, ISO~27001, SOX, and SOC~2 impose requirements that must be demonstrably linked to implemented controls---a process known as \emph{compliance mapping}.
+Regulations, standards and frameworks, among them GDPR, HIPAA, PCI~DSS, NIST~CSF, ISO~27001, SOX and SOC~2, impose or organize requirements that must be demonstrably linked to implemented controls---a process known as \emph{compliance mapping}.
 In practice, this mapping is overwhelmingly manual: compliance teams maintain spreadsheets linking regulatory clauses to control descriptions, a process that is labor-intensive, error-prone, and resistant to the pace of regulatory change.
 The requirements engineering community has studied the difficulty of relating legal text to software artifacts for nearly two decades, from the extraction of rights and obligations from privacy regulations~\citep{Breaux2008} and the systematic treatment of legal texts as a source of requirements~\citep{OttoAnton2007}, to machine-learning support for tracing regulatory codes to product requirements~\citep{ClelandHuang2010}.
 This body of work consistently reports that legal language is ambiguous, cross-referential, and written at a different level of abstraction than the artifacts it governs~\citep{Massey2010,Zeni2015}---observations that motivate the retrieval problem we address here.
@@ -114,7 +114,7 @@ The study is organized around three questions, stated here so the reader can che
 \begin{description}
 \item[RQ1] Under one common ranking protocol, does the benefit of domain-aware query reformulation observed on a corpus we built also appear on corpora whose requirements, controls and links were authored outside this work?
 \item[RQ2] \emph{Within} a corpus, does requirement-level vocabulary distance identify which requirements benefit from reformulation?
-\item[RQ3] Does a gated combination of lexical and semantic retrieval, whose design is frozen and publicly timestamped before it is run, recover what either family uniquely solves without giving up the other's successes?
+\item[RQ3] Does a gated combination of lexical and semantic retrieval, whose design was frozen and publicly timestamped before execution, recover what either family uniquely solves without giving up the other's successes?
 \end{description}
 
 RQ1 asks about generalization across corpora, not about corpus types as populations. We have four corpora, one of them ours, so the design can show whether an effect reappears elsewhere. It cannot attribute the difference to any single property of the corpus we built.
@@ -122,7 +122,7 @@ RQ1 asks about generalization across corpora, not about corpus types as populati
 \noindent\textbf{Contributions.}
 This paper makes four contributions.
 
-First, a cross-corpus evaluation of regulatory traceability (Section~\ref{sec:dataset}) that puts one corpus we built alongside three with NIST-authored ground truth, all sharing a single 300-control target catalogue, and scores every method once per requirement over the full corpus so that all ranking comparisons share one estimand.
+First, a cross-corpus evaluation of regulatory traceability (Section~\ref{sec:dataset}) that puts one corpus we built alongside three whose links are NIST-authored crosswalks over externally authored framework or statutory text, all sharing a single 300-control target catalogue, and scores every method once per requirement over the full corpus so that all ranking comparisons share one estimand.
 
 Second, the findings that answer RQ1 and RQ2 (Section~\ref{sec:results}). Reformulation improves Top-1 by $+0.121$ on our corpus and by $+0.028$, $0.000$ and $+0.032$ on the external ones, none of the three distinguishable from zero, and we found no evidence that a requirement-level vocabulary distance identifies who benefits within the external corpora. We report two properties of these estimates alongside them. Each turns on fewer than ten requirements whose top-1 correctness changes at all, and each moves by up to $0.029$ when the latent-semantic backend is refitted on a different population, a choice unrelated to reformulation. Since the mechanism of reformulation is a thesaurus written by the same authors as the corpus it succeeds on, this is a concrete case of a benchmark failing to predict how the intervention it exercises behaves elsewhere. We are explicit that a single corpus of our own construction cannot identify \emph{which} of its properties is responsible.
 
@@ -397,7 +397,7 @@ The three externally authored corpora below are what breaks that circle.
 \subsection{The three externally authored corpora}
 \label{sec:dataset-real}
 
-The remaining three corpora take both their texts and their links from NIST, and all three map into one 300-control corpus drawn from SP~800-53r5. They are externally authored but not independent of one another, which Section~\ref{sec:threats} treats as the study's most important limitation.
+The remaining three corpora use externally authored framework or statutory texts, linked through NIST-authored crosswalks, and all three map into one 300-control corpus drawn from SP~800-53r5. Two of the three requirement sets are NIST's own; the HIPAA Security Rule is not, being statutory text issued by the U.S.\ Department of Health and Human Services, and what NIST supplies there is the crosswalk. They are externally authored but not independent of one another, which Section~\ref{sec:threats} treats as the study's most important limitation.
 
 \noindent\textbf{NIST CSF 1.1 to SP 800-53r5.}
 
@@ -473,7 +473,7 @@ Equivalence against a pre-specified $\pm 0.05$ margin is reported as a secondary
 
 The open-world evaluation of Section~\ref{sec:results-openworld} additionally holds out a random 50\% of controls per seed to manufacture no-match queries.
 
-\medskip\noindent\textbf{Use of AI tools in this study.} No component of the system under evaluation is a \emph{generative} language model, and no result reported here was produced by one. Two of the baselines are pre-trained transformer encoders, which are language models in the representational sense; they are used only as fixed feature extractors at pinned revisions, and they generate no text. The pipeline contains no generative component and uses fixed inference settings: lexical backends, a hand-written thesaurus and regular-expression patterns, and two pre-trained sentence encoders used as fixed feature extractors at pinned revisions. Generative AI assistants were used during the conduct of the work in two roles, both of which we state so that a reader can judge them. They were used to review and refactor the evaluation harness and the analysis scripts, including the provenance tooling described above, and to review and edit the prose of this manuscript. Every statistical procedure, number, table and citation was independently verified by the authors against the committed records, and the authors take full responsibility for the content.
+\medskip\noindent\textbf{Use of AI tools in this study.} No component of the system under evaluation is a \emph{generative} language model, and no result reported here was produced by one. Two baselines use pre-trained transformer models at pinned revisions: a dual-encoder that produces fixed embeddings, and a cross-encoder that directly scores requirement--control pairs. Both are language models in the representational sense, and neither generates text. The pipeline contains no generative component and uses fixed inference settings: lexical backends, a hand-written thesaurus and regular-expression patterns, and two pre-trained sentence encoders used as fixed feature extractors at pinned revisions. Generative AI assistants were used during the conduct of the work in two roles, both of which we state so that a reader can judge them. They were used to review and refactor the evaluation harness and the analysis scripts, including the provenance tooling described above, and to review and edit the prose of this manuscript. Every statistical procedure, number, table and citation was independently verified by the authors against the committed records, and the authors take full responsibility for the content.
 
 
 %% ================================================================
@@ -870,7 +870,7 @@ We state the limits of that registration plainly. Because the hypothesis was gen
 \noindent\textbf{Design.}
 The gated arm ranks the full control corpus with the dual-encoder. Only when the dual-encoder's own top-2 relative margin falls below $0.10$ is the lexical side consulted, and the query is then re-ranked by reciprocal rank fusion over TF-IDF, BM25, inductive LSI and the dual-encoder. The gate reads only the dual-encoder scores, so routing is decided before any label is touched. Neither constant is new: $0.10$ is the margin the agent already uses to trigger reformulation (Section~\ref{sec:architecture}), and the five-point margin below was fixed for an earlier, unrelated contrast.
 
-The primary estimand is the mean paired Top-1 difference over the 268 concatenated requirements of the three NIST corpora, requirement-weighted, with intervals from a bootstrap resampled within corpus. Non-inferiority is tested first at a margin of $0.05$; superiority is tested only if non-inferiority is established, which fixes the multiplicity without a correction.
+The primary estimand is the mean paired Top-1 difference over the 268 concatenated requirements of the three external corpora, requirement-weighted, with intervals from a bootstrap resampled within corpus. Non-inferiority is tested first at a margin of $0.05$; superiority is tested only if non-inferiority is established, which fixes the multiplicity without a correction.
 
 \noindent\textbf{Result.}
 Non-inferiority is established ($p = 0.003$) and superiority is not ($p = 0.48$). The mean difference is $+0.022$, 90\% interval $[-0.022, +0.067]$.
@@ -1014,7 +1014,7 @@ The decision metrics come from repeated stratified holdouts and are computed on 
 \label{sec:conclusion}
 %% ================================================================
 
-We evaluated one frozen set of retrieval methods on four corpora of regulatory traceability: a diagnostic instrument we built, and three whose texts and links were authored by NIST.
+We evaluated one frozen set of retrieval methods on four corpora of regulatory traceability: a diagnostic instrument we built, and three whose requirement texts are externally authored framework or statutory documents and whose links are NIST-authored crosswalks.
 The study began as an attempt to characterize when a curated compliance thesaurus pays off. It ended as a study of what one benchmark can establish about a method.
 
 Four findings follow.
@@ -1027,7 +1027,7 @@ Third, we found no evidence that requirement-level vocabulary distance identifie
 
 Fourth, a preregistered test of a gated lexical-semantic hybrid rules out a mean loss of five Top-1 points or more against semantic retrieval alone ($p = 0.003$) and finds no evidence of superiority ($p = 0.48$), while producing $+0.085$ on one corpus against $-0.088$ on another. A cost of two or three points remains consistent with those data. The design was frozen, hashed and publicly registered before it ran, which constrains outcome-dependent analysis and lets a result of this shape be reported as evidence rather than set aside.
 
-The negative results about our own system stand: no deterministic component significantly improves ranking on any external corpus, the agent holds no coverage or selective-accuracy advantage, and its calibrated abstention detects only a minority of constructed no-match cases, so it is not ready for gap discovery. We do not substitute an untested claim about auditability for the missing metric case.
+The negative results about our own system stand: no added deterministic RAA component significantly improves ranking on any external corpus, the agent holds no coverage or selective-accuracy advantage, and its calibrated abstention detects only a minority of constructed no-match cases, so it is not ready for gap discovery. We do not substitute an untested claim about auditability for the missing metric case.
 
 The most valuable extension is the one this study cannot perform on itself. Our three external corpora share a NIST lineage and a common target catalogue, so they are correlated evidence rather than three independent attempts, and distinguishing external authorship from the properties of one institution's document ecosystem requires corpora from different institutions with a different control catalogue. Beyond that: designing a dedicated no-match signal to make open-world gap detection reliable; admitting domain-adapted encoders such as Legal-BERT~\citep{Chalkidis2020} or SecureBERT~\citep{Aghaei2022} as backends; and investigating temporal drift, where regulations and controls evolve and previously valid mappings become stale~\citep{Gama2014}.
 
@@ -1064,8 +1064,10 @@ CSF~1.1 (106 subcategories, 495 links), HIPAA Security Rule (68 requirements,
 share one 300-control corpus drawn from SP~800-53r5. Online Resource~1 also
 carries the provenance record written by each corpus builder, the
 reproduction guide and the source manifest. The scripts that regenerate the
-three NIST corpora from NIST's published OSCAL catalog and crosswalk
-spreadsheets are in the code repository below. The corpora are licensed CC BY 4.0; the
+three external corpora from published federal source texts, the NIST OSCAL
+catalogue and NIST crosswalk artifacts are in the code repository below. The
+underlying federal artifacts are United States Government works in the public
+domain. The corpora are licensed CC BY 4.0; the
 underlying NIST artifacts are United States Government works in the public
 domain.
 

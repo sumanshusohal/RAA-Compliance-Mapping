@@ -69,7 +69,7 @@ has changed.** All ranking results are now measured the same way: one scoring pa
 requirement over the full control corpus, with LSI fitted on control documents only.
 
 The +0.121 reformulation estimate on the diagnostic corpus we built (p=0.039) did not recur.
-The three NIST corpora give +0.028 (CSF), 0.000 (HIPAA) and +0.032 (PF), none distinguishable
+The three external corpora give +0.028 (CSF), 0.000 (HIPAA) and +0.032 (PF), none distinguishable
 from zero. Two things qualify all four numbers:
 
 - each turns on very few requirements. Wins/losses/ties are 8/1/49, 4/1/101, 2/2/64 and
@@ -110,9 +110,11 @@ Decision tools (measured: these reorder nothing on any of the four corpora):
 
 ## Benchmarks
 
-Four corpora are included. Three are real text with NIST-authored ground truth; one is
-author-built and used only as a diagnostic instrument. All three real corpora map to the same
-300-control SP 800-53 5.2.0 corpus.
+Four corpora are included. Three use externally authored framework or statutory text linked
+through NIST-authored crosswalks; one is author-built and used only as a diagnostic
+instrument. Two of the three external requirement sets are NIST's own, but the HIPAA
+Security Rule is HHS statutory text and only its crosswalk comes from NIST. All three map
+to the same 300-control SP 800-53 5.2.0 corpus.
 
 - **Diagnostic** (`diagnostic_benchmark/`): 58 regulations / 110 controls / 86 links,
   author-built to isolate vocabulary mismatch. Control labels in `diag_controls.csv` are

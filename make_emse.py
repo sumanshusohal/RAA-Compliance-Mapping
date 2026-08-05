@@ -140,8 +140,10 @@ CSF~1.1 (106 subcategories, 495 links), HIPAA Security Rule (68 requirements,
 share one 300-control corpus drawn from SP~800-53r5. Online Resource~1 also
 carries the provenance record written by each corpus builder, the
 reproduction guide and the source manifest. The scripts that regenerate the
-three NIST corpora from NIST's published OSCAL catalog and crosswalk
-spreadsheets are in the code repository below. The corpora are licensed CC BY 4.0; the
+three external corpora from published federal source texts, the NIST OSCAL
+catalogue and NIST crosswalk artifacts are in the code repository below. The
+underlying federal artifacts are United States Government works in the public
+domain. The corpora are licensed CC BY 4.0; the
 underlying NIST artifacts are United States Government works in the public
 domain.
 
