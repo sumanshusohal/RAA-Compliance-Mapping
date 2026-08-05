@@ -78,7 +78,7 @@ CONTENTS
   that generated them, recording every source artifact with its SHA-256.
 
   REPRODUCE.md    how to regenerate every number in the article
-  SOURCES.md      provenance and SHA-256 of every NIST source artifact
+  SOURCES.md      provenance and SHA-256 of every federal source artifact
   LICENSE         MIT, covering the software in the code repository
   LICENSE-DATA    CC BY 4.0, covering these corpora
 

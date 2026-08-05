@@ -32,62 +32,47 @@ We submit our manuscript ``Cross-Corpus Evaluation of Domain-Aware Query
 Reformulation for Regulatory Traceability'' for consideration in
 \emph{Empirical Software Engineering}.
 
-The paper reports a negative result and the analysis that establishes it.
-Compliance mapping, linking regulatory requirements to the controls that
-address them, has few public collections, so methods are usually measured on
-benchmarks their own authors build. We built one such benchmark, measured a
-substantial benefit from domain-aware query reformulation on it, and then
+The paper's contribution is a way of reporting retrieval effects that shows
+how much they can be trusted, applied to a case where the answer is
+uncomfortable. Compliance mapping has few public collections, so methods are
+usually measured on benchmarks their own authors build. We built one, measured
+a $+0.121$ Top-1 gain from domain-aware query reformulation on it, and then
 asked whether that measurement carried. Under a single ranking protocol
-applied to four corpora, the $+0.121$ Top-1 gain on our own corpus did not
-recur on three externally authored, NIST-derived corpora, which give
-$+0.028$, $0.000$ and $+0.032$.
+across four corpora it did not: three externally authored corpora give
+$+0.028$, $0.000$ and $+0.032$, none distinguishable from zero.
 
-Two properties of those estimates are the more transferable contribution.
-Each turns on fewer than ten requirements whose top-1 correctness changes at
-all, which no confidence interval conveys on its own, and each moves by up to
-$0.029$ when a latent-semantic backend is refitted on a different population,
-a choice unrelated to the intervention under test. We report wins, losses and
-ties with every paired effect for the first reason, and a three-cell
-factorial separating evaluation protocol from fitting population for the
-second.
+Two properties of those estimates are the transferable part. Each turns on
+fewer than ten requirements whose top-1 correctness changes at all, which no
+confidence interval conveys, and each moves by up to $0.029$ when a
+latent-semantic backend is refitted on a different population, a choice
+unrelated to the intervention. We therefore report wins, losses and ties with
+every paired effect, and a three-cell factorial separating evaluation protocol
+from fitting population.
 
-We believe the work fits EMSE for three reasons. It is an empirical study in
-requirements engineering and traceability, which the journal's scope covers
-explicitly. It puts an earlier estimate of our own to a generalization test
-under a common full-population protocol, rather than comparing numbers
-produced under different ones. And it ships infrastructure others can extend:
-four corpora, a frozen analysis specification, the evaluation harness, and
-provenance tooling that verifies every number in the paper against a hashed
-record.
+The work fits EMSE on three counts: it is an empirical study in requirements
+engineering and traceability; it tests generalization under one common
+protocol rather than comparing numbers produced under different ones; and it
+ships infrastructure others can extend, namely four corpora, a frozen analysis
+specification, the evaluation harness, and provenance tooling that checks
+every number in the paper against a hashed record. One analysis, a gated
+lexical--semantic hybrid, was preregistered before it was run
+(doi:10.17605/OSF.IO/NZXRV); it established non-inferiority without
+superiority while producing $+0.085$ on one corpus against $-0.088$ on
+another. The corpora accompany the article as Online Resource~1 and the code
+is public.
 
-One analysis, a gated lexical--semantic hybrid, was preregistered on the OSF
-before it was run (doi:10.17605/OSF.IO/NZXRV). It returned non-inferiority
-with no evidence of superiority, while producing $+0.085$ on one corpus
-against $-0.088$ on another. We report it as evidence rather than setting it
-aside, and we are explicit that because its hypothesis was generated from
-these same corpora it remains preregistered but exploratory. Everything else
-in the paper is exploratory and labelled as such.
-
-We are equally explicit about what the study cannot establish. The three
-external corpora share a NIST lineage and a single target catalogue, so they
-are correlated evaluation corpora rather than independent samples; with one corpus
-of our own construction the design cannot identify which of its properties is
-responsible for the difference; and our vocabulary-gap measure is fitted per
-corpus, so it provides no scale on which corpora could be ranked. We make no
-claim that engineered benchmarks inflate results in general.
-
-An earlier two-corpus analysis motivated this study. It concluded that the
-reformulation benefit was real but conditional on vocabulary-gap width; two
-further corpora under a common full-population protocol do not support that
-reading, and the present manuscript retracts it. The research questions,
-protocol, estimand, statistical procedure and framing are all different, and
-no part of the earlier analysis has been published.
+We are explicit about the limits. The three external corpora share a target
+catalogue and NIST-authored crosswalks, so they are correlated evidence rather
+than independent samples; with one corpus of our own the design cannot say
+which of its properties matters; and our vocabulary-gap measure is fitted per
+corpus, so it cannot rank corpora. We make no claim that author-built
+benchmarks inflate results in general. An earlier unpublished two-corpus
+analysis motivated this study; the additional corpora and common evaluation
+protocol did not support its conditional vocabulary-gap interpretation.
 
 The manuscript is original and is not under consideration elsewhere. Both
-authors, Sumanshu Sohal and Darshankumar Prajapati, have read and approved
-the submission, and we declare no competing interests. The corpora, harness
-and analysis code are available at
-\url{https://github.com/sumanshusohal/RAA-Compliance-Mapping}.
+authors, Sumanshu Sohal and Darshankumar Prajapati, have read and approved the
+submission, and we declare no competing interests.
 
 \closing{Yours sincerely,}
 
