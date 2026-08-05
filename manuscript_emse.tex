@@ -88,10 +88,10 @@ Regulatory Traceability}
 %% ================================================================
 
 Regulatory compliance is a first-order concern for organizations operating in regulated industries.
-Regulations, standards and frameworks, among them GDPR, HIPAA, PCI~DSS, NIST~CSF, ISO~27001, SOX and SOC~2, impose or organize requirements that must be demonstrably linked to implemented controls---a process known as \emph{compliance mapping}.
+Regulations, standards and frameworks, among them GDPR, HIPAA, PCI~DSS, NIST~CSF, ISO~27001, SOX and SOC~2, impose or organize requirements that must be demonstrably linked to implemented controls. That linking is known as \emph{compliance mapping}.
 In practice, this mapping is overwhelmingly manual: compliance teams maintain spreadsheets linking regulatory clauses to control descriptions, a process that is labor-intensive, error-prone, and resistant to the pace of regulatory change.
 The requirements engineering community has studied the difficulty of relating legal text to software artifacts for nearly two decades, from the extraction of rights and obligations from privacy regulations~\citep{Breaux2008} and the systematic treatment of legal texts as a source of requirements~\citep{OttoAnton2007}, to machine-learning support for tracing regulatory codes to product requirements~\citep{ClelandHuang2010}.
-This body of work consistently reports that legal language is ambiguous, cross-referential, and written at a different level of abstraction than the artifacts it governs~\citep{Massey2010,Zeni2015}---observations that motivate the retrieval problem we address here.
+This body of work consistently reports that legal language is ambiguous, cross-referential, and written at a different level of abstraction than the artifacts it governs~\citep{Massey2010,Zeni2015}. These observations motivate the retrieval problem we address here.
 
 From a software engineering perspective, compliance mapping is a form of \emph{traceability recovery}~\citep{Borg2014,Cleland-Huang2014}: establishing and maintaining links between documentation-like source artifacts (regulations, standards) and implementation-like target artifacts (controls, configurations, audit evidence).
 However, compliance mapping introduces challenges absent from classical code--documentation traceability.
@@ -100,13 +100,13 @@ Second, \emph{vocabulary mismatch}: regulatory text employs legal and policy-lev
 Third, \emph{scope confusion}: lexically similar controls may address orthogonal regulatory concerns (e.g., encryption at rest vs.\ encryption in transit).
 Fourth, \emph{regulatory drift}: both requirements and controls evolve independently over time~\citep{Gama2014}.
 
-Existing information retrieval approaches to traceability recovery---whether based on vector space models~\citep{Antoniol2002}, Latent Semantic Indexing~\citep{MarcusMaletic2003}, or more recent embedding-based methods~\citep{Guo2017}---operate in a single-shot fashion: a query is issued, a ranked list is returned, and the top result is taken as the answer.
+Existing information retrieval approaches to traceability recovery, whether based on vector space models~\citep{Antoniol2002}, Latent Semantic Indexing~\citep{MarcusMaletic2003}, or more recent embedding-based methods~\citep{Guo2017}, operate in a single-shot fashion: a query is issued, a ranked list is returned, and the top result is taken as the answer.
 This paradigm is ill-suited to compliance mapping for two reasons.
 First, when a single-shot retrieval returns a low-confidence result, no mechanism exists to refine the search or seek corroborating evidence.
-Second, in high-stakes domains, the system should be able to \emph{abstain} rather than commit to a potentially incorrect mapping---a capability absent from standard retrieval pipelines.
+Second, in high-stakes domains, the system should be able to \emph{abstain} rather than commit to a potentially incorrect mapping, a capability absent from standard retrieval pipelines.
 
 In this paper, we introduce the \emph{Regulatory Alignment Agent} (RAA), a multi-step retrieval system that addresses these limitations through a deterministic, tool-augmented multi-stage workflow.
-The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving reasoning-like observations with tool actions, but---unlike an open-ended language-model ReAct loop---RAA executes a fixed conditional sequence of deterministic tools and emits structured (templated) trace steps: it retrieves candidate controls, evaluates confidence, reformulates queries using domain knowledge when the top-2 margin is ambiguous, corroborates candidates across related regulatory frameworks, and makes an accept-or-abstain decision recorded together with the scores and thresholds behind it. We use the term ``agent'' in this restricted, deterministic sense throughout.
+The design is inspired by the ReAct paradigm~\citep{Yao2023} of interleaving reasoning-like observations with tool actions, but, unlike an open-ended language-model ReAct loop, RAA executes a fixed conditional sequence of deterministic tools and emits structured (templated) trace steps: it retrieves candidate controls, evaluates confidence, reformulates queries using domain knowledge when the top-2 margin is ambiguous, corroborates candidates across related regulatory frameworks, and makes an accept-or-abstain decision recorded together with the scores and thresholds behind it. We use the term ``agent'' in this restricted, deterministic sense throughout.
 
 \noindent\textbf{Research questions.}
 The study is organized around three questions, stated here so the reader can check the results against them.
@@ -159,7 +159,7 @@ Most directly related to our problem is the work of \citet{ClelandHuang2010}, wh
 Our work shares this framing but differs in three respects: we map regulations to \emph{controls} across seven frameworks rather than to requirements of a single system; we adopt a multi-step retrieval architecture rather than a single-shot classifier; and we treat abstention as a first-class outcome.
 
 More recently, NLP has been applied to compliance analysis at scale, notably by the requirements engineering group at the University of Luxembourg: automated extraction of semantic legal metadata~\citep{Sleimi2018}, question answering over compliance documents~\citep{Abualhaija2022}, completeness checking of privacy policies against GDPR~\citep{Amaral2022}, and compliance checking of data processing agreements~\citep{Cejas2023}.
-Closest in task to ours, \citet{Etezadi2026} compare a similarity-based classifier with LLM prompting for tracing requirements to GDPR provisions, concluding that generic traceability techniques transfer poorly to legal artifacts---a conclusion our cross-benchmark results reinforce from the retrieval side.
+Closest in task to ours, \citet{Etezadi2026} compare a similarity-based classifier with LLM prompting for tracing requirements to GDPR provisions, concluding that generic traceability techniques transfer poorly to legal artifacts. Our cross-corpus results reinforce that conclusion from the retrieval side.
 Unlike these approaches, which rely on learned models, our agent is deliberately built from deterministic components, so every mapping decision is accompanied by a decision-provenance record listing the steps, scores and thresholds that produced it.
 
 Compliance mapping is also a form of traceability recovery, and that literature is older still.
@@ -190,7 +190,7 @@ To our knowledge, no prior work has applied systematic query reformulation to re
 
 Combining the outputs of multiple retrieval systems is a well-studied problem.
 CombSUM, CombMNZ~\citep{Fox1994}, and Reciprocal Rank Fusion (RRF)~\citep{Cormack2009} are representative score- and rank-based fusion methods.
-RRF is attractive for our setting because it requires no score normalization and is robust to heterogeneous scoring functions---precisely the situation when combining BM25, TF-IDF, and LSI outputs.
+RRF is attractive for our setting because it requires no score normalization and is robust to heterogeneous scoring functions, which is the situation when combining BM25, TF-IDF and LSI outputs.
 
 In settings where incorrect predictions carry high costs, selective prediction~\citep{ElYaniv2010,Geifman2017} allows a system to abstain on inputs where it is uncertain.
 Coverage (the fraction of inputs on which the system makes a prediction) and selective accuracy (accuracy among accepted predictions) characterize the precision-coverage trade-off.
@@ -275,7 +275,7 @@ The key design question is the precision--coverage trade-off: higher coverage is
 
 
 The RAA processes each regulatory requirement $r$ through a fixed multi-stage sequence (Algorithm~\ref{alg:agent}).
-The sequence is parameterized by a set of \emph{tools}---stateless, deterministic functions invoked in a fixed order, gated by scale-invariant confidence tests rather than by open-ended planning.
+The sequence is parameterized by a set of \emph{tools}: stateless, deterministic functions invoked in a fixed order and gated by scale-invariant confidence tests rather than by open-ended planning.
 Each invocation produces an \texttt{AgentStep} record $(s, a, \text{input}, o)$ consisting of a templated status string $s$, an action $a$, its input, and the resulting observation $o$.
 The complete sequence of steps forms an \texttt{AgentTrace}, the decision-provenance record for that mapping. Whether such a record is useful to an auditor is untested here.
 
@@ -318,7 +318,7 @@ The complete sequence of steps forms an \texttt{AgentTrace}, the decision-proven
 The workflow draws on tools that fall into two groups: those that shape the \emph{ranking} of candidate controls (fusion, reformulation, optional decomposition) and those that shape only the \emph{decision} to accept or abstain (corroboration, verification, calibrated thresholding). Keeping the two groups separate is deliberate: it lets us attribute ranking changes and decision changes to distinct components, and it prevents a decision heuristic from silently reordering results.
 
 The first ranking tool is \emph{multi-backend retrieval and fusion}.
-The agent maintains three retrieval backends---TF-IDF with cosine similarity, Okapi BM25~\citep{Robertson2009}, and Latent Semantic Indexing~\citep{MarcusMaletic2003}---each producing a score vector $\mathbf{s}_b \in \mathbb{R}^m$ over the control corpus.
+The agent maintains three retrieval backends (TF-IDF with cosine similarity, Okapi BM25~\citep{Robertson2009}, and Latent Semantic Indexing~\citep{MarcusMaletic2003}), each producing a score vector $\mathbf{s}_b \in \mathbb{R}^m$ over the control corpus.
 Their rankings are combined via Reciprocal Rank Fusion~\citep{Cormack2009},
 \begin{equation}
 \text{RRF}(c_j) = \sum_{b \in \mathcal{B}} \frac{1}{k + \text{rank}_b(c_j)},
@@ -326,14 +326,14 @@ Their rankings are combined via Reciprocal Rank Fusion~\citep{Cormack2009},
 with the standard smoothing constant $k = 60$.
 RRF requires no score normalization and is robust to the heterogeneous scoring functions of the three backends.
 
-The second ranking tool, \emph{domain-aware query reformulation}, is invoked when the top-2 result is \emph{ambiguous}, defined by a scale-invariant criterion: the relative margin $\text{gap}/\text{conf}$ between the top two fused scores falls below a threshold $\tau_{\text{rel}}$ (0.10 in our experiments). We use a relative rather than absolute margin because backend score scales differ by orders of magnitude---raw BM25 scores and fused RRF scores are not comparable---so a single absolute confidence threshold cannot be shared across configurations. Reformulation addresses vocabulary mismatch through two deterministic mechanisms: a set of 32 regular-expression patterns that map regulatory phrases to implementation concepts (for instance, ``boundary protection'' expands to firewall, network perimeter, DMZ, segmentation, and IPS), and a curated thesaurus of 20 concept families that supplies synonym and hypernym expansions.
+The second ranking tool, \emph{domain-aware query reformulation}, is invoked when the top-2 result is \emph{ambiguous}, defined by a scale-invariant criterion: the relative margin $\text{gap}/\text{conf}$ between the top two fused scores falls below a threshold $\tau_{\text{rel}}$ (0.10 in our experiments). We use a relative rather than absolute margin because backend score scales differ by orders of magnitude, raw BM25 scores and fused RRF scores being on quite different footings, so a single absolute confidence threshold cannot be shared across configurations. Reformulation addresses vocabulary mismatch through two deterministic mechanisms: a set of 32 regular-expression patterns that map regulatory phrases to implementation concepts (for instance, ``boundary protection'' expands to firewall, network perimeter, DMZ, segmentation, and IPS), and a curated thesaurus of 20 concept families that supplies synonym and hypernym expansions.
 The full thesaurus is reproduced in \ref{app:thesaurus}.
 The reformulated query is the concatenation of the original query and the deduplicated expansion terms; no neural model is involved, so each expansion records the terms that produced it and the pattern or thesaurus entry they came from.
 An optional third ranking tool, \emph{query decomposition}, splits a compound requirement into sub-clauses, retrieves for each, and averages the results. Because decomposition is logically distinct from reformulation, we expose it under its own ablation flag rather than bundling the two.
 
 Turning to the decision tools, \emph{cross-framework corroboration} exploits the fact that regulatory frameworks overlap: NIST and ISO share access-control concepts, and HIPAA and SOC~2 overlap on audit requirements.
 Using a hand-coded framework relationship graph and a taxonomy grouping controls by functional concern, the tool checks whether the top candidate's domain family spans frameworks related to the requirement's framework, yielding a corroboration score $\rho \in [0, 1]$.
-Crucially, this signal is derived only from the static family-to-framework taxonomy, never from the ground-truth mapping; when $\rho > 0$ the agent relaxes its acceptance threshold by up to 15\%, admitting borderline mappings that have structural support.
+Importantly for leakage, this signal is derived only from the static family-to-framework taxonomy, never from the ground-truth mapping; when $\rho > 0$ the agent relaxes its acceptance threshold by up to 15\%, admitting borderline mappings that have structural support.
 \emph{Bidirectional verification} then queries the requirement corpus with the top control's own text and locates the original requirement in that reverse ranking, in the spirit of cycle-consistency checks in unsupervised machine translation~\citep{Lample2018}. If the requirement is not recovered within the top decile of the reverse ranking, the mapping is deemed inconsistent and the acceptance thresholds are tightened by 10\%, nudging the borderline case toward abstention. Verification never reorders the candidate list; it acts purely on the decision.
 Finally, the \emph{calibrated selective decision} governs the accept/abstain outcome through a confidence threshold $\theta_c$ and a score-gap threshold $\theta_g$, both calibrated on a held-out split to target a specified coverage level; the calibration procedure is detailed in Section~\ref{sec:protocol}.
 
@@ -411,7 +411,7 @@ This corpus is a substantially harder and more faithful test than the diagnostic
 The candidate pool is nearly three times larger (300 vs.\ 110 controls); the mapping is genuinely many-to-many with dense multi-label structure; and, critically, neither the texts nor the links were authored by us, so no component of the agent can be inadvertently tuned to the ground truth.
 It also differs in character: CSF subcategories and SP~800-53 controls are written in the same institutional style by the same body, where the diagnostic benchmark deliberately puts policy language against implementation language. We describe that difference qualitatively and do not quantify it. Our gap measure is fitted per corpus and gives no scale on which one corpus can be called narrower-gapped than another.
 An earlier version of this work had only this corpus and the diagnostic one, and concluded from the contrast between them that gap severity determines how much reformulation contributes. Sections~\ref{sec:results-multi} and \ref{sec:results-gap} test that conclusion against two further corpora and do not support it.
-One caveat bounds the interpretation of this corpus: NIST characterizes its crosswalks as \emph{concept relationship} mappings between documentary standards---indicating that a control's outcomes support, in whole or in part, a CSF subcategory---rather than as evidence that any organization has implemented a control satisfying a requirement~\citep{NISTIR8477}.
+One caveat bounds the interpretation of this corpus: NIST characterizes its crosswalks as \emph{concept relationship} mappings between documentary standards, meaning that a control's outcomes support a CSF subcategory in whole or in part, rather than as evidence that any organization has implemented a control satisfying a requirement~\citep{NISTIR8477}.
 Accordingly, we treat this benchmark as a test of reference-link recovery between framework artifacts, not of implemented-compliance verification, and we scope our claims to that task.
 The generated CSV files are in Online Resource~1 and the extraction scripts are in the code repository, so the corpus can be rebuilt from the NIST sources.
 
@@ -446,7 +446,7 @@ The study reports two kinds of number, and they are produced differently.
 
 \emph{Ranking} results are measured once per requirement over the full control corpus. Every requirement is scored exactly once, no split is involved, and the reported figure is the mean over all requirements of the corpus. This is the primary protocol, and every cross-corpus ranking comparison in the paper uses it.
 
-\emph{Decision} results---coverage, selective accuracy, open-world gap detection---need an acceptance threshold, and a threshold has to be chosen on data the system is not then judged on. These come from repeated stratified holdouts: for each of 30 random seeds, every stratum contributes proportionally to three disjoint splits (training, calibration, test) with holdout ratio 0.20 and calibration ratio 0.15, stratified by regulatory framework family and, on the CSF corpus, by CSF function. Requirements are tested an uneven number of times across seeds, so each is collapsed to its mean over the splits it appeared in before any comparison.
+\emph{Decision} results (coverage, selective accuracy, open-world gap detection) need an acceptance threshold, and a threshold has to be chosen on data the system is not then judged on. These come from repeated stratified holdouts: for each of 30 random seeds, every stratum contributes proportionally to three disjoint splits (training, calibration, test) with holdout ratio 0.20 and calibration ratio 0.15, stratified by regulatory framework family and, on the CSF corpus, by CSF function. Requirements are tested an uneven number of times across seeds, so each is collapsed to its mean over the splits it appeared in before any comparison.
 
 The two are different estimands and we never mix them in one comparison. Tables carry the protocol in their captions.
 
@@ -458,7 +458,7 @@ To isolate each component's marginal contribution, we evaluate six incrementally
 We further compare against three lexical baselines (TF-IDF, BM25, LSI) evaluated independently, a neural dual-encoder (\texttt{all-MiniLM-L6-v2}~\citep{Reimers2019}) using cosine similarity over sentence embeddings, and a cross-encoder reranker (\texttt{ms-marco-MiniLM-L-6-v2}) applied to the top-20 dual-encoder candidates.
 Because ranking-shaping and decision-shaping tools are separated in the architecture (Section~\ref{sec:architecture}), the +CrossRef and Full Agent rows differ from +Decomp only in their decision profile, never in the ranking they produce.
 
-Each agent variant is calibrated \emph{end-to-end}: its base acceptance thresholds are chosen by running the complete pipeline---including reformulation and the corroboration and verification threshold adjustments---on the calibration split, so that the reported operating point reflects the target coverage (0.80) rather than the coverage of an intermediate, pre-adjustment ranking. Repeated-holdout decision analyses use 30 seeds; the primary ranking results are computed in a single full-population pass.
+Each agent variant is calibrated \emph{end-to-end}: its base acceptance thresholds are chosen by running the complete pipeline on the calibration split, including reformulation and the corroboration and verification threshold adjustments, so that the reported operating point reflects the target coverage (0.80) rather than the coverage of an intermediate, pre-adjustment ranking. Repeated-holdout decision analyses use 30 seeds; the primary ranking results are computed in a single full-population pass.
 
 \label{sec:protocol-stats}
 Three further points about the statistics, all prompted by weaknesses we identified in earlier versions of this work.
@@ -649,7 +649,7 @@ Cross-enc.    & .562 $\pm$ .032 & .666 $\pm$ .026 & .454 $\pm$ .021 & .398 $\pm$
 \end{tabular}}
 \end{table}
 
-Three results stand out, and they qualify---rather than confirm---the diagnostic-benchmark findings of Section~\ref{sec:results-synth}.
+Three results stand out, and they qualify rather than confirm the diagnostic-benchmark findings of Section~\ref{sec:results-synth}.
 First, on this corpus no agent component significantly improves ranking.
 Neither fusion (multi vs.\ single Top-1 $+0.026$, $p = 0.51$) nor reformulation (Table~\ref{tab:multi}: $+0.028$, $p = 0.38$) produces a significant change.
 The seed-averaged means drift upward slightly (single 0.368 to multi 0.403), which a naive across-seed $t$-test would flag as significant, but that apparent effect does not survive the pseudoreplication-safe requirement-level test.
@@ -807,7 +807,7 @@ The conservative single-backend policy detects 40\% of gaps, but only by keeping
 Once corroboration and verification are added and the operating point is calibrated toward the 0.80 coverage target, gap detection falls to 0.21--0.24: a system tuned to accept more answerable mappings inevitably accepts more unanswerable ones.
 Bidirectional verification provides a small, statistically fragile improvement over corroboration alone (0.211 to 0.235, with overlapping intervals).
 Detecting roughly one no-match query in four is far from deployment-ready, and a sensitivity sweep of the verification-tightening constant (Section~\ref{sec:sensitivity}) does not change this regime.
-We conclude that abstention calibrated for coverage on answerable queries does not, on its own, solve open-world gap detection, and that a dedicated no-match signal is needed---a limitation we make explicit rather than obscure, and a priority for future work.
+We conclude that abstention calibrated for coverage on answerable queries does not, on its own, solve open-world gap detection, and that a dedicated no-match signal is needed. We state that limitation plainly, and treat it as a priority for future work.
 
 \subsection{Execution traces and sensitivity to the hand-set constants}
 \label{sec:sensitivity}
@@ -841,7 +841,7 @@ Step & Action & Observation \\
 
 The trace shows the mechanism concretely.
 Single-shot BM25 (Step~1) happens to rank the correct control first, but fusion (Step~2) reorders a different control to the top with a near-zero relative top-2 margin, which trips the ambiguity test and triggers reformulation.
-Reformulation (Step~3) injects the implementation vocabulary---``privacy by design,'' ``data minimization''---and re-retrieval (Step~4) restores the correct control.
+Reformulation (Step~3) injects the implementation vocabulary, ``privacy by design'' and ``data minimization'', and re-retrieval (Step~4) restores the correct control.
 The decision tools then operate without reordering: corroboration finds cross-framework support ($\rho=1.0$) and relaxes the confidence threshold by 15\%, verification confirms bidirectional consistency (the control's text recovers the requirement at reverse rank~1 of 58), and the agent accepts against the logged effective threshold of 0.045.
 The example shows how an expansion can move a correct control to the top. On the external corpora the same steps run and the expansion still reorders the ranking, but the reordering rarely moves a correct control into first place (Section~\ref{sec:results-multi}), so the trace looks the same and the outcome does not improve.
 
@@ -947,7 +947,7 @@ Ranking is computed from the full candidate list regardless of the accept/abstai
 This separation is what makes the component analysis trustworthy, and it changes the conclusions: several apparent ranking gains dissolve once decoupled from coverage, and once we also apply requirement-level rather than seed-level inference (Section~\ref{sec:protocol-stats}), the agent turns out to hold neither a ranking edge nor a decision-quality edge over the strongest baselines. What remains is a negative result about the components, not a qualitative advantage recovered in their place.
 
 The distinction is nonetheless underappreciated in the traceability literature, which focuses almost exclusively on ranking metrics.
-We argue that for deployment in compliance settings, decision quality is at least as important as ranking quality, because incorrect mappings in an accepted state carry real regulatory risk---and because, as Section~\ref{sec:results-openworld} shows, recognizing the \emph{absence} of a valid mapping is itself an unsolved problem.
+We argue that for deployment in compliance settings, decision quality is at least as important as ranking quality, because incorrect mappings in an accepted state carry real regulatory risk, and because, as Section~\ref{sec:results-openworld} shows, recognizing the \emph{absence} of a valid mapping is itself an unsolved problem.
 The decision tools illustrate the point in both directions: corroboration and verification barely move the ranking yet substantially reshape coverage and gap detection, and verification, whose rationale is decision hygiene, must be gated carefully because in densely linked corpora it trades coverage for only a fragile calibration gain.
 
 Once ranking is measured independently of the decision and compared with a requirement-level test, the picture is consistent: the deterministic agent does not out-rank neural retrieval on any corpus.
