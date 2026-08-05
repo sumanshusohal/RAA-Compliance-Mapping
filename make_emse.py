@@ -66,6 +66,21 @@ PREAMBLE = r"""%% Empirical Software Engineering (Springer) -- SVJour3.
 \usepackage{graphicx}
 \usepackage{url}
 
+%% Float placement. Twelve tables in a single narrow column will queue up and
+%% drift far from the text that discusses them unless LaTeX is given room.
+%% The defaults reserve most of a page for prose (textfraction 0.2) and allow
+%% only two floats at the top, which is what pushed tables several pages past
+%% their discussion. These are the standard relaxations, not forced placement:
+%% the [H] specifier from the float package would pin every table exactly
+%% where it appears in the source and leave large vertical gaps instead.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
 \journalname{Empirical Software Engineering}
 
 \begin{document}

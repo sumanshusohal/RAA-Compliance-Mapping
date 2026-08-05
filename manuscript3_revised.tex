@@ -46,11 +46,11 @@
 
 \textbf{Objective.} We ask how far one such measurement carries.
 
-\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora. One is a diagnostic instrument we built to isolate vocabulary mismatch. The other three take their texts and links from NIST and share a single 300-control target corpus, so they are externally authored but not independent.
+\textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora: one we built to isolate vocabulary mismatch, and three that take their texts and links from NIST and share a single 300-control target corpus, so they are externally authored but not independent.
 
-\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, nominal $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that vocabulary distance moderates the effect within a corpus ($p = 0.31$), an inconclusive interval rather than a null. A preregistered gated hybrid shows the same spread: non-inferiority established, no superiority, $+0.085$ on one corpus against $-0.088$ on another.
+\textbf{Results.} Domain-aware query reformulation improves Top-1 accuracy by $+0.121$ on the corpus we built (95\% CI $[+0.034, +0.224]$, nominal $p = 0.039$). That estimate did not recur: the NIST corpora give $+0.028$, $0.000$ and $+0.032$, none distinguishable from zero. Each rests on very few requirements, flipping top-1 correctness for 9 of 58 on our corpus and for 5, 4 and 5 externally, and each moves by up to $0.029$ under a backend-refitting choice unrelated to reformulation. We found no evidence that vocabulary distance moderates the effect within a corpus ($p = 0.31$), an inconclusive interval rather than a null. A preregistered gated hybrid shows the same spread, $+0.085$ on one corpus against $-0.088$ on another.
 
-\textbf{Conclusion.} A benchmark built by the authors of the intervention it evaluates did not predict how that intervention behaves elsewhere. Corpora, harness and analysis code are public; the preregistration is at doi:10.17605/OSF.IO/NZXRV.
+\textbf{Conclusion.} Measuring a method only on a benchmark its own authors built can overstate how far that method transfers. When effects are this small, the number of decisions behind an estimate, and its movement under fitting choices unrelated to the intervention, are more informative than the estimate alone. All corpora, code and the preregistration are public.
 \end{abstract}
 
 \begin{highlights}
@@ -336,7 +336,7 @@ The three external corpora tell us whether that help survives contact with authe
 
 Table~\ref{tab:corpora} summarizes them. All three external corpora map into the same 300-control corpus drawn from SP~800-53, so differences between them are differences in the regulatory side of the mapping rather than in the target catalogue.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{The four evaluation corpora. Recall@20 is the share of requirements for which the dual-encoder places a gold control in its top 20, and bounds any method that reranks that shortlist.}
 \label{tab:corpora}
 \centering
@@ -473,7 +473,7 @@ The open-world evaluation of Section~\ref{sec:results-openworld} additionally ho
 
 Table~\ref{tab:unified} is the study's single like-for-like comparison. Every method is scored once per requirement over the full control corpus, with LSI fitted on controls only, so the four columns and the seven rows are all on the same footing.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Top-1 accuracy for every method on all four corpora under the primary protocol: one scoring pass per requirement over the full control corpus, LSI fitted on controls only. The lower block reranks the dual-encoder's top 20 rather than the corpus, so it is bounded by that shortlist; its ceiling is given beneath it.}
 \label{tab:unified}
 \centering
@@ -512,7 +512,7 @@ The remaining tables in this subsection are the repeated-holdout ablations. They
 
 Table~\ref{tab:baselines} presents the lexical and neural baseline results on the diagnostic benchmark.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Baseline comparison on the diagnostic benchmark. Repeated-holdout protocol, mean $\pm$ 95\% CI over 30 seeds, 110 controls, 86 positive links. Descriptive; the cross-corpus ranking claims of Section~\ref{sec:results-multi} use the one-pass protocol instead.}
 \label{tab:baselines}
 \centering
@@ -545,7 +545,7 @@ Third, the neural encoders are the strongest rankers on this benchmark: the dual
 
 Table~\ref{tab:ablation} presents the incremental agent ablation on the same benchmark.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Agent ablation on the diagnostic benchmark. Repeated-holdout protocol, mean $\pm$ 95\% CI over 30 seeds; $\Delta$ is the marginal Top-1 gain over the previous row. Ranking metrics are decision-independent. The coverage and selective-accuracy columns are the reason this table uses holdouts: they need a calibrated threshold. The Top-1 column is descriptive here; Table~\ref{tab:multi} gives the primary figure.}
 \label{tab:ablation}
 \centering
@@ -576,7 +576,7 @@ Fourth, the deterministic agent does not out-rank the neural baselines: the dual
 
 For methodological continuity with the traceability literature, Table~\ref{tab:legacy} additionally reports micro-precision and micro-recall at cut points 1 and 5, following the aggregation protocol of \citet{MarcusMaletic2003}.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Legacy micro-precision/recall at cut points on the diagnostic benchmark. Repeated-holdout protocol, 30 seeds; descriptive.}
 \label{tab:legacy}
 \centering
@@ -606,7 +606,7 @@ This is notable because LSI was specifically designed to capture latent semantic
 Table~\ref{tab:real} reports the same protocol applied to the NIST CSF to SP~800-53r5 corpus.
 Absolute numbers are markedly lower across the board, reflecting a genuinely harder task: 300 candidate controls instead of 110, an average of 4.7 gold controls per requirement, and no controls authored to be easy.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Results on the CSF~1.1 corpus. Repeated-holdout protocol, mean $\pm$ 95\% CI over 30 seeds, 106 requirements, 300 controls, 495 links. The two blocks use different retrieval protocols and are not directly comparable; see the text. Descriptive, as in Table~\ref{tab:ablation}.}
 \label{tab:real}
 \centering
@@ -660,7 +660,7 @@ Taken alone, these two corpora invite a tidy conclusion: reformulation helps whe
 
 Table~\ref{tab:multi} gives the reformulation contrast on all four corpora under the primary protocol: one scoring pass per requirement over the full control corpus, with LSI fitted on control documents alone. The four figures are produced the same way and can be compared with each other.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Effect of domain-aware reformulation on Top-1 accuracy, measured identically on all four corpora. One scoring pass per requirement over the full control corpus; LSI fitted on controls only. Intervals are requirement-level bootstrap, $p$ from paired sign-flip permutation. W/L/T counts requirements by whether reformulation turns a wrong top-1 into a right one, a right one into a wrong one, or leaves correctness unchanged. Ties include requirements whose top-ranked control changes without changing correctness.}
 \label{tab:multi}
 \centering
@@ -703,7 +703,7 @@ It does not establish why the split falls where it does. Our corpus differs from
 
 Two things changed between the figures an earlier version of this work reported and the figures in Table~\ref{tab:multi}: the evaluation protocol, and the population the latent-semantic backend is fitted on. Neither is about reformulation. We separate them with a three-cell factorial, reported as an unplanned analysis written after the per-corpus effects were known.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Separating the evaluation protocol from the LSI fitting population. Cell~A is repeated holdouts with LSI fitted on controls only; cell~B is repeated holdouts with LSI fitted on controls plus the training and calibration requirements, which is what the earlier version of this work used; cell~C is the primary one-pass protocol with LSI fitted on controls only. A~vs.~B isolates the fitting population, A~vs.~C isolates the protocol. Unplanned analysis.}
 \label{tab:lsi}
 \centering
@@ -771,7 +771,7 @@ To test this directly, we hold out a random 50\% of controls per seed on the dia
 This yields on average 4.4 no-match queries per seed (132 across the 30 seeds), a small denominator that we report explicitly and that widens the confidence intervals below.
 We report \emph{gap detection}, the fraction of no-match queries on which the system abstains, for three configurations that isolate the decision tools, each calibrated to the same 0.80 target coverage on answerable queries (Table~\ref{tab:openworld}).
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Open-world gap detection on the diagnostic benchmark (50\% of controls held out; mean $\pm$ 95\% CI over 30 seeds; 4.4 no-match queries per seed, 132 total). Gap detection is the abstention rate on genuine no-match queries.}
 \label{tab:openworld}
 \centering
@@ -804,7 +804,7 @@ We conclude that abstention calibrated for coverage on answerable queries does n
 Each agent decision is accompanied by an execution trace, exported verbatim by the evaluation harness and recording, at the decision step, the effective (post-adjustment) thresholds actually applied.
 Table~\ref{tab:trace} reproduces one such trace directly from the exported log (diagnostic benchmark, seed~42), for a GDPR requirement exhibiting vocabulary mismatch.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Example agent trace, generated directly from the exported log: GDPR Art.~25 (data protection by design and by default), correctly mapped to a privacy-by-design control. Confidence values in Steps~2--4 are fused RRF scores; the reformulation trigger and the effective threshold are logged as shown.}
 \label{tab:trace}
 \centering
@@ -866,7 +866,7 @@ Stated precisely: the analysis rules out mean losses of five Top-1 points or mor
 
 That pooled result is the registered answer, and it conceals the more interesting pattern. Table~\ref{tab:hybrid} gives the per-corpus figures, which are descriptive by prior declaration and carry no test.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{Gated hybrid against the dual-encoder alone, Top-1. The pooled contrast is the registered primary result; per-corpus rows are descriptive by prior declaration.}
 \label{tab:hybrid}
 \centering
@@ -1047,7 +1047,7 @@ The 30-seed logs underlying the holdout tables are included with the release; th
 Table~\ref{tab:thesaurus} reproduces the complete 20-family compliance thesaurus used by the reformulation tool.
 The 32 pattern-based concept-extraction rules are included in the released implementation.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \caption{The 20 concept families of the domain thesaurus.}
 \label{tab:thesaurus}
 \centering
