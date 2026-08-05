@@ -285,10 +285,10 @@ The complete sequence of steps forms an \texttt{AgentTrace}, the decision-proven
 \begin{algorithmic}[1]
 \REQUIRE Requirement $r$, backends $\mathcal{B}$, thesaurus $\mathcal{T}$, thresholds $\theta_c, \theta_g$
 \ENSURE Decision $d \in \{\texttt{accept}, \texttt{abstain}\}$, ranked list, trace
-
+%
 \STATE $\mathbf{s}_{\text{best}} \gets \textsc{RRF}(\{\textsc{Retrieve}(r.\text{text}, b) : b \in \mathcal{B}\})$ \COMMENT{Multi-backend fusion}
 \STATE $\text{conf}, \text{gap} \gets \textsc{TopConfGap}(\mathbf{s}_{\text{best}})$
-
+%
 \IF{$\text{gap} / \text{conf} < \tau_{\text{rel}}$}  \COMMENT{Ambiguous top-2 margin (scale-invariant)}
     \STATE $q' \gets \textsc{Reformulate}(r.\text{text}, \mathcal{T})$ \COMMENT{Query expansion}
     \STATE $\mathbf{s}_{\text{ref}} \gets \textsc{RRF}(\{\textsc{Retrieve}(q', b) : b \in \mathcal{B}\})$
@@ -297,7 +297,7 @@ The complete sequence of steps forms an \texttt{AgentTrace}, the decision-proven
         \STATE $\mathbf{s}_{\text{best}} \gets \textsc{Decompose\&Aggregate}(r, \mathcal{B})$ \COMMENT{Optional; own ablation flag}
     \ENDIF
 \ENDIF
-
+%
 \STATE $c^* \gets \arg\max_j \mathbf{s}_{\text{best}}[j]$; \quad $\theta'_c \gets \theta_c$, $\theta'_g \gets \theta_g$
 \STATE $\rho \gets \textsc{CrossRef}(r.\text{framework}, c^*.\text{family})$ \COMMENT{Corroboration (decision only)}
 \STATE $\theta'_c \gets \theta'_c \cdot (1 - 0.15\rho)$ \COMMENT{Relax threshold if corroborated}
@@ -305,13 +305,13 @@ The complete sequence of steps forms an \texttt{AgentTrace}, the decision-proven
     \STATE $\theta'_c \gets \theta'_c \cdot 1.1$, \quad $\theta'_g \gets \theta'_g \cdot 1.1$ \COMMENT{Tighten if inconsistent}
 \ENDIF
 \STATE $\text{conf}, \text{gap} \gets \textsc{TopConfGap}(\mathbf{s}_{\text{best}})$ \COMMENT{Ranking never reordered by CrossRef/Verify}
-
+%
 \IF{$\text{conf} \geq \theta'_c$ \AND $\text{gap} \geq \theta'_g$}
     \RETURN $\texttt{accept}$, ranked list, trace
 \ELSE
     \RETURN $\texttt{abstain}$, ranked list, trace
 \ENDIF
-\end{algorithmic}
+%\end{algorithmic}
 \end{algorithm}
 
 
