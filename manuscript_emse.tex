@@ -71,7 +71,7 @@ Regulatory Traceability}
 \begin{abstract}
 \textbf{Context.} Compliance mapping links regulatory requirements to the controls that address them. Public collections are scarce, so methods are usually measured on benchmarks their own authors build.
 
-\textbf{Objective.} We ask how far one such measurement carries.
+\textbf{Objective.} We test whether the measured benefit of domain-aware query reformulation generalizes from an author-constructed benchmark to three externally authored corpora.
 
 \textbf{Method.} We score a frozen set of retrieval methods once per requirement over the full control corpus, on four corpora: one we built to isolate vocabulary mismatch, and three taking their texts and links from NIST, which share a 300-control target corpus and so are externally authored but not independent.
 
@@ -130,7 +130,7 @@ Third, a preregistered answer to RQ3 (Section~\ref{sec:hybrid}). The gated hybri
 
 Fourth, a formalization of compliance mapping as a \emph{selective} traceability recovery problem (Section~\ref{sec:formulation}) that separates ranking quality from decision quality, together with the multi-step architecture used as the vehicle for the study (Section~\ref{sec:architecture}).
 
-The system is the instrument here, not the claim. Once ranking is decoupled from the accept/abstain decision and compared at the query level, no deterministic component significantly improves ranking on any real corpus, the agent holds no coverage or selective-accuracy advantage, and an open-world evaluation shows its abstention detects only a minority of constructed no-match cases.
+The system is the instrument here, not the claim. Once ranking is decoupled from the accept/abstain decision and compared at the requirement level, no added deterministic component significantly improves ranking on any external NIST-derived corpus, the agent holds no coverage or selective-accuracy advantage, and an open-world evaluation shows its abstention detects only a minority of constructed no-match cases.
 We draw no compensating qualitative claim from this.
 The traces record the steps behind each decision, which is a provenance property; whether they help an auditor is an empirical question this paper does not test.
 All four corpora, the frozen analysis specification, the baselines and the implementation are public, and the preregistration is at \texttt{doi:10.17605/OSF.IO/NZXRV}.
@@ -174,7 +174,7 @@ More recently, deep learning approaches have been applied to traceability.
 \citet{Guo2017} used recurrent neural networks to learn distributed representations of artifacts.
 Pre-trained language models such as BERT~\citep{Devlin2019} and domain-adapted variants (Legal-BERT~\citep{Chalkidis2020}, SecureBERT~\citep{Aghaei2022}) offer richer representations but require domain-specific fine-tuning.
 
-Our work differs from these approaches in three ways: (1)~we address the \emph{compliance} variant of traceability where open-world non-matches (gaps) are first-class outcomes; (2)~we adopt a multi-step reasoning architecture rather than single-shot retrieval; and (3)~we evaluate the system's \emph{decision quality} (when to accept vs.\ abstain) alongside ranking quality.
+Our work differs from these approaches in three ways: (1)~we address the \emph{compliance} variant of traceability where open-world non-matches (gaps) are first-class outcomes; (2)~we adopt a multi-step retrieval architecture rather than single-shot retrieval; and (3)~we evaluate the system's \emph{decision quality} (when to accept vs.\ abstain) alongside ranking quality.
 
 \subsection{Retrieval techniques: reformulation, fusion, abstention and language models}
 \label{sec:related-methods}
@@ -198,7 +198,7 @@ Selective prediction has been applied to classification~\citep{Geifman2019} and 
 
 The ReAct framework~\citep{Yao2023} demonstrated that interleaving reasoning traces with tool invocations enables language model agents to solve complex tasks through multi-step planning.
 Subsequent work has applied agentic patterns to code generation~\citep{Yang2024}, scientific discovery~\citep{Bran2024}, and information retrieval~\citep{Shao2024}.
-We adapt the ReAct pattern to compliance mapping, where the ``tools'' are retrieval backends, a domain thesaurus, and cross-framework knowledge---all rule-based, so each step and its inputs can be recorded.
+We adapt the ReAct pattern to compliance mapping, where the ``tools'' are retrieval backends, a domain thesaurus, and cross-framework knowledge. Not all of these are rule-based: latent semantic indexing and the pre-trained encoders are learned. What they share is that every component runs at fixed inference settings and exposes its inputs, transformations, scores and outputs, so each step can be recorded rather than inferred.
 
 Language models have also been used as retrieval components directly rather than as planners.
 Retrieval-augmented generation~\citep{Lewis2020} conditions generation on retrieved passages, and a line of work uses the model itself as a reranker: \citet{Sun2023} show that an instruction-following model can reorder a candidate list competitively with supervised cross-encoders, without task-specific training.
@@ -345,7 +345,7 @@ Finally, the \emph{calibrated selective decision} governs the accept/abstain out
 
 We evaluate on four corpora: one we constructed, and three assembled entirely from artifacts published by NIST, in which both the texts and the ground-truth mappings were authored independently of this work.
 The engineered corpus tells us \emph{why} a component helps, because we control the degree of vocabulary mismatch in it.
-The three external corpora tell us whether that help survives contact with authentic regulatory text, and, because there are three rather than one, whether a conclusion drawn from any single one of them would have held on the others.
+The three external corpora tell us whether that help survives contact with externally authored framework and statutory text, and, because there are three rather than one, whether a conclusion drawn from any single one of them would have held on the others.
 
 Table~\ref{tab:corpora} summarizes them. All three external corpora map into the same 300-control corpus drawn from SP~800-53, so differences between them are differences in the regulatory side of the mapping rather than in the target catalogue.
 
@@ -458,7 +458,7 @@ To isolate each component's marginal contribution, we evaluate six incrementally
 We further compare against three lexical baselines (TF-IDF, BM25, LSI) evaluated independently, a neural dual-encoder (\texttt{all-MiniLM-L6-v2}~\citep{Reimers2019}) using cosine similarity over sentence embeddings, and a cross-encoder reranker (\texttt{ms-marco-MiniLM-L-6-v2}) applied to the top-20 dual-encoder candidates.
 Because ranking-shaping and decision-shaping tools are separated in the architecture (Section~\ref{sec:architecture}), the +CrossRef and Full Agent rows differ from +Decomp only in their decision profile, never in the ranking they produce.
 
-Each agent variant is calibrated \emph{end-to-end}: its base acceptance thresholds are chosen by running the complete pipeline---including reformulation and the corroboration and verification threshold adjustments---on the calibration split, so that the reported operating point reflects the target coverage (0.80) rather than the coverage of an intermediate, pre-adjustment ranking. All experiments are repeated over 30 random seeds.
+Each agent variant is calibrated \emph{end-to-end}: its base acceptance thresholds are chosen by running the complete pipeline---including reformulation and the corroboration and verification threshold adjustments---on the calibration split, so that the reported operating point reflects the target coverage (0.80) rather than the coverage of an intermediate, pre-adjustment ranking. Repeated-holdout decision analyses use 30 seeds; the primary ranking results are computed in a single full-population pass.
 
 \label{sec:protocol-stats}
 Three further points about the statistics, all prompted by weaknesses we identified in earlier versions of this work.
@@ -843,14 +843,14 @@ The trace shows the mechanism concretely.
 Single-shot BM25 (Step~1) happens to rank the correct control first, but fusion (Step~2) reorders a different control to the top with a near-zero relative top-2 margin, which trips the ambiguity test and triggers reformulation.
 Reformulation (Step~3) injects the implementation vocabulary---``privacy by design,'' ``data minimization''---and re-retrieval (Step~4) restores the correct control.
 The decision tools then operate without reordering: corroboration finds cross-framework support ($\rho=1.0$) and relaxes the confidence threshold by 15\%, verification confirms bidirectional consistency (the control's text recovers the requirement at reverse rank~1 of 58), and the agent accepts against the logged effective threshold of 0.045.
-This is the regime in which reformulation earns its cost. On the external corpora the same steps run and the expansion still reorders the ranking, but the reordering rarely moves a correct control into first place (Section~\ref{sec:results-multi}), so the trace looks the same and the outcome does not improve.
+The example shows how an expansion can move a correct control to the top. On the external corpora the same steps run and the expansion still reorders the ranking, but the reordering rarely moves a correct control into first place (Section~\ref{sec:results-multi}), so the trace looks the same and the outcome does not improve.
 
 \noindent\textbf{The constants.}
 The workflow contains four hand-set constants: the relative top-2 margin $\tau_{\text{rel}}$ that triggers reformulation, the two corroboration relaxation factors, and the verification tightening factor.
 We check that our conclusions do not depend on their exact values.
-Varying $\tau_{\text{rel}}$ over $\{0.05, 0.10, 0.15, 0.20\}$ leaves the diagnostic +Reform ranking identical at every setting, to three decimal places in both Top-1 and MRR@5. We report the invariance rather than the level: this sweep is a separate run whose absolute Top-1 sits slightly above the ablation of Table~\ref{tab:ablation}, and we have not accounted for that difference, so the released \texttt{sensitivity.csv} is the reference for the figures themselves. On this benchmark the fused top-2 relative margins are consistently small, so the gate fires for nearly every query regardless of the threshold, and whatever benefit there is comes from the expansion itself rather than from selective triggering.
-At that threshold the gate is close to inert as a selection mechanism, firing on 93\% or more of requirements on every corpus.
-It does not follow that reformulation is always on, which is what an earlier version of this work concluded from the firing rate alone; Section~\ref{sec:results-multi} gives the four counts that separate invocation from effect.
+We swept $\tau_{\text{rel}}$ over $\{0.05, 0.10, 0.15, 0.20\}$ under the primary protocol, so the output is directly comparable to Table~\ref{tab:multi}. The reformulation effect is identical at every setting on every corpus: $+0.121$, $+0.028$, $0.000$ and $+0.032$, to four decimal places, with a range across settings of exactly zero.
+The gate itself is not inert to the constant, which is what makes the invariance informative. Raising $\tau_{\text{rel}}$ from $0.05$ to $0.20$ increases the number of requirements the gate fires on from 100 to 106 of 106 on CSF, from 60 to 68 of 68 on HIPAA, and from 86 to 94 of 94 on the Privacy Framework, and increases the number of expansions correspondingly. Those additional expansions change no outcome. The constant therefore governs how often the tool runs, not what the paper concludes from it, and reformulation's contribution comes from the expansion itself rather than from selective triggering.
+An earlier version of this work read the firing rate alone as showing reformulation was always on; Section~\ref{sec:results-multi} gives the four counts that separate invocation from effect.
 The decision constants affect only the accept/abstain boundary, and because thresholds are recalibrated to the coverage target, their main measurable effect is on open-world gap detection; sweeping the verification-tightening factor over $\{0.05, 0.10, 0.20\}$ moves gap detection only within $0.25$--$0.31$ at essentially fixed coverage ($\approx 0.79$), so no setting lifts gap detection out of the weak regime reported in Section~\ref{sec:results-openworld}.
 
 
@@ -932,18 +932,18 @@ Whether that inspectability changes an auditor's work is untested here, so we re
 
 \subsection{What a registered null is worth}
 
-The gated hybrid in Section~\ref{sec:hybrid} returned a non-inferiority result without evidence of superiority. Reported without a registration, that result would be hard to weigh, because a reader has no way to know whether it was the analysis we intended or the least embarrassing of several we tried. Registration does not make such a result publishable by itself; what it does is constrain outcome-dependent analysis, so that the reported test is demonstrably the one specified in advance. The mechanism is worth spelling out because it is cheap and rarely used in this literature.
+The gated hybrid in Section~\ref{sec:hybrid} returned a non-inferiority result without evidence of superiority. Reported without a registration, that result would be hard to weigh, because a reader has no way to know whether it was the analysis we intended in advance or the most favourable of several we could have run. Registration does not make such a result publishable by itself; what it does is constrain outcome-dependent analysis, so that the reported test is demonstrably the one specified in advance. The mechanism is worth spelling out because it is cheap and rarely used in this literature.
 
-Three provisions did the work. The endpoint, margin and test order were fixed in code before the data were touched, so the superiority test could only run if non-inferiority passed, and no second test could be substituted if the first disappointed. The secondary variants, including the hard fallback that turned out to be worse everywhere, were declared in advance, so the better-performing gate cannot be presented as a principled choice made ahead of time. And the analysis inputs were hashed, so a reader can check that the numbers came from the matrices we said they came from.
+Three provisions did the work. The endpoint, margin and test order were fixed in code before the registered contrast was computed, so the superiority test could only run if non-inferiority passed, and no second test could be substituted if the first disappointed. The secondary variants, including the hard fallback that turned out to be worse everywhere, were declared in advance, so the better-performing gate cannot be presented as a principled choice made ahead of time. And the analysis inputs were hashed, so a reader can check that the numbers came from the matrices we said they came from.
 
-The cost was a few hours. The benefit is that a result of this shape, which offers no headline improvement, can be reported as evidence rather than discarded, which matters in a subfield where the space of plausible retrieval combinations is large and the incentive to report only the combination that worked is correspondingly strong.
+The benefit is that a result of this shape, which offers no headline improvement, can be reported as evidence rather than discarded, which matters in a subfield where the space of plausible retrieval combinations is large and the incentive to report only the combination that worked is correspondingly strong.
 
 We also disclose what registration did not fix. The hypothesis was generated from the same corpora that tested it, so the result is preregistered but exploratory, and one secondary arm was computed before registration and is reported as observed rather than preregistered.
 
 \subsection{Ranking, decisions, and what the agent does not buy}
 
 A recurring theme in our results is the distinction between \emph{ranking quality} (how well are controls ordered?) and \emph{decision quality} (when should the system commit to a mapping, and when abstain?).
-Our first revision of this work inadvertently conflated the two by computing ranking metrics only over accepted queries, which let a coverage change masquerade as a ranking gain; the present results compute ranking from the full candidate list regardless of the decision, and report coverage, selective accuracy, and open-world gap detection as separate decision metrics.
+Ranking is computed from the full candidate list regardless of the accept/abstain decision, and coverage, selective accuracy and open-world gap detection are reported as separate decision metrics. Computing ranking only over accepted queries lets a coverage change masquerade as a ranking gain, which is what an earlier version of this work did.
 This separation is what makes the component analysis trustworthy, and it changes the conclusions: several apparent ranking gains dissolve once decoupled from coverage, and once we also apply requirement-level rather than seed-level inference (Section~\ref{sec:protocol-stats}), the agent turns out to hold neither a ranking edge nor a decision-quality edge over the strongest baselines. What remains is a negative result about the components, not a qualitative advantage recovered in their place.
 
 The distinction is nonetheless underappreciated in the traceability literature, which focuses almost exclusively on ranking metrics.
@@ -976,7 +976,7 @@ Finally, the open-world evaluation manufactures no-match queries by holding out 
 
 \noindent\textbf{Internal validity.}
 The domain thesaurus and concept patterns are hand-crafted by the authors, who are practicing cybersecurity specialists, creating a risk of overfitting the thesaurus to the diagnostic benchmark.
-We mitigated this by separating thesaurus design (general domain knowledge) from benchmark design (specific regulatory texts) and by reporting over 30 random splits with a calibration split disjoint from test.
+We separated thesaurus design (general domain knowledge) from benchmark design (specific regulatory texts), but that is a procedural safeguard and not a test. Repeated splits do not address it either: resampling the same corpus cannot reveal that the corpus and the thesaurus were built by the same authors.
 The external corpora provide the stronger safeguard: the thesaurus was frozen before any of them was assembled, and neither their texts nor their links were authored by us.
 The smaller effects on those corpora are therefore not an artifact of tuning against them. They are not a bound on transfer either. Each rests on four or five discordant requirements and moves by roughly its own magnitude under a change of LSI fitting population, so they establish that the diagnostic result did not recur rather than measuring how much of it survives.
 
