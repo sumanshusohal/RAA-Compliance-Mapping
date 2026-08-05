@@ -297,8 +297,16 @@ def check(out):
     if "Online Resource" not in text:
         notes.append("the manuscript does not mention Online Resource 1")
 
-    n_bib = len(re.findall(r"\\bibitem", text))
-    n_doi = len(re.findall(r"doi\.org|\\doi\{", text, re.I))
+    # Count DOIs inside the bibliography only. Counting the whole file also
+    # caught the OSF preregistration DOI in the declarations, so 39
+    # references were reported as 40.
+    try:
+        bib = text[text.index(r"\begin{thebibliography}"):
+                   text.index(r"\end{thebibliography}")]
+    except ValueError:
+        bib = ""
+    n_bib = len(re.findall(r"\\bibitem", bib))
+    n_doi = len(re.findall(r"doi\.org|\\doi\{", bib, re.I))
     if n_doi < n_bib:
         notes.append(f"{n_doi} of {n_bib} references carry a DOI link")
 
