@@ -61,31 +61,43 @@ Article : Cross-Corpus Evaluation of Domain-Aware Query Reformulation for
 Journal : Empirical Software Engineering
 Authors : Sumanshu Sohal (corresponding), University of the Cumberlands,
           Williamsburg, KY, USA, and Independent Researcher, Washington, DC,
-          USA. sumanshu.95s@outlook.com
-          Darshankumar Prajapati, Independent Researcher, Old Bridge, NJ, USA.
+          USA. sumanshu.95s@outlook.com, ORCID 0009-0003-3379-5495
+          Darshankumar Prajapati, Independent Researcher, Old Bridge, NJ,
+          USA. darshan3298@gmail.com, ORCID 0009-0006-9777-3887
 
 CONTENTS
 
-  corpora/diagnostic/            58 requirements, 110 controls, 86 links.
-                                 Author-constructed to isolate vocabulary
-                                 mismatch.
-  corpora/csf_1.1/               106 subcategories, 300 controls, 495 links.
-  corpora/hipaa/                 68 requirements, 300 controls, 274 links.
-  corpora/privacy_framework/     94 subcategories, 300 controls, 456 links.
+Files are flat and uniquely named, because the submission system extracts
+this archive and flattens it; per-corpus folders would collide.
 
-  Each corpus directory holds regs.csv, controls.csv and mappings.csv. The
-  three external corpora also carry provenance.json, written by the builder
-  that generated them, recording every source artifact with its SHA-256.
+  diagnostic_regs.csv              58 requirements
+  diagnostic_controls.csv          110 controls, author-constructed to
+                                   isolate vocabulary mismatch
+  diagnostic_mappings.csv          86 links
+
+  csf_1.1_regs.csv                 106 CSF 1.1 subcategories
+  csf_1.1_mappings.csv             495 links
+  hipaa_regs.csv                   68 HIPAA Security Rule requirements
+  hipaa_mappings.csv               274 links
+  privacy_framework_regs.csv       94 Privacy Framework subcategories
+  privacy_framework_mappings.csv   456 links
+
+  sp800-53r5_controls.csv          the 300-control target catalogue shared by
+                                   all three external corpora. It is one file
+                                   because the three are byte-identical; every
+                                   external mapping file refers to it.
+
+  *_provenance.json                written by the builder that generated each
+                                   external corpus, recording every source
+                                   artifact with its SHA-256.
 
   REPRODUCE.md    how to regenerate every number in the article
   SOURCES.md      provenance and SHA-256 of every federal source artifact
   LICENSE         MIT, covering the software in the code repository
   LICENSE-DATA    CC BY 4.0, covering these corpora
 
-The three external corpora share one 300-control corpus drawn from
-SP 800-53r5, so their controls.csv files are byte-identical. They are
-externally authored but not independent of one another, which the article
-treats as its main limitation.
+The three external corpora are externally authored but not independent of one
+another, which the article treats as its main limitation.
 
 Requirement text differs in origin. CSF 1.1 and the Privacy Framework are
 NIST publications. The HIPAA Security Rule is statutory text issued by the
@@ -117,7 +129,7 @@ def build(out):
         shutil.rmtree(out)
     overleaf = os.path.join(out, "overleaf")
     os.makedirs(overleaf)
-    os.makedirs(os.path.join(out, "supplementary", "corpora"))
+    os.makedirs(os.path.join(out, "supplementary"))
 
     # overleaf/ belongs to make_emse.py: it writes main.tex and copies the
     # vendored class files. Calling it here rather than copying its output
@@ -136,16 +148,26 @@ def build(out):
     for name in ("cover_letter.tex", "title_page.tex"):
         shutil.copy(os.path.join(HERE, name), os.path.join(out, name))
 
+    # Flat, uniquely named. Editorial Manager extracts the archive and
+    # flattens it, so per-corpus directories collapse into one namespace and
+    # four files called regs.csv collide; only the first is accepted.
+    supp_data = os.path.join(out, "supplementary")
     for label, directory, prefix in CORPORA:
-        dst = os.path.join(out, "supplementary", "corpora", label)
-        os.makedirs(dst)
-        for stem in ("regs", "controls", "mappings"):
+        for stem in ("regs", "mappings"):
             src = os.path.join(HERE, directory, f"{prefix}{stem}.csv")
             if os.path.exists(src):
-                shutil.copy(src, os.path.join(dst, f"{stem}.csv"))
+                shutil.copy(src, os.path.join(supp_data, f"{label}_{stem}.csv"))
         prov = os.path.join(HERE, directory, "provenance.json")
         if os.path.exists(prov):
-            shutil.copy(prov, os.path.join(dst, "provenance.json"))
+            shutil.copy(prov, os.path.join(supp_data,
+                                           f"{label}_provenance.json"))
+
+    # The three external corpora share one 300-control catalogue, byte for
+    # byte, so it ships once rather than three times under three names.
+    shutil.copy(os.path.join(HERE, "diagnostic_benchmark", "diag_controls.csv"),
+                os.path.join(supp_data, "diagnostic_controls.csv"))
+    shutil.copy(os.path.join(HERE, "csf_benchmark", "csf_controls.csv"),
+                os.path.join(supp_data, "sp800-53r5_controls.csv"))
 
     for name in SUPPLEMENTARY_DOCS:
         src = os.path.join(HERE, name)
@@ -329,8 +351,13 @@ def check(out):
             f"(first difference at line {where}); this is the file that gets "
             "uploaded, so rebuild with python make_submission.py")
 
-    if not os.path.isdir(os.path.join(out, "supplementary", "corpora")):
-        problems.append("supplementary/corpora is missing")
+    supp = os.path.join(out, "supplementary")
+    flat = [f for f in os.listdir(supp)] if os.path.isdir(supp) else []
+    if len(flat) != len(set(f.lower() for f in flat)):
+        problems.append("supplementary/ has colliding filenames; Editorial "
+                        "Manager flattens the archive and will reject them")
+    if not any(f.endswith("_regs.csv") for f in flat):
+        problems.append("supplementary/ has no corpus files")
     if not any(f.lower().startswith("title") and f.lower().endswith(".pdf")
                for f in os.listdir(out)):
         problems.append("no compiled title page; Editorial Manager lists a "
