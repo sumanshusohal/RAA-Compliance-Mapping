@@ -130,7 +130,7 @@ Third, a preregistered answer to RQ3 (Section~\ref{sec:hybrid}). The gated hybri
 
 Fourth, a formalization of compliance mapping as a \emph{selective} traceability recovery problem (Section~\ref{sec:formulation}) that separates ranking quality from decision quality, together with the multi-step architecture used as the vehicle for the study (Section~\ref{sec:architecture}).
 
-The system is the instrument here, not the claim. Once ranking is decoupled from the accept/abstain decision and compared at the query level, no deterministic component significantly improves ranking on any real corpus, the agent holds no coverage or selective-accuracy advantage, and an open-world evaluation shows its abstention detects only a minority of genuine no-match gaps.
+The system is the instrument here, not the claim. Once ranking is decoupled from the accept/abstain decision and compared at the query level, no deterministic component significantly improves ranking on any real corpus, the agent holds no coverage or selective-accuracy advantage, and an open-world evaluation shows its abstention detects only a minority of constructed no-match cases.
 We draw no compensating qualitative claim from this.
 The traces record the steps behind each decision, which is a provenance property; whether they help an auditor is an empirical question this paper does not test.
 All four corpora, the frozen analysis specification, the baselines and the implementation are public, and the preregistration is at \texttt{doi:10.17605/OSF.IO/NZXRV}.
@@ -232,7 +232,7 @@ A constructed collection is a legitimate diagnostic instrument, but its authors 
 We therefore evaluate the same frozen methods on one engineered corpus and three externally authored ones, whose source texts and mappings were not written by us, and report the contrast between them as the result rather than reporting the best number.
 
 The three external corpora are independent of us but not of each other.
-All three come from the NIST ecosystem and map to the same SP~800-53 control catalogue, so they are correlated evaluation corpora rather than independent samples of regulatory text, and we treat them as such throughout.
+All three map to the same SP~800-53 control catalogue through NIST-authored crosswalks, so they are correlated evaluation corpora rather than independent samples of regulatory text, and we treat them as such throughout.
 We are not aware of prior work in regulatory traceability that compares conclusions drawn from an engineered corpus against externally authored ones, though we make this claim from familiarity with the literature rather than from a structured search.
 Section~\ref{sec:results} shows the contrast is large enough to reverse a conclusion drawn from the engineered corpus alone.
 
@@ -276,11 +276,11 @@ The key design question is the precision--coverage trade-off: higher coverage is
 
 The RAA processes each regulatory requirement $r$ through a fixed multi-stage sequence (Algorithm~\ref{alg:agent}).
 The sequence is parameterized by a set of \emph{tools}---stateless, deterministic functions invoked in a fixed order, gated by scale-invariant confidence tests rather than by open-ended planning.
-Each invocation produces an \texttt{AgentStep} record $(s, a, \text{input}, o)$ consisting of a reasoning statement $s$, an action $a$, its input, and the resulting observation $o$.
+Each invocation produces an \texttt{AgentStep} record $(s, a, \text{input}, o)$ consisting of a templated status string $s$, an action $a$, its input, and the resulting observation $o$.
 The complete sequence of steps forms an \texttt{AgentTrace}, the decision-provenance record for that mapping. Whether such a record is useful to an auditor is untested here.
 
 \begin{algorithm}[t]
-\caption{RAA Reasoning Loop}
+\caption{RAA execution loop}
 \label{alg:agent}
 \begin{algorithmic}[1]
 \REQUIRE Requirement $r$, backends $\mathcal{B}$, thesaurus $\mathcal{T}$, thresholds $\theta_c, \theta_g$
@@ -370,7 +370,7 @@ Privacy Fw. & NIST crosswalk & 94 & 300 & 456 & .840 \\
 
 Two properties of this design need stating before the results.
 
-The three external corpora are independent of us but not of each other. All are NIST products mapping into one catalogue, so they are correlated evaluation corpora rather than independent samples of regulatory text, and a result that holds across all three is weaker evidence than three unrelated corpora would provide. We treat this as a limitation throughout and return to it in Section~\ref{sec:threats}.
+The three external corpora are independent of us but not of each other. All map into one catalogue through NIST-authored crosswalks, so they are correlated evaluation corpora rather than independent samples of regulatory text, and a result that holds across all three is weaker evidence than three unrelated corpora would provide. We treat this as a limitation throughout and return to it in Section~\ref{sec:threats}.
 
 NIST describes these mappings as concept relationship mappings rather than assertions of implementation, and marks the HIPAA OLIR ``Comprehensive: No''~\citep{NISTIR8477}. They are therefore a silver standard. A predicted link that the crosswalk does not list is not automatically wrong, and we say ``addresses'' rather than ``implements'' throughout.
 
@@ -471,9 +471,9 @@ Third, we report wins, losses and ties with every paired effect. Top-1 is binary
 
 Equivalence against a pre-specified $\pm 0.05$ margin is reported as a secondary result using two one-sided $t$ tests. We flag any equivalence decision whose $p$ falls within $0.01$ of $\alpha$, because with so few discordant requirements such a decision can turn on a single one. We did not implement an exact matched-pair equivalence procedure; the exact sign tests reported alongside address superiority only, and say nothing about whether an effect lies inside a margin.
 
-The open-world evaluation of Section~\ref{sec:results-openworld} additionally holds out a random 50\% of controls per seed to manufacture genuine no-match queries.
+The open-world evaluation of Section~\ref{sec:results-openworld} additionally holds out a random 50\% of controls per seed to manufacture no-match queries.
 
-\medskip\noindent\textbf{Use of AI tools in this study.} No component of the system under evaluation is a language model, and no result reported here was produced by one. The pipeline contains no generative component and uses fixed inference settings: lexical backends, a hand-written thesaurus and regular-expression patterns, and two pre-trained sentence encoders used as fixed feature extractors at pinned revisions. Generative AI assistants were used during the conduct of the work in two roles, both of which we state so that a reader can judge them. They were used to review and refactor the evaluation harness and the analysis scripts, including the provenance tooling described above, and to review and edit the prose of this manuscript. Every statistical procedure, number, table and citation was independently verified by the authors against the committed records, and the authors take full responsibility for the content.
+\medskip\noindent\textbf{Use of AI tools in this study.} No component of the system under evaluation is a \emph{generative} language model, and no result reported here was produced by one. Two of the baselines are pre-trained transformer encoders, which are language models in the representational sense; they are used only as fixed feature extractors at pinned revisions, and they generate no text. The pipeline contains no generative component and uses fixed inference settings: lexical backends, a hand-written thesaurus and regular-expression patterns, and two pre-trained sentence encoders used as fixed feature extractors at pinned revisions. Generative AI assistants were used during the conduct of the work in two roles, both of which we state so that a reader can judge them. They were used to review and refactor the evaluation harness and the analysis scripts, including the provenance tooling described above, and to review and edit the prose of this manuscript. Every statistical procedure, number, table and citation was independently verified by the authors against the committed records, and the authors take full responsibility for the content.
 
 
 %% ================================================================
@@ -481,7 +481,7 @@ The open-world evaluation of Section~\ref{sec:results-openworld} additionally ho
 \label{sec:results}
 %% ================================================================
 
-\subsection{All methods on one protocol}
+\subsection{Cross-corpus comparison, and the per-corpus ablations}
 \label{sec:results-unified}
 
 Table~\ref{tab:unified} is the study's single like-for-like comparison. Every method is scored once per requirement over the full control corpus, with LSI fitted on controls only, so the four columns and the seven rows are all on the same footing.
@@ -666,7 +666,7 @@ Two readings of that number are worth keeping apart. As an end-to-end comparison
 Third, taken with Section~\ref{sec:results-synth}, the deterministic agent never significantly out-ranks a neural baseline under a matched protocol on either benchmark.
 It holds no decision-quality edge either: TF-IDF has higher coverage (0.792 vs.\ 0.721) and the cross-encoder pipeline higher selective accuracy (0.639 vs.\ 0.478).
 
-Taken alone, these two corpora invite a tidy conclusion: reformulation helps where the vocabulary gap is wide and is inert where it is narrow. That is what an earlier version of this work concluded; it was submitted and rejected on that basis rather than published. The next three subsections put all four corpora on one protocol and test the reading.
+Taken alone, these two corpora invite a tidy conclusion: reformulation helps where the vocabulary gap is wide and is inert where it is narrow. That is what an earlier version of this work concluded, on two corpora. The next three subsections put all four corpora on one protocol and test the reading.
 
 \subsection{Does the reformulation benefit generalize? (RQ1)}
 \label{sec:results-multi}
@@ -780,12 +780,12 @@ This leaves the agent without a demonstrated case on accuracy, and we do not con
 
 The evaluations above assume every requirement has at least one correct control.
 In deployment, the more consequential question is often the open-world one: can the system recognize when \emph{no} adequate control exists and abstain, flagging a compliance gap?
-To test this directly, we hold out a random 50\% of controls per seed on the diagnostic benchmark; a test requirement whose gold controls are all removed becomes a genuine no-match query on which the correct behavior is to abstain.
+To test this directly, we hold out a random 50\% of controls per seed on the diagnostic benchmark; a test requirement whose gold controls are all removed becomes a constructed no-match query on which the correct behaviour is to abstain. These are manufactured rather than naturally occurring gaps, which Section~\ref{sec:threats} treats as a limit on what the figures below can be read to mean.
 This yields on average 4.4 no-match queries per seed (132 across the 30 seeds), a small denominator that we report explicitly and that widens the confidence intervals below.
 We report \emph{gap detection}, the fraction of no-match queries on which the system abstains, for three configurations that isolate the decision tools, each calibrated to the same 0.80 target coverage on answerable queries (Table~\ref{tab:openworld}).
 
 \begin{table}[htbp]
-\caption{Open-world gap detection on the diagnostic benchmark (50\% of controls held out; mean $\pm$ 95\% CI over 30 seeds; 4.4 no-match queries per seed, 132 total). Gap detection is the abstention rate on genuine no-match queries.}
+\caption{Open-world gap detection on the diagnostic benchmark (50\% of controls held out; mean $\pm$ 95\% CI over 30 seeds; 4.4 no-match queries per seed, 132 total). Gap detection is the abstention rate on constructed no-match queries, made by removing a requirement's gold controls.}
 \label{tab:openworld}
 \centering
 \setlength{\tabcolsep}{3pt}
@@ -848,7 +848,7 @@ This is the regime in which reformulation earns its cost. On the external corpor
 \noindent\textbf{The constants.}
 The workflow contains four hand-set constants: the relative top-2 margin $\tau_{\text{rel}}$ that triggers reformulation, the two corroboration relaxation factors, and the verification tightening factor.
 We check that our conclusions do not depend on their exact values.
-Varying $\tau_{\text{rel}}$ over $\{0.05, 0.10, 0.15, 0.20\}$ leaves the diagnostic +Reform ranking unchanged (Top-1 $0.658 \pm 0.042$ at every setting): on this benchmark the fused top-2 relative margins are consistently small, so the gate fires for nearly every query regardless of the threshold, and whatever benefit there is comes from the expansion itself rather than from selective triggering.
+Varying $\tau_{\text{rel}}$ over $\{0.05, 0.10, 0.15, 0.20\}$ leaves the diagnostic +Reform ranking identical at every setting, to three decimal places in both Top-1 and MRR@5. We report the invariance rather than the level: this sweep is a separate run whose absolute Top-1 sits slightly above the ablation of Table~\ref{tab:ablation}, and we have not accounted for that difference, so the released \texttt{sensitivity.csv} is the reference for the figures themselves. On this benchmark the fused top-2 relative margins are consistently small, so the gate fires for nearly every query regardless of the threshold, and whatever benefit there is comes from the expansion itself rather than from selective triggering.
 At that threshold the gate is close to inert as a selection mechanism, firing on 93\% or more of requirements on every corpus.
 It does not follow that reformulation is always on, which is what an earlier version of this work concluded from the firing rate alone; Section~\ref{sec:results-multi} gives the four counts that separate invocation from effect.
 The decision constants affect only the accept/abstain boundary, and because thresholds are recalibrated to the coverage target, their main measurable effect is on open-world gap detection; sweeping the verification-tightening factor over $\{0.05, 0.10, 0.20\}$ moves gap detection only within $0.25$--$0.31$ at essentially fixed coverage ($\approx 0.79$), so no setting lifts gap detection out of the weak regime reported in Section~\ref{sec:results-openworld}.
@@ -861,7 +861,7 @@ The decision constants affect only the accept/abstain boundary, and because thre
 
 Everything reported so far is exploratory. The corpora existed before any analysis plan was written, and the plan was not timestamped, so nothing above can claim to have been specified in advance. This section is different, and we describe how it differs before giving the result.
 
-Section~\ref{sec:results} showed that lexical and semantic retrieval fail on different requirements. On the Privacy Framework corpus five methods score exactly $35/94$ while lexical fusion and the dual-encoder each uniquely solve 15 requirements the other misses, and the oracle union of the two reaches $50/94$. Aggregate ties of this kind conceal complementary errors, and they suggest a combination that is selective rather than uniform: use the dual-encoder when it is confident, and consult the lexical side only when it is not.
+Section~\ref{sec:results} showed that lexical and semantic retrieval fail on different requirements. On the Privacy Framework corpus lexical fusion solves $32/94$ and the dual-encoder $35/94$, yet each uniquely solves requirements the other misses, 14 and 17 respectively, so their oracle union reaches $49/94$. Aggregate ties of this kind conceal complementary errors, and they suggest a combination that is selective rather than uniform: use the dual-encoder when it is confident, and consult the lexical side only when it is not.
 
 That suggestion came from looking at these corpora, which is exactly why the test of it had to be constrained in advance. We therefore froze the design in an executable specification, hashed it, and registered it publicly before computing the contrast.\footnote{\texttt{doi:10.17605/OSF.IO/NZXRV}. The registration records the analysis code, its tests, the input generator, and SHA-256 hashes of every input score matrix.} The registration fixes the primary arm, the comparator, the endpoint, the estimand, the non-inferiority margin, the order of the two tests, the exclusion of the engineered corpus from the primary estimate, and a list of prohibited actions.
 
@@ -902,7 +902,7 @@ Diagnostic & 58 & .621 & .569 & $-.052$ & .48 \\
 \end{tabular}}
 \end{table}
 
-A gain of $+0.085$ on CSF sits against a loss of $-0.088$ on HIPAA. A study evaluating this gate on either corpus alone would have reported a clear success or a clear harm, and the pooled figure is the average of the two. That is the same cross-corpus spread as the reformulation result of Section~\ref{sec:results-multi}, reached here inside a single frozen design rather than assembled after the fact.
+A gain of $+0.085$ on CSF sits against a loss of $-0.088$ on HIPAA. A study evaluating this gate on either corpus alone would have reported a clear success or a clear harm. The pooled figure averages those two against a third, $+0.032$ on the Privacy Framework, over all 268 requirements. That is the same cross-corpus spread as the reformulation result of Section~\ref{sec:results-multi}, reached here inside a single frozen design rather than assembled after the fact.
 
 The complementarity counts show the mechanism. On CSF the gate recovers 7 of the 11 requirements that lexical fusion uniquely solves while losing 3 of the 14 the dual-encoder uniquely solves. On HIPAA the trade reverses: 2 recovered against 8 lost. The gate is not behaving differently on the two corpora; the corpora differ in whether the lexical side has anything to contribute when the dual-encoder hesitates.
 
@@ -951,8 +951,8 @@ We argue that for deployment in compliance settings, decision quality is at leas
 The decision tools illustrate the point in both directions: corroboration and verification barely move the ranking yet substantially reshape coverage and gap detection, and verification, whose rationale is decision hygiene, must be gated carefully because in densely linked corpora it trades coverage for only a fragile calibration gain.
 
 Once ranking is measured independently of the decision and compared with a requirement-level test, the picture is consistent: the deterministic agent does not out-rank neural retrieval on any corpus.
-On the diagnostic corpus it is statistically indistinguishable from the dual-encoder (0.672 vs.\ 0.644 Top-1, $p\approx1.0$); on the external corpora no deterministic component improves ranking significantly.
-A two-stage cross-encoder pipeline scores higher on CSF (0.562 vs.\ 0.406), but it reranks a 20-candidate shortlist and is bounded by its Recall@20 of 0.906, so we report it in a separate protocol section rather than as a like-for-like win.
+Under the primary protocol full RAA never exceeds the dual-encoder on any corpus: $-0.034$, $0.000$, $-0.147$ and $0.000$ (Table~\ref{tab:unified}). The repeated-holdout tables agree on the diagnostic corpus, where the two are statistically indistinguishable (0.672 against 0.644 Top-1, $p\approx1.0$), and on the external corpora no deterministic component improves ranking significantly.
+A two-stage cross-encoder pipeline scores higher on CSF and the Privacy Framework under the primary protocol ($.547$ against $.406$, and $.457$ against $.372$), and lower than the dual-encoder alone on the diagnostic corpus and HIPAA. It reranks a 20-candidate shortlist, so as a comparison between reranking methods it is bounded by that shortlist and we give the ceiling alongside it.
 
 We draw two conclusions.
 First, general-purpose learned representations are strong retrievers for compliance text, and a deterministic pipeline built from lexical backends and a curated thesaurus does not beat them on ranking, even where the thesaurus helps most.
@@ -982,7 +982,7 @@ The smaller effects on those corpora are therefore not an artifact of tuning aga
 
 \noindent\textbf{External validity: the three external corpora are not independent of one another.}
 This is the most important limitation of the study and it bears directly on the central claim.
-CSF~1.1, HIPAA and the Privacy Framework are all NIST products, all mapped into the same 300-control corpus drawn from SP~800-53, and two of the three crosswalks were authored by the same programme.
+CSF~1.1 and the Privacy Framework are NIST products. The HIPAA Security Rule is not: it is statutory text issued by the U.S.\ Department of Health and Human Services, and what NIST supplies there is the crosswalk into SP~800-53. All three nonetheless map into the same 300-control corpus, and all three crosswalks come from NIST, two of them from the same programme, so the mappings share a lineage even where the requirement text does not.
 They are correlated evaluation corpora, not independent samples of regulatory text.
 A null that holds across all three is therefore weaker evidence than a null across three unrelated corpora would be, and we cannot exclude that some shared property of the NIST ecosystem, rather than external authorship as such, is what distinguishes them from the corpus we built.
 Testing that requires externally authored corpora from different institutions, ideally with a different target catalogue, and it is the single most valuable extension of this work.
@@ -1027,7 +1027,7 @@ Third, we found no evidence that requirement-level vocabulary distance identifie
 
 Fourth, a preregistered test of a gated lexical-semantic hybrid rules out a mean loss of five Top-1 points or more against semantic retrieval alone ($p = 0.003$) and finds no evidence of superiority ($p = 0.48$), while producing $+0.085$ on one corpus against $-0.088$ on another. A cost of two or three points remains consistent with those data. The design was frozen, hashed and publicly registered before it ran, which constrains outcome-dependent analysis and lets a result of this shape be reported as evidence rather than set aside.
 
-The negative results about our own system stand: no deterministic component significantly improves ranking on any external corpus, the agent holds no coverage or selective-accuracy advantage, and its calibrated abstention detects only a minority of genuine no-match gaps, so it is not ready for gap discovery. We do not substitute an untested claim about auditability for the missing metric case.
+The negative results about our own system stand: no deterministic component significantly improves ranking on any external corpus, the agent holds no coverage or selective-accuracy advantage, and its calibrated abstention detects only a minority of constructed no-match cases, so it is not ready for gap discovery. We do not substitute an untested claim about auditability for the missing metric case.
 
 The most valuable extension is the one this study cannot perform on itself. Our three external corpora share a NIST lineage and a common target catalogue, so they are correlated evidence rather than three independent attempts, and distinguishing external authorship from the properties of one institution's document ecosystem requires corpora from different institutions with a different control catalogue. Beyond that: designing a dedicated no-match signal to make open-world gap detection reliable; admitting domain-adapted encoders such as Legal-BERT~\citep{Chalkidis2020} or SecureBERT~\citep{Aghaei2022} as backends; and investigating temporal drift, where regulations and controls evolve and previously valid mappings become stale~\citep{Gama2014}.
 
