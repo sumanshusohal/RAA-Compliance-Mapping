@@ -99,7 +99,16 @@ https://doi.org/10.17605/OSF.IO/NZXRV
 
 
 def build(out):
+    # The compiled PDF is placed here by hand, since nothing in this
+    # environment can produce it. Rebuilding used to delete it along with
+    # everything else, so a rebuild after any edit silently threw away the
+    # one artifact the readiness check insists on.
+    keep = {}
     if os.path.isdir(out):
+        for f in os.listdir(out):
+            if f.lower().endswith(".pdf"):
+                with open(os.path.join(out, f), "rb") as fh:
+                    keep[f] = fh.read()
         shutil.rmtree(out)
     overleaf = os.path.join(out, "overleaf")
     os.makedirs(overleaf)
@@ -156,6 +165,12 @@ def build(out):
     with open(os.path.join(out, "README.md"), "w", newline="\n",
               encoding="utf-8") as f:
         f.write(package_readme())
+
+    for name, blob in keep.items():
+        with open(os.path.join(out, name), "wb") as fh:
+            fh.write(blob)
+        print(f"  preserved {name}")
+
     print(f"built {out}\n  from commit {git_commit()[:8]}")
 
 
